@@ -1,0 +1,64 @@
+﻿@using BlazorApp.Enums;
+@using System.ComponentModel.DataAnnotations;
+@using BlazorApp.DA;
+
+@inject IApplicationsDataAccess applicationsDataAccess;
+
+    <InputSelect @bind-Value="stretchingStatus" @bind-Value:after="UpdateApplicationStretchingStatus">
+        @foreach (StretchingStatus Item in Enum.GetValues(typeof( StretchingStatus)))
+        {
+            <option value="@Item">@Item.GetDisplayName()</option>
+        }
+    </InputSelect>
+
+<style>
+    .statusStreched
+    {
+        background-color: #90ee90 !important;
+    }
+    .statusDoNotStrech
+    {
+        background-color: #add8e6 !important;
+
+    }
+    .statusWillBeStreched
+    {
+        background-color: #d3d3d3 !important;
+
+    }
+    .statusNotSctreched
+    {
+        background-color: White !important;
+
+    }
+</style>
+
+@code {
+    [Parameter] public StretchingStatus stretchingStatus {get;set;}
+    [Parameter] public int applicationId {get;set;}
+
+    private string color = "White";
+
+    protected override void OnParametersSet()
+    {
+        if(stretchingStatus == StretchingStatus.DoNotStrech) color = "#add8e6";
+        if(stretchingStatus == StretchingStatus.Streched) color = "#90ee90";
+        if(stretchingStatus == StretchingStatus.NotSctreched) color = "White";
+        if(stretchingStatus == StretchingStatus.WillBeStreched) color = "#d3d3d3";
+    }
+
+    public static string GetStrechingStatusClass(StretchingStatus s)
+    {
+        if(s == StretchingStatus.DoNotStrech) return "statusDoNotStrech";
+        if(s == StretchingStatus.Streched) return "statusStreched";
+        if(s == StretchingStatus.NotSctreched) return "statusNotSctreched";        
+        if(s == StretchingStatus.WillBeStreched) return "statusWillBeStreched";     
+        return "";  
+    }
+
+    void UpdateApplicationStretchingStatus()
+    {
+        applicationsDataAccess.ChangeApplicationStrethcingStatus(applicationId, stretchingStatus);
+    }
+}
+

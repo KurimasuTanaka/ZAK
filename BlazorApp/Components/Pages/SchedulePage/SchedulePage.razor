@@ -1,0 +1,18 @@
+﻿@page "/"
+@page "/schedule"
+@rendermode InteractiveServer
+@using BlazorApp.DA;
+@using BlazorApp.Enums;
+@using BlazorBootstrap;
+@using BlazorApp.Components.Pages.ApplicationsPage.ApplicationsActivities;
+
+<ApplicationsPicker />
+
+<div style="display: flex; flex-direction: row">
+    <SchedulePart />
+    <MapPart />
+</div>
+
+@code {
+
+}

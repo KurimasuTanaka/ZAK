@@ -1,0 +1,22 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@using BlazorApp.DA;
+@using BlazorApp.DA.Addresses
+
+
+@inject IAddressesDataAccess addressesDataAccess;
+
+
+<NumberInput TValue="double" Label="Приорітет" @bind-Value="@priority" @bind-Value:after="UpdateDbData" />
+
+
+
+@code {
+    [Parameter] public int addressId { get; set; }
+
+    [Parameter] public double priority { get; set; }
+ 
+    private async Task UpdateDbData()
+    {
+        await addressesDataAccess.UpdatePriority(addressId, priority);
+    }
+}

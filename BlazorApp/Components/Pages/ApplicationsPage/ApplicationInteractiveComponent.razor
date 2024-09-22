@@ -1,0 +1,46 @@
+﻿@using BlazorApp.Enums;
+@using System.ComponentModel.DataAnnotations;
+@using BlazorApp.DA;
+@using BlazorBootstrap;
+
+
+@inject IApplicationsDataAccess applicationsDataAccess;
+
+<Switch Label="Ignored"      ValueChanged="PressIgnored" />
+<Switch Label="Hot"          ValueChanged="PressHot"/>
+<Switch Label="In schedule"  ValueChanged="PressAddToSchedule"/>
+<NumberInput TValue="int" @bind-Value="@maxDays"  @bind-Value:after="UpdateMaxDays" />
+
+@code {
+    [Parameter] public int applicationId { get; set; }
+    [Parameter] public bool ignored { get; set; }
+    [Parameter] public bool hot { get; set; }
+    [Parameter] public bool inSchedule { get; set; }
+    [Parameter] public int maxDays {get;set;}
+
+    private void PressIgnored()
+    {
+        ignored = !ignored;
+
+        applicationsDataAccess.SwitchApplicationIgnoredStatus(applicationId);
+    }
+
+    private void PressHot()
+    {
+        hot = !hot;
+        applicationsDataAccess.SwitchApplicationHotStatus(applicationId);
+
+    }
+
+    private void PressAddToSchedule()
+    {
+        inSchedule = !inSchedule;
+        applicationsDataAccess.SwitchApplicationInScheduleStatus(applicationId);
+    }
+
+    private void UpdateMaxDays()
+    {
+        applicationsDataAccess.SetMaxDays(applicationId, maxDays);
+    }
+
+}

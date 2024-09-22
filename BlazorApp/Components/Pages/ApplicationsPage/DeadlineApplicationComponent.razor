@@ -1,0 +1,24 @@
+﻿Дней до дедлайна:
+@daysWithWeakends
+
+@code {
+
+    [Parameter] public int year {get; set;}
+    [Parameter] public int month {get; set;}
+    [Parameter] public int day {get; set;}
+    [Parameter] public int maxDays {get; set;}
+
+    private int daysWithWeakends = 0;
+    
+    //Add in future
+    //private int daysWithoutWeakends = 0;
+
+    protected override void OnParametersSet()
+    {
+        DateTime dateTime = new DateTime(year, month, day);
+
+        daysWithWeakends = (dateTime.AddDays(maxDays) - DateTime.Today).Days;
+    } 
+
+}
+

@@ -1,0 +1,26 @@
+﻿
+@using BlazorApp.DA;
+@using BlazorApp.DA.Addresses
+@using BlazorApp.Enums;
+@using BlazorBootstrap;
+
+@inject IAddressesDataAccess addressesDataAccess;
+
+
+
+
+<td><span> @address.streetName @address.building</span></td>
+<td>
+    <NumberInput TValue="double" Label="Приоритетность дома" @bind-Value="@address.priority"  @bind-Value:after="UpdateParameterValue" />
+</td>
+
+
+@code {
+    [Parameter] public Address address { get; set; }
+
+    private async void UpdateParameterValue()
+    {
+        await addressesDataAccess.UpdatePriority(address.id, address.priority);
+    }
+
+}

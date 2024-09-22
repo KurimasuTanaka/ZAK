@@ -1,0 +1,83 @@
+﻿@using BlazorApp.DA;
+
+@inject IApplicationsDataAccess applicationsDataAccess;
+
+<Card>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item p-1"> @result </li>
+        <li class="list-group-item" style="display: flex; align-items: baseline; padding:0px">
+            <Button style="width: 100%; --bs-btn-border-radius: 0;" class="btn-sm" Color="ButtonColor.Secondary"
+                @onclick="UpdateFirstPartTimeframe">First</Button>
+            <Button style="width: 100%; --bs-btn-border-radius: 0;" class="btn-sm" Color="ButtonColor.Secondary"
+                @onclick="UpdateSecondPartTimeframe">Second</Button>
+
+        </li>
+        <li class="list-group-item p-1" style="display: flex; align-items: center; padding:0px">
+            <span>From:</span>
+            <InputSelect @bind-Value="startHour" @bind-Value:after="UpdateStrartHour">
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+            </InputSelect>
+            <span>To:</span>
+            <InputSelect @bind-Value="endHour" @bind-Value:after="UpdateEndHour">
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+            </InputSelect>
+        </li>
+    </ul>
+</Card>
+
+@code {
+    private string result = String.Empty; 
+
+    [Parameter] public int applicationId { get; set; }
+
+    [Parameter] public bool timeRangeIsSet {get; set;}
+    [Parameter] public int startHour { get; set; }
+    [Parameter] public int endHour { get; set; }
+
+    [Parameter] public bool firstPart { get; set; }
+    [Parameter] public bool secondPart { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if(timeRangeIsSet)
+        {
+            result = $"С {startHour} до {endHour}";
+        } else result = firstPart ? "В первой половине" : "Во второй половине" ;
+    } 
+
+    private void UpdateStrartHour() {
+        applicationsDataAccess.SetTimeRange(applicationId, startHour, endHour);
+        result = $"С {startHour} до {endHour}";    
+        }
+    private void UpdateEndHour() {
+        applicationsDataAccess.SetTimeRange(applicationId, startHour, endHour);
+        result = $"С {startHour} до {endHour}";    
+        }
+
+    private void UpdateFirstPartTimeframe()
+    {
+        applicationsDataAccess.ChoseFirstPartOfDay(applicationId);
+        result = "В первой половине";
+    }
+    private void UpdateSecondPartTimeframe()
+    {
+        applicationsDataAccess.ChoseSecondPartOfDay(applicationId);
+        result = "Во второй половине";
+    }
+}

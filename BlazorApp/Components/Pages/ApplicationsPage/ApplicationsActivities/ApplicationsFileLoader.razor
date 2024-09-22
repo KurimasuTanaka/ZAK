@@ -1,0 +1,73 @@
+﻿@using BlazorApp.DA;
+@using ApplicationsScrappingModule;
+@using BlazorApp.Enums;
+@using BlazorBootstrap;
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorApp.ApplicationsManager;
+
+@inject IFileLoader fileLoader;
+@inject IApplicationScrapper applicationScrapper;
+@inject IApplicationsManager applicationsManager;
+
+
+<div>
+  <InputFile OnChange="LoadFile"></InputFile>
+  <Button class="p-2" Color="ButtonColor.Info" @onclick="LoadNewApplicationsWithReplacement">Load applications</Button>
+  <Button class="p-2" Color="ButtonColor.Info" @onclick="LoadNewApplications">Add applications</Button>
+</div>
+
+@code
+{
+  [Parameter]
+  public EventCallback ApplicationsInformationWasChanged { get; set; }
+
+  string pathToApplicationsFile = String.Empty;
+  IBrowserFile applicationsFileToLoad;
+
+  Alert noFileAlert = default!;
+
+  private async void LoadNewApplications()
+  {
+    if (applicationsFileToLoad is null)
+    {
+      return;
+    }
+
+    await fileLoader.LoadFile(applicationsFileToLoad);
+
+    await applicationsManager.AddNewApplications(fileLoader.GetLastLoadedFile());
+
+    //applicationScrapper.ProcessFileWithAddition(fileLoader.GetLastLoadedFile());
+
+    await ApplicationsInformationWasChanged.InvokeAsync();
+
+    //TODO: Fix issue with deleting of used files
+    //fileLoader.DeleteTempFiles();
+  }
+
+  private async void LoadNewApplicationsWithReplacement()
+  {
+    if (applicationsFileToLoad is null)
+    {
+      return;
+    }
+    await fileLoader.LoadFile(applicationsFileToLoad);
+
+    //Application list removal removed
+    //applicationScrapper.ProcessFileWithReplacement(fileLoader.GetLastLoadedFile());
+
+    await applicationsManager.AddNewApplicationsWithRemoval(fileLoader.GetLastLoadedFile());
+
+
+    await ApplicationsInformationWasChanged.InvokeAsync();
+
+    //TODO: Fix issue with deleting of used files
+    fileLoader.DeleteTempFiles();
+  }
+
+  public void LoadFile(InputFileChangeEventArgs e)
+  {
+    //fileLoader.LoadFile(e.File, "C:/Users/Kurimasu Tanaka/Documents/Coding projects/C#/ZAK/file.html");
+    applicationsFileToLoad = e.File;
+  }
+}

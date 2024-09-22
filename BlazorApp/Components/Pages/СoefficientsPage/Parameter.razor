@@ -1,0 +1,31 @@
+﻿@using BlazorApp.DA;
+@using BlazorApp.Enums;
+@using BlazorBootstrap;
+
+@inject ICoefficientsDataAccess coefficientsDataAccess;
+
+
+<td><span>@coefficient.parameterAlias</span></td>
+<td>
+    <Switch @bind-Value="coefficient.infinite" Label="Максимальный приоритет"   @bind-Value:after="UpdateInfinityStatus" />
+</td>
+<td>
+    <NumberInput TValue="double" @bind-Value="@coefficient.coefficient"  @bind-Value:after="UpdateParameterValue" />
+</td>
+
+
+@code {
+    [Parameter] public Coefficient coefficient { get; set; }
+
+    private async void UpdateParameterValue()
+    {
+        await coefficientsDataAccess.UpdateCoefficient(coefficient.id, coefficient.coefficient);
+    }
+
+    private async void UpdateInfinityStatus()
+    {
+        await coefficientsDataAccess.MakeParameterInfinite(coefficient.id);
+    }
+
+
+}

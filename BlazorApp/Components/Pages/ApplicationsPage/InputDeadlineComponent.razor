@@ -1,0 +1,16 @@
+﻿@inject IApplicationsDataAccess applicationsDataAccess;
+@using System.ComponentModel.DataAnnotations;
+@using BlazorApp.DA;
+
+
+<InputNumber Label="Дней на подключение" @bind-Value="daysForConnection" @bind-Value:after="UpdateDbData" />
+
+
+
+@code {
+    [Parameter] public int applicationId { get; set; }
+    [Parameter] public int daysForConnection {get; set;} =  0;
+
+    private async Task UpdateDbData() =>
+        await applicationsDataAccess.SetMaxDays(applicationId, daysForConnection);
+}

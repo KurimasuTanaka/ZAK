@@ -1,0 +1,26 @@
+﻿@using BlazorApp.DA;
+
+@inject IBrigadesDataAccess brigadesDataAccess;
+
+@foreach(Brigade brigade in brigades)
+{
+    <BrigadeView brigade="@brigade" UpdateBrigadeLists="UpdateList"/>
+}
+
+
+@code {
+
+    private List<Brigade> brigades = new();
+
+    public async void UpdateList()
+    {
+        brigades =  (await brigadesDataAccess.GetAllBrigades()).OrderBy(brigade => brigade.brigadeNumber).ToList();
+        StateHasChanged();
+    }
+
+    protected override void OnParametersSet()
+    {
+        brigades = brigadesDataAccess.GetAllBrigades().Result.OrderBy(brigade => brigade.brigadeNumber).ToList();
+    }
+
+}

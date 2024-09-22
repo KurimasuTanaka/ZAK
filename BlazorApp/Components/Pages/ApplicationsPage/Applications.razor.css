@@ -1,0 +1,55 @@
+.statusStreched {
+    background-color: #90ee90;
+  }
+
+  .statusDoNotStrech {
+    background-color: #add8e6;
+
+  }
+
+  .statusWillBeStreched {
+    background-color: #d3d3d3;
+
+  }
+
+  .statusNotSctreched {
+    background-color: White;
+
+  }
+
+  table,
+  th,
+  td {
+    border: 1px solid black;
+  }
+
+  #appId {
+    width: 5%;
+  }
+
+  #appDis {
+    width: 5%;
+  }
+
+  #appLoc {
+    width: 20%;
+  }
+
+  #appStr {
+    width: 5%;
+  }
+
+  #appOpCom,
+  #appMasCom {
+    width: 50%;
+  }
+
+  .scrollComment {
+    overflow: auto;
+    max-height: 10em;
+
+  }
+
+  #appDate {
+    width: 10%;
+  }

@@ -1,0 +1,40 @@
+﻿@using BlazorApp.DA;
+@using BlazorApp.ApplicationsManager;
+
+@inject IApplicationsManager applicationsManager;
+
+
+<Modal @ref="modal" Title="Новая заявка" Size="ModalSize.Large">
+    <BodyTemplate>
+            <ApplicationEditor 
+                application = "@newApplication"
+                applicationSubmited = "@FormSubmitted"
+                buttonText="Добавить"
+             />
+    </BodyTemplate>
+    
+</Modal>
+
+<Button class="p-2" Color="ButtonColor.Info" @onclick="ShowModal">Add new Application</Button>
+
+
+
+@code {
+    [Parameter]
+    public EventCallback ApplicationsInformationWasChanged { get; set; }
+
+    Application newApplication = new();
+
+    private Modal modal = default!;
+
+    async void FormSubmitted(Application application)
+	{
+        applicationsManager.AddNewApplication(newApplication);
+        await ApplicationsInformationWasChanged.InvokeAsync();
+	}
+
+    private async Task ShowModal()
+    {
+        await modal.ShowAsync();
+    }
+}

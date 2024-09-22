@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp", "BlazorApp\BlazorApp.csproj", "{5E96AC06-701A-4D03-BC6E-8734009FE146}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.DA", "BlazorApp.DA\BlazorApp.DA.csproj", "{8A5EEA3D-06DE-4C41-A148-42CC12889F7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.DB", "BlazorApp.DB\BlazorApp.DB.csproj", "{54FA7639-127A-4A0B-8666-A5202C6E1094}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationsScrapper", "ApplicationsScrapper\ApplicationsScrapper.csproj", "{2743EF27-B556-47E2-B5C4-8E2B2734B314}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.Enums", "BlazorApp.Enums\BlazorApp.Enums.csproj", "{F0EBA8F3-3040-488D-8697-5C2E768AAC19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.ApplicationsManager", "ApplicationsManager\BlazorApp.ApplicationsManager.csproj", "{7ABF2563-E7E0-426C-830E-21F472EB0CF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.GeoDataManager", "GeoDataManager\BlazorApp.GeoDataManager.csproj", "{4BF0123F-3240-4C79-A4BB-78EA2EDDAEFB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E96AC06-701A-4D03-BC6E-8734009FE146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E96AC06-701A-4D03-BC6E-8734009FE146}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E96AC06-701A-4D03-BC6E-8734009FE146}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E96AC06-701A-4D03-BC6E-8734009FE146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A5EEA3D-06DE-4C41-A148-42CC12889F7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A5EEA3D-06DE-4C41-A148-42CC12889F7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A5EEA3D-06DE-4C41-A148-42CC12889F7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A5EEA3D-06DE-4C41-A148-42CC12889F7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54FA7639-127A-4A0B-8666-A5202C6E1094}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54FA7639-127A-4A0B-8666-A5202C6E1094}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54FA7639-127A-4A0B-8666-A5202C6E1094}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54FA7639-127A-4A0B-8666-A5202C6E1094}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2743EF27-B556-47E2-B5C4-8E2B2734B314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2743EF27-B556-47E2-B5C4-8E2B2734B314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2743EF27-B556-47E2-B5C4-8E2B2734B314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2743EF27-B556-47E2-B5C4-8E2B2734B314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0EBA8F3-3040-488D-8697-5C2E768AAC19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0EBA8F3-3040-488D-8697-5C2E768AAC19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0EBA8F3-3040-488D-8697-5C2E768AAC19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0EBA8F3-3040-488D-8697-5C2E768AAC19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7ABF2563-E7E0-426C-830E-21F472EB0CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ABF2563-E7E0-426C-830E-21F472EB0CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ABF2563-E7E0-426C-830E-21F472EB0CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ABF2563-E7E0-426C-830E-21F472EB0CF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BF0123F-3240-4C79-A4BB-78EA2EDDAEFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BF0123F-3240-4C79-A4BB-78EA2EDDAEFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BF0123F-3240-4C79-A4BB-78EA2EDDAEFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BF0123F-3240-4C79-A4BB-78EA2EDDAEFB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

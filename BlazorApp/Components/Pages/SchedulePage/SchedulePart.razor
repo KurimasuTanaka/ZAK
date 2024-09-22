@@ -1,0 +1,21 @@
+﻿@using BlazorApp.DA;
+
+@inject IBrigadesDataAccess brigadesDataAccess;
+
+<div style="width: 50%">
+    <Button Color="ButtonColor.Primary" @onclick="AddNewBrigade">Добавить бригаду</Button>
+
+    <BrigadeList @ref=@brigadeList />
+</div>
+
+@code {
+
+    BrigadeList brigadeList;
+
+    private async Task AddNewBrigade()
+    {
+        brigadesDataAccess.AddNewBrigade();
+        brigadeList.UpdateList();
+    }
+
+}

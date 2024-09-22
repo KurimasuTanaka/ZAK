@@ -1,0 +1,50 @@
+﻿@page "/addresses"
+@rendermode InteractiveServer
+
+@using BlazorApp.DA;
+@using BlazorApp.DA.Addresses
+@using BlazorApp.Enums;
+@using BlazorBootstrap;
+
+@inject IAddressesDataAccess addressesDataAccess;
+
+<PrioritizedAddressAddition redraw="Redraw" />
+
+
+<Grid @ref="addressGrid" TItem="Address" Class="table table-bordered table-striped" DataProvider="@AddressesDataProvider" >
+    <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName">
+        @context.streetName
+    </GridColumn>
+        <GridColumn TItem="Address" HeaderText="Будинок" PropertyName="building">
+        @context.building
+    </GridColumn>
+    <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority">
+        <PriorityInputComponent addressId="context.id" priority="context.priority" />
+    </GridColumn>
+
+</Grid>
+
+
+@code {
+    private List<Address> addresses = null;
+
+    private Grid<Address> addressGrid = default!;
+
+    private async Task<GridDataProviderResult<Address>> AddressesDataProvider(GridDataProviderRequest<Address> request)
+    {
+        List<Address> addresses = await addressesDataAccess.GetAddresses();
+        return await Task.FromResult(new GridDataProviderResult<Address> {Data = addresses, TotalCount = addresses.Count});
+    }
+
+    public async void Redraw()
+    {
+        await addressGrid.RefreshDataAsync();
+        StateHasChanged();
+    }
+
+    override async protected void OnParametersSet()
+    {
+        addresses = await addressesDataAccess.GetAddresses();
+    }
+
+}

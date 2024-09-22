@@ -1,0 +1,144 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@using BlazorApp.DA;
+@using BlazorApp.Components.Pages.SchedulePage
+@using BlazorBootstrap
+@using global::BlazorApp.Components.Pages.SchedulePage
+@using global::BlazorApp.DA
+
+@inject IBrigadesDataAccess brigadesDataAccess;
+@inject IApplicationsDataAccess applicationsDataAccess;
+
+<Modal @ref="applicationsList" Title="Выбрать заявку" Size="ModalSize.ExtraLarge">
+    <BodyTemplate>
+        <ApplicationsRatedList @ref="appList"/>
+    </BodyTemplate>
+</Modal>
+
+<Card>
+    <CardTitle style="display: flex; flex-direction: row; align-items:center;">
+        <Button @onclick="DeleteBrigade">
+            <Icon Name="IconName.XCircleFill" />
+        </Button>
+        Бригада
+        <!-- <NumberInput style="width: 15%" TValue="int" Value="brigade.brigadeNumber" ValueExpression="() => brigade.brigadeNumber" ValueChanged="(value) => BrigadeNumberChanged(value)"/>
+        -->
+    </CardTitle>
+    <Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="ToggleApplicationsList">Toggle
+        content</Button>
+
+    <CardBody>
+
+        <Collapse @ref="collapseApplicationsList">
+
+
+            <Grid @ref="brigadeApplicationsGrid" TItem="ApplicationScheduled" AllowRowClick="true" Class="table table-hover"
+                DataProvider="BrigadeApplicationsProvider" OnRowClick="OnRowClick" Responsive="true">
+
+                <GridColumn TItem="ApplicationScheduled" HeaderText="Время"> 
+                    @(context.applicationScheduledTime + 10)  -  @(context.applicationScheduledTime + 11) 
+                </GridColumn>
+                <GridColumn TItem="ApplicationScheduled" HeaderText="ID"> @if(@context.id != 0) { @context.id } else { } </GridColumn>
+                <GridColumn TItem="ApplicationScheduled" HeaderText="Район">@if(@context.id != 0) { @context.districtName } else { }   </GridColumn>
+                <GridColumn TItem="ApplicationScheduled" HeaderText="Улица"> @if(@context.id != 0) { @context.streetName } else { <span> РЕЗЕРВ</span> } </GridColumn>
+                <GridColumn TItem="ApplicationScheduled" HeaderText="Дом"> @if(@context.id != 0) {  @context.building } else { } </GridColumn>
+            </Grid>
+        </Collapse>
+    </CardBody>
+
+
+</Card>
+
+@code {
+    [Parameter]
+    public Brigade brigade { get; set; } = new();
+    [Parameter]
+    public EventCallback UpdateBrigadeLists { get; set; }
+
+    private Grid<ApplicationScheduled> brigadeApplicationsGrid = default!;
+
+    public Modal applicationsList = default!;
+    public ApplicationsRatedList appList = default!;
+
+    private Collapse collapseApplicationsList;
+
+    private async Task ToggleApplicationsList() => await collapseApplicationsList.ToggleAsync();
+
+    override protected void OnParametersSet()
+    {
+        brigade.PopulateApplicationList(applicationsDataAccess);
+    }
+
+    private async void BrigadeNumberChanged(int newBrigadeNumber)
+    {
+        brigade.brigadeNumber = newBrigadeNumber;
+        await brigadesDataAccess.ChangeBrigadeNumber(brigade.id, newBrigadeNumber);
+    }
+
+    private async void DeleteBrigade()
+    {
+        await brigadesDataAccess.DeleteBrigade(brigade.id);
+        await UpdateBrigadeLists.InvokeAsync();
+    }
+
+    int chosenId = 0;
+    public async void ApplicationWasChosen(int applicationId)
+    {
+        chosenId = applicationId;
+
+        await applicationsList.HideAsync();
+
+        
+        await brigadesDataAccess.ChangeBrigadeApplication(brigade.id, chosenTime, chosenId);
+        brigade.applications[chosenTime] = applicationsDataAccess.GetApplication(applicationId).Result;
+
+        await RedrawBrigadeTable();
+
+    }
+
+    int chosenTime = 0;
+    public async Task ApplicationButtonIsPressed(int applicationTime)
+    {
+        chosenTime = applicationTime;
+
+        await applicationsList.ShowAsync();
+        appList.applicationWasChosen = new EventCallback(this, ApplicationWasChosen);
+
+        return;
+    }
+
+    public async void SwapButtonIsPressed()
+    {
+
+    }
+
+    private async Task<GridDataProviderResult<ApplicationScheduled>> BrigadeApplicationsProvider(
+        GridDataProviderRequest<ApplicationScheduled> request)
+    {
+
+        brigade.PopulateApplicationList(applicationsDataAccess);
+
+        List<ApplicationScheduled> applications = brigade.applications.Select(application => new ApplicationScheduled(application, 0)).ToList();
+        for(int i = 0; i < applications.Count; i++)
+        {
+            applications[i].applicationScheduledTime = i;
+        }
+
+
+        return await Task.FromResult(new GridDataProviderResult<ApplicationScheduled>
+            {
+                TotalCount = applications.Count,
+                Data = applications
+            });
+    }
+
+    private async Task OnRowClick(GridRowEventArgs<ApplicationScheduled> args)
+    {
+        await ApplicationButtonIsPressed(args.Item.applicationScheduledTime);
+    }
+
+    private async Task RedrawBrigadeTable()
+    {
+        await brigadeApplicationsGrid.RefreshDataAsync();
+        StateHasChanged();
+    }
+}

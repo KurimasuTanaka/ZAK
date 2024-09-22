@@ -1,0 +1,19 @@
+﻿<div class="scrollComment">
+    "@((MarkupString)operatorComment)"
+    <hr>
+    "@((MarkupString)masterComment)"
+</div>
+
+<style>
+    .scrollComment 
+    {
+        max-height: 20em;
+        overflow: auto;
+    }
+</style>
+
+@code {
+    [Parameter] public string operatorComment {get;set;}
+    [Parameter] public string masterComment {get;set;}
+
+}

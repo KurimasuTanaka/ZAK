@@ -1,0 +1,26 @@
+﻿@page "/coefficients"
+@rendermode InteractiveServer
+
+@using BlazorApp.DA;
+@using BlazorApp.Enums;
+@using BlazorBootstrap;
+
+@inject ICoefficientsDataAccess coefficientsDataAccess;
+
+<table>
+        @foreach(Coefficient coefficient in coefficients)
+        {
+            <tr>
+                <Parameter coefficient="@coefficient" />
+            </tr>
+        }
+    
+</table>
+@code {
+    private List<Coefficient> coefficients = null;
+
+    override async protected void OnParametersSet()
+    {
+        coefficients = await coefficientsDataAccess.GetCoefficients();
+    }
+}
