@@ -10,8 +10,9 @@
 @inject IAddressesDataAccess addressesDataAccess;
 @inject ICoefficientsDataAccess coefficientsDataAccess;
 
-<Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowDetailView="true" AllowFiltering="true"
-    AllowPaging="true" PageSize="100" AllowSorting="true" OnRowClick="OnRowClick" AllowRowClick="true">
+<Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowDetailView="true"
+    AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true" OnRowClick="OnRowClick"
+    AllowRowClick="true">
     <GridColumns>
         @*Id column with set of interactive components*@
         <GridColumn TItem="Application" HeaderText="Id" PropertyName="id">
@@ -52,7 +53,7 @@
             <span>@context.year.@context.month.@context.day</span>
         </GridColumn>
     </GridColumns>
-    
+
     @*Column for comments section*@
     <GridDetailView TItem="Application">
         <div class="row">
@@ -80,7 +81,7 @@
     protected override async void OnParametersSet()
     {
         applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
-        
+
         Dictionary<string, double> priorities = await coefficientsDataAccess.GetCoefficientsDictionary();
         List<Address> addresses = await addressesDataAccess.GetAddresses();
 
@@ -93,12 +94,16 @@
     public async void Redraw()
     {
         applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
+        List<Address> addresses = await addressesDataAccess.GetAddresses();
 
         Dictionary<string, double> priorities = await coefficientsDataAccess.GetCoefficientsDictionary();
 
         foreach (Application app in applications)
         {
-            app.SetupApplicationPriorityLevel(priorities, await addressesDataAccess.GetPriorityByAddress(app.streetName, app.building));
+            Address? address = addresses.Find(a => a.streetName == app.streetName && a.building == app.building);
+
+            app.SetupApplicationPriorityLevel(priorities, await addressesDataAccess.GetPriorityByAddress(app.streetName,
+            app.building));
         }
 
 
