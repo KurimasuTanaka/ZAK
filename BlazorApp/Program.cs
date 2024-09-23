@@ -8,6 +8,7 @@ using BlazorApp.GeoDataManager;
 using Microsoft.EntityFrameworkCore;
 using BlazorApp.DA.Addresses;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddBlazorBootstrap();
@@ -23,7 +24,7 @@ builder.Services.AddScoped<IBrigadesDataAccess, BrigadesDataAccess>();
 
 
 builder.Services.AddScoped<IFileLoader, FileLoader>();
-builder.Services.AddScoped<IApplicationScrapper,ApplicationScrapper>();
+builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapper>();
 builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
 builder.Services.AddScoped<IApplicationsManager, ApplicationsManager>();
 builder.Services.AddScoped<IAddressesDataAccess, AddressesDataAccess>();

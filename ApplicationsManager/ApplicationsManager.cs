@@ -6,11 +6,11 @@ namespace BlazorApp.ApplicationsManager;
 
 public class ApplicationsManager : IApplicationsManager
 {
-    IApplicationScrapper _applicationScrapper;
+    IApplicationsScrapper _applicationScrapper;
     IApplicationsDataAccess _applicationsDataAccess;
     IGeoDataManager _geoDataManager;
 
-    public ApplicationsManager(IApplicationScrapper applicationScrapper,    
+    public ApplicationsManager(IApplicationsScrapper applicationScrapper,    
                         IApplicationsDataAccess applicationsDataAccess, 
                         IGeoDataManager geoDataManager)
     {
@@ -28,12 +28,9 @@ public class ApplicationsManager : IApplicationsManager
     {
         await _applicationsDataAccess.ClearApplicationsList();
 
-        List<Application> newApplications = new List<Application>();
+        List<Application> newApplications = await _applicationScrapper.ScrapApplicationData(applicationsFilePath);
 
-        _applicationScrapper.ScrapApplicationData(ref newApplications, applicationsFilePath);
-        newApplications = await _geoDataManager.AddGeoDataToApplications(newApplications);
-
-        _applicationsDataAccess.AddNewApplications(newApplications);
+        await _applicationsDataAccess.AddNewApplications(newApplications);
 
     }
 
@@ -41,12 +38,9 @@ public class ApplicationsManager : IApplicationsManager
     {
         await _applicationsDataAccess.ClearApplicationsList();
 
-        List<Application> newApplications = new List<Application>();
+        List<Application> newApplications = await _applicationScrapper.ScrapApplicationData(applicationsFilePath);
 
-        _applicationScrapper.ScrapApplicationData(ref newApplications, applicationsFilePath);
-        newApplications = await _geoDataManager.AddGeoDataToApplications(newApplications);
-
-        _applicationsDataAccess.AddApplications(newApplications);
+        await _applicationsDataAccess.AddApplications(newApplications);
     }
 
     public async Task<IEnumerable<Application>> GetApplications()
