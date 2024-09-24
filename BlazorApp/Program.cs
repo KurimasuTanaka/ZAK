@@ -1,4 +1,4 @@
-using BlazorApp.ApplicationsManager;
+using BlazorApp.ApplicationsLoader;
 using ApplicationsScrappingModule;
 using BlazorApp;
 using BlazorApp.Components;
@@ -26,7 +26,7 @@ builder.Services.AddScoped<IBrigadesDataAccess, BrigadesDataAccess>();
 builder.Services.AddScoped<IFileLoader, FileLoader>();
 builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();
 builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
-builder.Services.AddScoped<IApplicationsManager, ApplicationsManager>();
+builder.Services.AddScoped<IApplicationsLoader, ApplicationsLoader>();
 builder.Services.AddScoped<IAddressesDataAccess, AddressesDataAccess>();
 
 

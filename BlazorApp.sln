@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApplicationsScrapper", "App
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.Enums", "BlazorApp.Enums\BlazorApp.Enums.csproj", "{F0EBA8F3-3040-488D-8697-5C2E768AAC19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.ApplicationsManager", "ApplicationsManager\BlazorApp.ApplicationsManager.csproj", "{7ABF2563-E7E0-426C-830E-21F472EB0CF9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.ApplicationsLoader", "ApplicationsManager\BlazorApp.ApplicationsLoader.csproj", "{7ABF2563-E7E0-426C-830E-21F472EB0CF9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.GeoDataManager", "GeoDataManager\BlazorApp.GeoDataManager.csproj", "{4BF0123F-3240-4C79-A4BB-78EA2EDDAEFB}"
 EndProject

@@ -1,7 +1,6 @@
 ﻿@using BlazorApp.DA;
-@using BlazorApp.ApplicationsManager;
 
-@inject IApplicationsManager applicationsManager;
+@inject IApplicationsDataAccess applicationsDataAccess;
 
 
 <Modal @ref="modal" Title="Новая заявка" Size="ModalSize.Large">
@@ -29,7 +28,7 @@
 
     async void FormSubmitted(Application application)
 	{
-        applicationsManager.AddNewApplication(newApplication);
+        applicationsDataAccess.AddNewApplication(newApplication);
         await ApplicationsInformationWasChanged.InvokeAsync();
 	}
 

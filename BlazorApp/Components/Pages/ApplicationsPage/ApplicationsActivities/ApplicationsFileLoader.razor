@@ -3,10 +3,10 @@
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
 @using Microsoft.AspNetCore.Components.Forms
-@using BlazorApp.ApplicationsManager;
+@using BlazorApp.ApplicationsLoader;
 
 @inject IFileLoader fileLoader;
-@inject IApplicationsManager applicationsManager;
+@inject IApplicationsLoader applicationsLoader;
 
 
 <div>
@@ -34,7 +34,7 @@
 
     await fileLoader.LoadFile(applicationsFileToLoad);
 
-    await applicationsManager.AddNewApplications(fileLoader.GetLastLoadedFile());
+    await applicationsLoader.AddNewApplications(fileLoader.GetLastLoadedFile());
 
     //applicationScrapper.ProcessFileWithAddition(fileLoader.GetLastLoadedFile());
 
@@ -52,10 +52,8 @@
     }
     await fileLoader.LoadFile(applicationsFileToLoad);
 
-    //Application list removal removed
-    //applicationScrapper.ProcessFileWithReplacement(fileLoader.GetLastLoadedFile());
-
-    await applicationsManager.AddNewApplicationsWithRemoval(fileLoader.GetLastLoadedFile());
+  
+    await applicationsLoader.AddNewApplicationsWithRemoval(fileLoader.GetLastLoadedFile());
 
 
     await ApplicationsInformationWasChanged.InvokeAsync();
