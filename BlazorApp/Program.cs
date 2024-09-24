@@ -24,7 +24,7 @@ builder.Services.AddScoped<IBrigadesDataAccess, BrigadesDataAccess>();
 
 
 builder.Services.AddScoped<IFileLoader, FileLoader>();
-builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapper>();
+builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();
 builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
 builder.Services.AddScoped<IApplicationsManager, ApplicationsManager>();
 builder.Services.AddScoped<IAddressesDataAccess, AddressesDataAccess>();
