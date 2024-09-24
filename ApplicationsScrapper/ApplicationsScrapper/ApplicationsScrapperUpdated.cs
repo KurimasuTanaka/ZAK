@@ -34,6 +34,12 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
         application = ScrapApplicationOperatorComment(application, applicationNode);
         application = ScrapApplicationMasterComment(application, applicationNode);
     
+        application = TryScrapApplicationFreeCable(application, applicationNode);
+        application = TryScrapApplicationStatusWasChecked(application, applicationNode);
+        application = TryScrapApplicationTarChangeApp(application, applicationNode);
+        application = TryScrapApplicationTiming(application, applicationNode);
+
+
         return application;
     }
 
@@ -101,29 +107,51 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
 
     //Attempt to scrap the information from the master comment
 
-    private Application TryScrapApplicationIgnorance(Application application, HtmlNode applicationNode)
-    {
-        return application;
-    }
-    private Application TryScrapApplicationUrgency(Application application, HtmlNode applicationNode)
-    {
-        return application;
-    }
     private Application TryScrapApplicationFreeCable(Application application, HtmlNode applicationNode)
     {
+        if(
+            application.operatorComment.Contains("вільний кабель", StringComparison.CurrentCultureIgnoreCase) ||
+            application.operatorComment.Contains("свободный кабель", StringComparison.CurrentCultureIgnoreCase) ||
+            application.operatorComment.Contains("має бути кабель", StringComparison.CurrentCultureIgnoreCase) ||
+            application.operatorComment.Contains("должен быть кабель", StringComparison.CurrentCultureIgnoreCase) 
+        ) application.freeCable = true;
+        
         return application;
     }
     private Application TryScrapApplicationStatusWasChecked(Application application, HtmlNode applicationNode)
     {
+        if(
+            application.operatorComment.Contains("цікавився статусом", StringComparison.CurrentCultureIgnoreCase) ||
+            application.operatorComment.Contains("интересовался статусом", StringComparison.CurrentCultureIgnoreCase) 
+        ) application.statusWasChecked = true;
+
         return application;
     }
     private Application TryScrapApplicationTarChangeApp(Application application, HtmlNode applicationNode)
     {
+        if(
+            application.operatorComment.Contains("Перехід на Гігабіт", StringComparison.CurrentCultureIgnoreCase) ||
+            application.operatorComment.Contains("перехід", StringComparison.CurrentCultureIgnoreCase) ||
+            application.operatorComment.Contains("переход", StringComparison.CurrentCultureIgnoreCase) 
+        ) application.tarChangeApp= true;
+
+
         return application;
     }
-
-    private Application ScrapApplicationTiming(Application application, HtmlNode applicationNode)
+    private Application TryScrapApplicationTiming(Application application, HtmlNode applicationNode)
     {
+        if(
+            application.operatorComment.Contains("першу половину", StringComparison.CurrentCultureIgnoreCase) ||
+            application.operatorComment.Contains("1 половину", StringComparison.CurrentCultureIgnoreCase) ||
+            application.operatorComment.Contains("первую половину", StringComparison.CurrentCultureIgnoreCase) 
+        ) application.firstPart = true;
+
+        if(
+            application.operatorComment.Contains("другу половину", StringComparison.CurrentCultureIgnoreCase) ||
+            application.operatorComment.Contains("вторую половину", StringComparison.CurrentCultureIgnoreCase) ||
+            application.operatorComment.Contains("2 половину", StringComparison.CurrentCultureIgnoreCase) 
+        ) application.secondPart = true;
+
         return application;
     }
 }
