@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ApplicationsScrapper\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
   </ItemGroup>
 
