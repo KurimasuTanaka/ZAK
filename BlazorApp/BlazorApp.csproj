@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <ItemGroup>
-    <ProjectReference Include="..\ApplicationsManager\BlazorApp.ApplicationsLoader.csproj" />
+    <ProjectReference Include="..\BlazorApp.ApplicationsLoader\BlazorApp.ApplicationsLoader.csproj" />
     <ProjectReference Include="..\BlazorApp.DA\BlazorApp.DA.csproj" />
     <ProjectReference Include="..\ApplicationsScrapper\ApplicationsScrapper.csproj" />
     <ProjectReference Include="..\BlazorApp.Enums\BlazorApp.Enums.csproj" />
