@@ -1,0 +1,32 @@
+﻿
+@using BlazorApp.DA;
+@inject IBrigadesDataAccess brigadesDataAccess;
+
+<Button class="btn btn-danger" @onclick="DeleteApplication">Delete</Button>
+
+@code {
+
+    [Parameter]
+    public int applicationId { get; set; } = 0;
+
+    [Parameter]
+    public int brigadeId { get; set; } = 0;
+
+
+    [Parameter]
+    public EventCallback UpdateSchedule { get; set; }
+
+
+    [Parameter]
+    public EventCallback DeleteButtonWasPressed { get; set; }
+
+
+    private async void DeleteApplication()
+    {
+        await DeleteButtonWasPressed.InvokeAsync();
+        await brigadesDataAccess.DeleteApplicationFromSchedule(brigadeId, applicationId);
+        await UpdateSchedule.InvokeAsync();
+    }
+
+}
+ 

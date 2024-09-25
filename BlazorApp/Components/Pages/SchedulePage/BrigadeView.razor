@@ -37,6 +37,15 @@
                 <GridColumn TItem="ApplicationScheduled" HeaderText="Время"> 
                     @(context.applicationScheduledTime + 10)  -  @(context.applicationScheduledTime + 11) 
                 </GridColumn>
+                <GridColumn TItem="ApplicationScheduled" HeaderText=" - "> 
+                    <ApplicationDeleteButton 
+                        brigadeId="@brigade.id" 
+                        applicationId="@context.id" 
+                        UpdateSchedule="RedrawBrigadeTable" 
+                        DeleteButtonWasPressed="RowButtonWasPressed"
+                        /> 
+                </GridColumn>
+                <GridColumn TItem="ApplicationScheduled" HeaderText=" - ">  </GridColumn>
                 <GridColumn TItem="ApplicationScheduled" HeaderText="ID"> @if(@context.id != 0) { @context.id } else { } </GridColumn>
                 <GridColumn TItem="ApplicationScheduled" HeaderText="Район">@if(@context.id != 0) { @context.districtName } else { }   </GridColumn>
                 <GridColumn TItem="ApplicationScheduled" HeaderText="Улица"> @if(@context.id != 0) { @context.streetName } else { <span> РЕЗЕРВ</span> } </GridColumn>
@@ -131,9 +140,21 @@
             });
     }
 
+    private bool wasRowButtonPressed = false;
+    public async Task RowButtonWasPressed()
+    {
+        wasRowButtonPressed = true;
+        await Task.Delay(500);
+        wasRowButtonPressed = false;
+        
+    }
+
     private async Task OnRowClick(GridRowEventArgs<ApplicationScheduled> args)
     {
-        await ApplicationButtonIsPressed(args.Item.applicationScheduledTime);
+        if(!wasRowButtonPressed)
+        {
+            await ApplicationButtonIsPressed(args.Item.applicationScheduledTime);
+        }
     }
 
     private async Task RedrawBrigadeTable()

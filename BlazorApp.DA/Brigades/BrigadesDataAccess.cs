@@ -44,6 +44,17 @@ public class BrigadesDataAccess : IBrigadesDataAccess
         return;
     }
 
+    public async Task DeleteApplicationFromSchedule(int brigadeId, int applicationId)
+    {
+        BrigadeModel? brigade = await _dbContext.brigades.FindAsync(brigadeId);
+        if (brigade is not null)
+        {
+            brigade.applicationsIds[brigade.applicationsIds.IndexOf(applicationId)] = 0;
+            await _dbContext.SaveChangesAsync();
+        }
+        return;
+    }
+
     public async Task DeleteBrigade(int id)
     {
         BrigadeModel? brigade = await _dbContext.brigades.FindAsync(id);
