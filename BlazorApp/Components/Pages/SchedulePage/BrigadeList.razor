@@ -4,7 +4,7 @@
 
 @foreach(Brigade brigade in brigades)
 {
-    <BrigadeView brigade="@brigade" UpdateBrigadeLists="UpdateList"/>
+    <BrigadeView brigade="@brigade" UpdateBrigadeLists="UpdateList" AddApplicationToSwap="AddSwapApplication"/>
 }
 
 
@@ -12,11 +12,27 @@
 
     private List<Brigade> brigades = new();
 
-    public async void UpdateList()
+    private List<ApplicationScheduled> applicationsToSwap = new();
+
+    public async Task UpdateList()
     {
         brigades =  (await brigadesDataAccess.GetAllBrigades()).OrderBy(brigade => brigade.brigadeNumber).ToList();
         StateHasChanged();
     }
+
+    public async void AddSwapApplication(ApplicationScheduled application)
+    {
+        applicationsToSwap.Add(application);
+        if (applicationsToSwap.Count == 2)
+        {
+            await brigadesDataAccess.SwapApplications(
+                applicationsToSwap[0].brigadeId,                applicationsToSwap[1].brigadeId,
+                applicationsToSwap[0].applicationScheduledTime, applicationsToSwap[1].applicationScheduledTime);
+            applicationsToSwap.Clear();
+            await UpdateList();
+        }
+    }
+
 
     protected override void OnParametersSet()
     {

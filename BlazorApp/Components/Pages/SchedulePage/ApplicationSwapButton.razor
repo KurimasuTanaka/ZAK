@@ -1,0 +1,26 @@
+﻿
+@using BlazorApp.DA;
+@inject IBrigadesDataAccess brigadesDataAccess;
+
+<Button class="btn btn-success" @onclick="AddSwapApplication">Swap</Button>
+
+@code {
+
+    [Parameter]
+    public ApplicationScheduled application { get; set; } = new();
+
+
+    [Parameter]
+    public EventCallback<ApplicationScheduled> AddApplicationToSwap { get; set; }
+
+    [Parameter]
+    public EventCallback SwapButtonsWasPressed { get; set; }
+
+
+    private async void AddSwapApplication()
+    {
+        await SwapButtonsWasPressed.InvokeAsync();
+        await AddApplicationToSwap.InvokeAsync(application);
+    }
+
+}

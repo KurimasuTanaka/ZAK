@@ -72,8 +72,35 @@ public class BrigadesDataAccess : IBrigadesDataAccess
         return await _dbContext.brigades.Select(brigade => new Brigade(brigade)).ToListAsync();
     }
 
-    public Task SwapApplications()
+
+    public async Task SwapApplications(int brigade1Id, int brigade2Id, int application1Time, int application2Time)
     {
-        throw new NotImplementedException();
+
+        if (brigade1Id == brigade2Id)
+        {
+            BrigadeModel? brigade = await _dbContext.brigades.FindAsync(brigade1Id);
+            if (brigade is not null)
+            {
+                int applicationIdBuf = brigade.applicationsIds[application1Time];
+                brigade.applicationsIds[application1Time] = brigade.applicationsIds[application2Time];
+                brigade.applicationsIds[application2Time] = applicationIdBuf;
+
+                await _dbContext.SaveChangesAsync();
+            }
+        }
+        else
+        {
+            BrigadeModel? brigade1 = await _dbContext.brigades.FindAsync(brigade1Id);
+            BrigadeModel? brigade2 = await _dbContext.brigades.FindAsync(brigade2Id);
+
+            if (brigade1 is not null && brigade2 is not null)
+            {
+                int applicationIdBuf = brigade1.applicationsIds[application1Time];
+                brigade1.applicationsIds[application1Time] = brigade2.applicationsIds[application2Time];
+                brigade2.applicationsIds[application2Time] = applicationIdBuf;
+
+                await _dbContext.SaveChangesAsync();
+            }
+        }
     }
 }

@@ -10,5 +10,5 @@ public interface IBrigadesDataAccess
     public Task ChangeBrigadeApplication(int id, int time, int applicationId);
     public Task DeleteApplicationFromSchedule(int brigadeId, int applicationId);
     public Task<List<Brigade>> GetAllBrigades();
-    public Task SwapApplications();
+    public Task SwapApplications(int brigade1Id, int brigade2Id, int application1Time, int application2Time);
 }
