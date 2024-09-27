@@ -182,9 +182,11 @@
         }
     }
 
-    private async Task RedrawBrigadeTable()
+    public async Task RedrawBrigadeTable()
     {
         await brigadeApplicationsGrid.RefreshDataAsync();
         StateHasChanged();
     }
+
+
 }
