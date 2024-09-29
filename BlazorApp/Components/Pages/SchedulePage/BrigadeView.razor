@@ -5,6 +5,8 @@
 @inject IBrigadesDataAccess brigadesDataAccess;
 @inject IApplicationsDataAccess applicationsDataAccess;
 
+@inject IJSRuntime Js
+
 <Modal @ref="applicationsList" Title="Выбрать заявку" Size="ModalSize.ExtraLarge">
     <BodyTemplate>
         <ApplicationsRatedList @ref="appList" />
@@ -17,8 +19,12 @@
             <Icon Name="IconName.XCircleFill" />
         </Button>
         Бригада
-        <NumberInput style="width: 15%" TValue="int" Value="brigade.brigadeNumber"
-            ValueExpression="() => brigade.brigadeNumber" ValueChanged="(value) => BrigadeNumberChanged(value)" />
+        @* <NumberInput style="width: 15%" TValue="int" Value="brigade.brigadeNumber"
+            ValueExpression="() => brigade.brigadeNumber" ValueChanged="(value) => BrigadeNumberChanged(value)" /> *@
+        <Button @onclick="CopyBrigade">
+            Скопировать бригаду
+        </Button>
+
     </CardTitle>
     <Button Type="ButtonType.Button" Color="ButtonColor.Primary" @onclick="ToggleApplicationsList">Toggle
         content</Button>
@@ -189,4 +195,28 @@
     }
 
 
+    public async Task CopyBrigade()
+    {
+        string brigadeInChatFormat = String.Empty;
+
+        brigadeInChatFormat += "Бригада " + brigade.brigadeNumber + "\n";
+        for (int i = 0; i < brigade.applications.Count; i++)
+        {
+            if(brigade.applications[i] is null)
+            {
+                brigadeInChatFormat += 
+                (i + 10).ToString() + " - " + (i + 11).ToString() + " " + 
+                "----- Резерв -----\n";
+            } else 
+            {
+                brigadeInChatFormat += 
+                    (i + 10).ToString() + " - " + (i + 11).ToString() + " " + 
+                    brigade.applications[i].id + " " + brigade.applications[i].streetName + " " + brigade.applications[i].building + "\n";
+
+            }
+
+        }
+        
+        await Js.InvokeVoidAsync("CopyToClipboard", brigadeInChatFormat);
+    }
 }
