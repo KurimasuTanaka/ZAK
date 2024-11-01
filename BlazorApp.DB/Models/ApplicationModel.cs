@@ -10,12 +10,9 @@ namespace BlazorApp.DB;
         [Key]
         public int id {get; set;}
 
-        //Address 
-        public string streetName { get; set; } = "Paper st.";
-        public string building { get; set; }  = "000";
 
-        //District
-        public string districtName { get; set; } = "000";
+        public AddressModel? address { get; set; }
+        public int addressId { get; set; }
 
         //Date    
         public int year {get; set;} = 0;

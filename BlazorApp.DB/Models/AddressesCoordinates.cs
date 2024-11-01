@@ -6,7 +6,7 @@ namespace BlazorApp.DB;
 public class AddressesCoordinates
 {
     [Key]
-    public string address { get; set; }
+    public string address { get; set; } = String.Empty;
     public double lat { get; set; }
     public double lon { get; set; }
 

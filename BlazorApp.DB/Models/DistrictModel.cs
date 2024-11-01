@@ -5,8 +5,11 @@ namespace BlazorApp.DB;
 public class DistrictModel
 {
     [Key]
-    public string name {get;set;} = "";
+    public string name {get;set;} = String.Empty;
     public string color { get; set; } = "White";
+
+    //Address foreign key
+    public List<AddressModel> addresses {get; set;} = new List<AddressModel>();
 
     public DistrictModel() {}
 
