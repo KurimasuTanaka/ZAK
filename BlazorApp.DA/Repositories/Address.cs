@@ -4,8 +4,25 @@ using BlazorApp.DB;
 
 namespace BlazorApp.DA;
 
-public class Address: AddressModel
+public class Address : AddressModel
 {
+    public double priority
+    {
+        get
+        {
+            return addressPriority is null ? 0.0 : addressPriority.priority;
+        }
+        set
+        {
+            if (addressPriority is null)
+            {
+                addressPriority = new AddressPriorityModel();
+                addressPriority.priority = value;
+            }
+            else addressPriority.priority = value;
+        }
+    }
+
     public Address() : base()
     {
     }
@@ -14,7 +31,7 @@ public class Address: AddressModel
     {
     }
 
-        public object? this[string propertyName]
+    public object? this[string propertyName]
     {
         get
         {

@@ -12,6 +12,43 @@ public class Application : ApplicationModel
 
     public int daysToDeadline = 0;
 
+
+    public string streetName 
+    {
+        get
+        {
+            return address?.streetName ?? "";
+        }
+        set
+        {
+            if (address is not null) address.streetName = value;
+        }
+    }
+
+    public string building
+    {
+        get
+        {
+            return address?.building ?? "";
+        }
+        set
+        {
+            if (address is not null) address.building = value;
+        }
+    }
+
+    public string districtName
+    {
+        get
+        {
+            return address?.district.name ?? "";
+        }
+        set
+        {
+            if (address is not null) address.district.name = value;
+        }
+    }
+
     public Application() { }
     public Application(ApplicationModel model) : this(model, 0, 0) { }
     public Application(ApplicationModel model, double lat, double lon) : base(model)
@@ -59,12 +96,12 @@ public class Application : ApplicationModel
     public void SetupApplicationPriorityLevel(Dictionary<string, double> coefficients, double buildingPriority)
     {
         priority =
-            0 /*there should be a distance*/ * coefficients["distance"] 
-            + buildingPriority * coefficients["housePriority"] 
-            + daysToDeadline * coefficients["deadline"] 
-            + (hot ? 1 : 0) * coefficients["urgency"] 
-            + (statusWasChecked ? 1 : 0) * coefficients["specified"] 
-            + (freeCable ? 1 : 0) * coefficients["freeCable"] 
+            0 /*there should be a distance*/ * coefficients["distance"]
+            + buildingPriority * coefficients["housePriority"]
+            + daysToDeadline * coefficients["deadline"]
+            + (hot ? 1 : 0) * coefficients["urgency"]
+            + (statusWasChecked ? 1 : 0) * coefficients["specified"]
+            + (freeCable ? 1 : 0) * coefficients["freeCable"]
             - (tarChangeApp ? 1 : 0) * coefficients["tarrifeChangeApplication"];
     }
 

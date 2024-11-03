@@ -10,6 +10,9 @@ public class BlazorAppDbContext : DbContext
         public virtual DbSet<BrigadeModel> brigades { get; set; }
         public virtual DbSet<CoefficientModel> coefficients {get; set;}
 
+        public virtual DbSet<AddressModel> addresses {get; set;}
+
+        public virtual DbSet<DistrictModel> districts {get; set;}
         public virtual DbSet<AddressAliasModel> addressAliases {get; set;}
         public virtual DbSet<AddressPriorityModel> addressPriorities {get; set;}
 

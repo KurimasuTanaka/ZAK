@@ -9,7 +9,7 @@ public class AddressModel
 {
     [Key]
     public int id {get; set;}
-    public string street  {get; set;} = String.Empty; 
+    public string streetName  {get; set;} = String.Empty; 
     public string building {get; set;} = String.Empty;
 
     //Application

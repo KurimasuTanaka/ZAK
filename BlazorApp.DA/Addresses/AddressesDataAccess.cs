@@ -28,7 +28,7 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
         if(address is null)
         {
             return 0.0;
-        } else return address.priority;
+        } else return address.addressPriority is null ? 0.0 : address.addressPriority.priority;
     }
 
     public async Task UpdatePriority(int id, double priority)
@@ -37,7 +37,12 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
 
         if(address is not null)
         {
-            address.priority = priority;
+            if(address.addressPriority is null)
+            {
+                address.addressPriority = new AddressPriorityModel();
+                address.addressPriority.priority = priority;
+            }
+            else address.addressPriority.priority = priority;
             await _dbContext.SaveChangesAsync();
         } 
     }
