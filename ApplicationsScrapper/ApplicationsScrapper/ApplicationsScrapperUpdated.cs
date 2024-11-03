@@ -26,9 +26,12 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
         Application application = new Application();
 
         application = ScrapApplicationId(application, applicationNode);
+
         application = ScrapApplicationDistrict(application, applicationNode);
+        
         application = ScrapApplicationStreetName(application, applicationNode);
         application = ScrapApplicationBuilding(application, applicationNode);
+        
         application = ScrapApplicationDate(application, applicationNode);
         application = ScrapApplicationStretchingStatus(application, applicationNode);
         application = ScrapApplicationOperatorComment(application, applicationNode);
@@ -50,6 +53,7 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
     }
     private Application ScrapApplicationDistrict(Application application, HtmlNode applicationNode)
     {
+        District district = 
         application.districtName = applicationNode.SelectSingleNode("td[2]/b").InnerHtml;
         return application;
     }

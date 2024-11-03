@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
 namespace BlazorApp.DB;
@@ -8,6 +9,9 @@ public class AddressAliasModel
 {
     [Key]
     public int addressId { get; set; }
+
+    //[ForeignKey ("addressId")]
+    public AddressModel address { get; set; }
 
     public string streetAlias { get; set; } = String.Empty;
     public string buildingAlias { get; set; } = String.Empty;

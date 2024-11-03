@@ -31,7 +31,7 @@ builder.Services.AddScoped<IAddressesDataAccess, AddressesDataAccess>();
 
 
 builder.Services.AddDbContext<BlazorAppDbContext>(
-    options => options.UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK2\BlazorApp.DB\DbFiles\testdb.db")
+    options => options.UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK2\BlazorApp.DB\DbFiles\testdb2.db")
 );
 
 var app = builder.Build();

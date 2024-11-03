@@ -1,12 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
 namespace BlazorApp.DB;
 
 public class AddressesCoordinates
 {
+   // [ForeignKey("addressId")]
+    public AddressModel address { get; set; } = new AddressModel();
     [Key]
-    public string address { get; set; } = String.Empty;
+    public int addressId { get; set; }
     public double lat { get; set; }
     public double lon { get; set; }
 

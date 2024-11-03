@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using BlazorApp.Enums;
 using System.Reflection;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BlazorApp.DB;
 
@@ -10,10 +11,9 @@ namespace BlazorApp.DB;
         [Key]
         public int id {get; set;}
 
-
+//        [ForeignKey ("addressId")]
         public AddressModel? address { get; set; }
-        public int addressId { get; set; }
-
+        //public int addressId { get; set; }
         //Date    
         public int year {get; set;} = 0;
         public int month {get; set;} = 0;

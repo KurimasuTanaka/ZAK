@@ -28,9 +28,9 @@ public class BlazorAppDbContext : DbContext
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        { /*
             modelBuilder.Entity<ApplicationModel>().
-                HasOne(a => a.address).WithMany(a => a.applications).HasForeignKey(a => a.addressId).
+                HasOne(a => a.address).WithMany(a => a.applications).HasForeignKey(a => a.address).
                 OnDelete(DeleteBehavior.NoAction);
                 
             modelBuilder.Entity<AddressModel>().
@@ -38,17 +38,18 @@ public class BlazorAppDbContext : DbContext
                 OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<AddressModel>().
-                HasOne(a => a.addressAlias).WithOne().HasForeignKey<AddressAliasModel>(a => a.addressId).
+                HasOne(a => a.addressAlias).WithOne().HasForeignKey<AddressAliasModel>(a => a.address).
                 OnDelete(DeleteBehavior.Cascade);
 
 
             modelBuilder.Entity<AddressModel>().
-                HasOne(a => a.addressPriority).WithOne().HasForeignKey<AddressPriorityModel>(a => a.addressId).
+                HasOne(a => a.addressPriority).WithOne().HasForeignKey<AddressPriorityModel>(a => a.address).
                 OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<AddressModel>().HasOne(a => a.coordinates).WithOne().HasForeignKey<AddressesCoordinates>(a => a.address).
                 OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);
-        }
+        */
+        } 
 }

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,12 +9,14 @@ namespace BlazorApp.DB;
 public class AddressModel 
 {
     [Key]
-    public int id {get; set;}
+    public int Id {get; set;}
     public string streetName  {get; set;} = String.Empty; 
     public string building {get; set;} = String.Empty;
 
     //Application
+    //[ForeignKey("applicationId")]
     public List<ApplicationModel> applications {get; set;} = new List<ApplicationModel>();
+    
 
     //District
     public DistrictModel district {get; set;} = new DistrictModel();
