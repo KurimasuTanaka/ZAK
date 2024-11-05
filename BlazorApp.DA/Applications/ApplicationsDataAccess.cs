@@ -11,8 +11,27 @@ public class ApplicationsDataAccess(BlazorAppDbContext blazorAppDbContext) : IAp
 
     public async Task AddApplications(List<Application> applications)
     {
-        await _dbContext.applications.AddRangeAsync(applications);
-        await _dbContext.SaveChangesAsync();
+        
+        foreach(Application application in applications)
+        {
+            AddressModel? address = await _dbContext.addresses.FirstOrDefaultAsync(a => (a.streetName == application.address.streetName) && (a.building == application.address.building) && (a.district.name == application.address.district.name));
+        
+            if (address is not null)
+            {
+                application.address = address;
+            } 
+            else 
+            {
+                DistrictModel? district = await _dbContext.districts.FirstOrDefaultAsync(d => d.name == application.address.district.name);
+                if (district is not null)
+                {
+                    application.address.district = district;
+                }
+            }       
+            await _dbContext.applications.AddAsync(application);
+            await _dbContext.SaveChangesAsync();
+        }
+
     }
 
     public async Task AddNewApplications(List<Application> applications)

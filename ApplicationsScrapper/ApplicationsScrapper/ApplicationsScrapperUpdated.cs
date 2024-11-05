@@ -53,7 +53,7 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
     }
     private Application ScrapApplicationDistrict(Application application, HtmlNode applicationNode)
     {
-        District district = 
+        //application.address.district.name = applicationNode.SelectSingleNode("td[2]/b").InnerHtml;
         application.districtName = applicationNode.SelectSingleNode("td[2]/b").InnerHtml;
         return application;
     }

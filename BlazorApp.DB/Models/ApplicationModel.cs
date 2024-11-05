@@ -12,7 +12,7 @@ namespace BlazorApp.DB;
         public int id {get; set;}
 
 //        [ForeignKey ("addressId")]
-        public AddressModel? address { get; set; }
+        public AddressModel address { get; set; } = new AddressModel();
         //public int addressId { get; set; }
         //Date    
         public int year {get; set;} = 0;

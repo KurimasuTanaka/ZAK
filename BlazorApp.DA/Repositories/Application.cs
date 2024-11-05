@@ -41,11 +41,11 @@ public class Application : ApplicationModel
     {
         get
         {
-            return address?.district.name ?? "";
+            return address.district.name ?? "";
         }
         set
         {
-            if (address is not null) address.district.name = value;
+            address.district.name = value;
         }
     }
 

@@ -8,9 +8,6 @@
 
 @inject IAddressesDataAccess addressesDataAccess;
 
-<PrioritizedAddressAddition redraw="Redraw" />
-
-
 <Grid @ref="addressGrid" TItem="Address" Class="table table-bordered table-striped" DataProvider="@AddressesDataProvider" >
     <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName">
         @context.streetName

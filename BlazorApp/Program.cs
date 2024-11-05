@@ -16,7 +16,7 @@ builder.Services.AddBlazorBootstrap();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-    
+
 builder.Services.AddScoped<ICoefficientsDataAccess, CoefficientsDataAccess>();
 builder.Services.AddScoped<IApplicationsDataAccess, ApplicationsDataAccess>();
 builder.Services.AddScoped<IDistrictDataAccess, DistrictDataAccess>();
@@ -31,7 +31,11 @@ builder.Services.AddScoped<IAddressesDataAccess, AddressesDataAccess>();
 
 
 builder.Services.AddDbContext<BlazorAppDbContext>(
-    options => options.UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK2\BlazorApp.DB\DbFiles\testdb2.db")
+    options =>
+    {
+        options.UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK2\BlazorApp.DB\DbFiles\testdb2.db");
+        //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+    }
 );
 
 var app = builder.Build();
