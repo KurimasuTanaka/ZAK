@@ -52,4 +52,16 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
             await _dbContext.SaveChangesAsync();
         } 
     }
+    public async Task<List<Address>> GetAddressesWithoutLocation()
+    {
+        return await _dbContext.addresses.Where(a => a.coordinates == null).Select(a => new Address(a)).ToListAsync(); 
+
+    }
+
+    public Task UpgdateAddresses(List<Address> addresses)
+    {
+        _dbContext.addresses.UpdateRange(addresses);
+
+        return _dbContext.SaveChangesAsync();
+    }
 }

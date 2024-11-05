@@ -30,6 +30,8 @@ builder.Services.AddScoped<IAddressesDataAccess, AddressesDataAccess>();
 builder.Services.AddScoped<IAddressPriorityDataAccess, AddressPriorityDataAccess>();
 builder.Services.AddScoped<IAddressAliasDataAccess, AddressAliasDataAccess>();
 
+builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
+
 builder.Services.AddDbContext<BlazorAppDbContext>(
     options =>
     {

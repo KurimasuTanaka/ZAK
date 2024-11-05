@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.ApplicationsLoade
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.GeoDataManager", "GeoDataManager\BlazorApp.GeoDataManager.csproj", "{4BF0123F-3240-4C79-A4BB-78EA2EDDAEFB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp.Tests", "BlazorApp.Tests\BlazorApp.Tests.csproj", "{68C3F2DF-573F-4C73-8559-2CA6CDAA705E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{4BF0123F-3240-4C79-A4BB-78EA2EDDAEFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BF0123F-3240-4C79-A4BB-78EA2EDDAEFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BF0123F-3240-4C79-A4BB-78EA2EDDAEFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68C3F2DF-573F-4C73-8559-2CA6CDAA705E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68C3F2DF-573F-4C73-8559-2CA6CDAA705E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68C3F2DF-573F-4C73-8559-2CA6CDAA705E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68C3F2DF-573F-4C73-8559-2CA6CDAA705E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
