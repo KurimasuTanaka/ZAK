@@ -23,6 +23,41 @@ public class Address : AddressModel
         }
     }
 
+    public string streetAlias 
+    {
+        get 
+        {
+            return addressAlias is null ? "" : addressAlias.streetAlias;
+        }
+        set
+        {
+            if (addressAlias is null)
+            {
+                addressAlias = new AddressAliasModel();
+                addressAlias.streetAlias = value;
+            }
+            else addressAlias.streetAlias = value;
+        }
+    }
+
+    public string buildingAlias 
+    {
+        get 
+        {
+            return addressAlias is null ? "" : addressAlias.buildingAlias;
+        }
+        set
+        {
+            if (addressAlias is null)
+            {
+                addressAlias = new AddressAliasModel();
+                addressAlias.buildingAlias = value;
+            }
+            else addressAlias.buildingAlias = value;
+        }
+    }
+
+
     public Address() : base()
     {
     }

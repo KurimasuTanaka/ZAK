@@ -28,6 +28,7 @@ builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
 builder.Services.AddScoped<IApplicationsLoader, ApplicationsLoader>();
 builder.Services.AddScoped<IAddressesDataAccess, AddressesDataAccess>();
 builder.Services.AddScoped<IAddressPriorityDataAccess, AddressPriorityDataAccess>();
+builder.Services.AddScoped<IAddressAliasDataAccess, AddressAliasDataAccess>();
 
 builder.Services.AddDbContext<BlazorAppDbContext>(
     options =>

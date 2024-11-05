@@ -1,0 +1,24 @@
+﻿@using System.ComponentModel.DataAnnotations;
+@using BlazorApp.DA;
+
+
+@inject IAddressAliasDataAccess addressPriorityDataAccess;
+
+
+<InputText TValue="double" Label="Укр. назва" @bind-Value="@alias" @bind-Value:after="UpdateDbData" />
+
+
+
+@code {
+    [Parameter] public int addressId { get; set; }
+
+    [Parameter] public string alias { get; set; } = "";
+ 
+    [Parameter] public bool streetAlias { get; set; }
+
+    private async Task UpdateDbData()
+    {
+        if(streetAlias) await addressPriorityDataAccess.UpdateAddressSteetAlias(addressId, alias);
+        else await addressPriorityDataAccess.UpdateAddressBuildingAlias(addressId, alias);
+    }
+}  

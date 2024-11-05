@@ -16,7 +16,7 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
 
     public async Task<List<Address>> GetAddresses()
     {
-        return await _dbContext.addresses.Select(a => new Address(a)).ToListAsync(); 
+        return await _dbContext.addresses.Include(a => a.addressPriority).Include(a => a.addressAlias).Select(a => new Address(a)).ToListAsync(); 
     }
 
     public async Task<double> GetPriorityByAddress(string streetName, string building)

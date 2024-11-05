@@ -6,33 +6,41 @@
 @using BlazorBootstrap;
 @using BlazorApp.Components; <!-- Replace with the actual namespace containing GridColumns -->
 
-@inject IAddressPriorityDataAccess addressPriorityDataAccess;
+@inject IAddressesDataAccess addressesDataAccess;
 
-<Grid TItem="AddressPriority" Class="table table-bordered table-striped" DataProvider="@AddressesDataProvider"
+<Grid TItem="Address" Class="table table-bordered table-striped" DataProvider="@AddressesDataProvider"
      AllowPaging="true" PageSize="10" AllowFiltering="true" Responsive="true">
 
 
-        <GridColumn TItem="AddressPriority" HeaderText="Вулиця" PropertyName="streetName"
-            SortKeySelector="item => item.address.streetName">
-            @context.address.streetName
+        <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName"
+            SortKeySelector="item => item.streetName">
+            @context.streetName
         </GridColumn>
-        <GridColumn TItem="AddressPriority" HeaderText="Будинок" PropertyName="building"
-            SortKeySelector="item => item.address.building">
-            @context.address.building
+        <GridColumn TItem="Address" HeaderText="Будинок" PropertyName="building"
+            SortKeySelector="item => item.building">
+            @context.building
         </GridColumn>
-        <GridColumn TItem="AddressPriority" HeaderText="Пріорітет" PropertyName="priority">
-            <PriorityInputComponent addressId="context.addressId" priority="context.priority" />
+        <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority">
+            <PriorityInputComponent addressId="context.Id" priority="context.priority" />
         </GridColumn>
+
+        <GridColumn TItem="Address" HeaderText="Улица на карте" PropertyName="streetAlias">
+            <AliasInputComponent addressId="context.Id" alias="@context.streetAlias" streetAlias="@true"/>
+        </GridColumn>
+        <GridColumn TItem="Address" HeaderText="Дом на карте" PropertyName="buildingAlias">
+            <AliasInputComponent addressId="context.Id" alias="@context.buildingAlias"streetAlias="@false" />
+        </GridColumn>
+
 
 </Grid>
 
 
 @code {
 
-    private async Task<GridDataProviderResult<AddressPriority>>
-    AddressesDataProvider(GridDataProviderRequest<AddressPriority> request)
+    private async Task<GridDataProviderResult<Address>>
+    AddressesDataProvider(GridDataProviderRequest<Address> request)
     {
-        List<AddressPriority> addresses = await addressPriorityDataAccess.GetAddressPriorities();
+        List<Address> addresses = await addressesDataAccess.GetAddresses();
         return await Task.FromResult(request.ApplyTo(addresses));
     }
 
