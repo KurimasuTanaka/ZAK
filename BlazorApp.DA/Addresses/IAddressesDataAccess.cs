@@ -1,6 +1,6 @@
 using System;
 
-namespace BlazorApp.DA.Addresses;
+namespace BlazorApp.DA;
 
 public interface IAddressesDataAccess
 {

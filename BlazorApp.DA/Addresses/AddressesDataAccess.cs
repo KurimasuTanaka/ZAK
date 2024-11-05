@@ -2,7 +2,7 @@ using System;
 using BlazorApp.DB;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlazorApp.DA.Addresses;
+namespace BlazorApp.DA;
 
 public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataAccess
 {
@@ -33,7 +33,12 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
 
     public async Task UpdatePriority(int id, double priority)
     {
+
+        throw new Exception("Another method should be used!!!");
+
         AddressModel? address = await _dbContext.addresses.FindAsync(id);
+
+        AddressPriorityModel? addressPriority = await _dbContext.addressPriorities.FindAsync(id);
 
         if(address is not null)
         {
@@ -41,6 +46,7 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
             {
                 address.addressPriority = new AddressPriorityModel();
                 address.addressPriority.priority = priority;
+                address.addressPriority.addressId = id;
             }
             else address.addressPriority.priority = priority;
             await _dbContext.SaveChangesAsync();

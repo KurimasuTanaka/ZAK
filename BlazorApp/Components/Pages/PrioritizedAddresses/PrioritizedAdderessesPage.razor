@@ -2,46 +2,38 @@
 @rendermode InteractiveServer
 
 @using BlazorApp.DA;
-@using BlazorApp.DA.Addresses
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
+@using BlazorApp.Components; <!-- Replace with the actual namespace containing GridColumns -->
 
-@inject IAddressesDataAccess addressesDataAccess;
+@inject IAddressPriorityDataAccess addressPriorityDataAccess;
 
-<Grid @ref="addressGrid" TItem="Address" Class="table table-bordered table-striped" DataProvider="@AddressesDataProvider" >
-    <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName">
-        @context.streetName
-    </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Будинок" PropertyName="building">
-        @context.building
-    </GridColumn>
-    <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority">
-        <PriorityInputComponent addressId="context.Id" priority="context.priority" />
-    </GridColumn>
+<Grid TItem="AddressPriority" Class="table table-bordered table-striped" DataProvider="@AddressesDataProvider"
+     AllowPaging="true" PageSize="10" AllowFiltering="true" Responsive="true">
+
+
+        <GridColumn TItem="AddressPriority" HeaderText="Вулиця" PropertyName="streetName"
+            SortKeySelector="item => item.address.streetName">
+            @context.address.streetName
+        </GridColumn>
+        <GridColumn TItem="AddressPriority" HeaderText="Будинок" PropertyName="building"
+            SortKeySelector="item => item.address.building">
+            @context.address.building
+        </GridColumn>
+        <GridColumn TItem="AddressPriority" HeaderText="Пріорітет" PropertyName="priority">
+            <PriorityInputComponent addressId="context.addressId" priority="context.priority" />
+        </GridColumn>
 
 </Grid>
 
 
 @code {
-    private List<Address> addresses = null;
 
-    private Grid<Address> addressGrid = default!;
-
-    private async Task<GridDataProviderResult<Address>> AddressesDataProvider(GridDataProviderRequest<Address> request)
+    private async Task<GridDataProviderResult<AddressPriority>>
+    AddressesDataProvider(GridDataProviderRequest<AddressPriority> request)
     {
-        List<Address> addresses = await addressesDataAccess.GetAddresses();
-        return await Task.FromResult(new GridDataProviderResult<Address> {Data = addresses, TotalCount = addresses.Count});
-    }
-
-    public async void Redraw()
-    {
-        await addressGrid.RefreshDataAsync();
-        StateHasChanged();
-    }
-
-    override async protected void OnParametersSet()
-    {
-        addresses = await addressesDataAccess.GetAddresses();
+        List<AddressPriority> addresses = await addressPriorityDataAccess.GetAddressPriorities();
+        return await Task.FromResult(request.ApplyTo(addresses));
     }
 
 }

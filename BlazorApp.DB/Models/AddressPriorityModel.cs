@@ -18,7 +18,7 @@ public class AddressPriorityModel
     public AddressPriorityModel() {}
     public AddressPriorityModel(AddressPriorityModel addressModel)
     {
-        foreach (PropertyInfo property in typeof(AddressModel).GetProperties().Where(p => p.CanWrite))
+        foreach (PropertyInfo property in typeof(AddressPriorityModel).GetProperties().Where(p => p.CanWrite))
         {
             property.SetValue(this, property.GetValue(addressModel, null), null);
         }    
