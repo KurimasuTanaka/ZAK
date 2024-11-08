@@ -54,7 +54,7 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
     }
     public async Task<List<Address>> GetAddressesWithoutLocation()
     {
-        return await _dbContext.addresses.Where(a => a.coordinates == null).Select(a => new Address(a)).ToListAsync(); 
+        return await _dbContext.addresses.Include(a => a.addressAlias).Where(a => a.coordinates == null).Select(a => new Address(a)).ToListAsync(); 
 
     }
 

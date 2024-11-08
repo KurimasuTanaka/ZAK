@@ -24,13 +24,16 @@
             <PriorityInputComponent addressId="context.Id" priority="context.priority" />
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Улица на карте" PropertyName="streetAlias">
+        <GridColumn TItem="Address" HeaderText="Альт. вулиця" PropertyName="streetAlias">
             <AliasInputComponent addressId="context.Id" alias="@context.streetAlias" streetAlias="@true"/>
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Дом на карте" PropertyName="buildingAlias">
+        <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias">
             <AliasInputComponent addressId="context.Id" alias="@context.buildingAlias"streetAlias="@false" />
         </GridColumn>
 
+        <GridColumn TItem="Address" HeaderText="Координати">
+            
+        </GridColumn>
 
 </Grid>
 
