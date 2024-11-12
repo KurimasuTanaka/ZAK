@@ -16,6 +16,8 @@ public class BlazorAppDbContext : DbContext
         public virtual DbSet<AddressAliasModel> addressAliases {get; set;}
         public virtual DbSet<AddressPriorityModel> addressPriorities {get; set;}
 
+        public virtual DbSet<AddressCoordinatesModel> coordinates {get; set;}
+
 
         public BlazorAppDbContext() {}
         public BlazorAppDbContext(DbContextOptions optionsBuilder) : base(optionsBuilder) {}

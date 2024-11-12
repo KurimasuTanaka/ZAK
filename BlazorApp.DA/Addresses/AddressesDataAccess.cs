@@ -16,7 +16,7 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
 
     public async Task<List<Address>> GetAddresses()
     {
-        return await _dbContext.addresses.Include(a => a.addressPriority).Include(a => a.addressAlias).Select(a => new Address(a)).ToListAsync(); 
+        return await _dbContext.addresses.Include(a => a.addressPriority).Include(a => a.addressAlias).Include(a => a.coordinates).Select(a => new Address(a)).ToListAsync(); 
     }
 
     public async Task<double> GetPriorityByAddress(string streetName, string building)
@@ -58,10 +58,11 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
 
     }
 
-    public Task UpgdateAddresses(List<Address> addresses)
+    public async Task UpgdateAddresses(List<Address> addresses)
     {
         _dbContext.addresses.UpdateRange(addresses);
 
-        return _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
+        return;
     }
 }

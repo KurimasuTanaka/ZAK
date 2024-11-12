@@ -38,10 +38,16 @@ public class NominatimCoordinatesProvider : ICoordinatesProvider
         {
             string responseString = await response.Content.ReadAsStringAsync();
 
-            JsonNode jsonNode = JsonNode.Parse(responseString);
+            JsonNode? jsonNode = JsonNode.Parse(responseString!);
+            if(jsonNode is null) return;
+            
+            if(jsonNode.AsArray().Count != 1) return;
 
-            address.coordinates.lat = Double.Parse(jsonNode[0]["lat"].ToString());
-            address.coordinates.lon = Double.Parse(jsonNode[0]["lon"].ToString());
+            string lat = jsonNode[0]!.AsObject().TryGetPropertyValue("lat", out var latValue) ? latValue!.ToString() : "0.0";
+            string lon = jsonNode[0]!.AsObject().TryGetPropertyValue("lon", out var lonValue) ? lonValue!.ToString() : "0.0";
+
+            address.coordinates.lat = Double.Parse(lat);
+            address.coordinates.lon = Double.Parse(lon);
         }
 
         Task.Delay(1100).Wait();

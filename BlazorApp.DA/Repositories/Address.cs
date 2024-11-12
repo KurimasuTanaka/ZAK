@@ -58,6 +58,41 @@ public class Address : AddressModel
     }
 
 
+    public double Latitude 
+    {
+        get
+        {
+            return coordinates is null ? 0.0 : coordinates.lat;
+        }
+        set
+        {
+            if (coordinates is null)
+            {
+                coordinates = new AddressCoordinatesModel();
+                coordinates.lat = value;
+            }
+            else coordinates.lat = value;
+        }
+    }
+
+    public double Longtitude 
+    {
+        get
+        {
+            return coordinates is null ? 0.0 : coordinates.lon;
+        }
+        set
+        {
+            if (coordinates is null)
+            {
+                coordinates = new AddressCoordinatesModel();
+                coordinates.lon = value;
+            }
+            else coordinates.lon = value;
+        }
+    }
+
+
     public Address() : base()
     {
     }

@@ -1,5 +1,41 @@
-﻿<h3>CoordinatesInputComponent</h3>
+﻿@using System.ComponentModel.DataAnnotations;
+@using BlazorApp.DA;
+
+
+@inject ICoordinatesDataAccess cooridinatesDataAccess;
+
+
+<InputNumber TValue="double" @bind-Value="@coordinate" @bind-Value:after="UpdateDbData" />
+
+
 
 @code {
+    [Parameter] public int addressId { get; set; }
 
-}
+    [Parameter] public double coordinate { get; set; } = 0.0;
+ 
+    [Parameter] public bool Lat { get; set; } = false;
+    [Parameter] public bool Lon { get; set; } = false;
+
+    private async Task UpdateDbData()
+    {
+        Coordinates coordinates = await cooridinatesDataAccess.GetCoordinatesByIdAsync(addressId);
+        if(coordinates == null)
+        {
+            coordinates = new Coordinates();
+            coordinates.addressId = addressId;
+            coordinates.address = null;
+        }
+
+        if (Lat)
+        {
+            coordinates.lat = coordinate;
+        }
+        else if (Lon)
+        {
+            coordinates.lon = coordinate;
+        }
+
+        await cooridinatesDataAccess.UpdateCoordinatesAsync(coordinates);
+    }
+}  

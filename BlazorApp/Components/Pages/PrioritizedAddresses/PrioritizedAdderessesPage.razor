@@ -3,16 +3,20 @@
 
 @using BlazorApp.DA;
 @using BlazorApp.Enums;
+@using BlazorApp.GeoDataManager
 @using BlazorBootstrap;
-@using BlazorApp.Components; <!-- Replace with the actual namespace containing GridColumns -->
 
 @inject IAddressesDataAccess addressesDataAccess;
+@inject IGeoDataManager geoDataManager;
+
+<Button @ref="loadCoordinatesButton" Color="ButtonColor.Primary" @onclick="LoadCoordinatesData"> Подтянуть координаты </Button>
+
 
 <Grid TItem="Address" Class="table table-bordered table-striped" DataProvider="@AddressesDataProvider"
      AllowPaging="true" PageSize="10" AllowFiltering="true" Responsive="true">
 
 
-        <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName"
+        <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName" FilterTextboxWidth="200"
             SortKeySelector="item => item.streetName">
             @context.streetName
         </GridColumn>
@@ -31,8 +35,11 @@
             <AliasInputComponent addressId="context.Id" alias="@context.buildingAlias"streetAlias="@false" />
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Координати">
-            
+        <GridColumn TItem="Address" HeaderText="Широта">
+            <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Latitude" Lat="@true" /> 
+        </GridColumn>
+        <GridColumn TItem="Address" HeaderText="Долгота">
+            <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Longtitude" Lon="@true" />
         </GridColumn>
 
 </Grid>
@@ -40,11 +47,18 @@
 
 @code {
 
-    private async Task<GridDataProviderResult<Address>>
-    AddressesDataProvider(GridDataProviderRequest<Address> request)
+    private Button loadCoordinatesButton = default!;
+    private async Task<GridDataProviderResult<Address>> AddressesDataProvider(GridDataProviderRequest<Address> request)
     {
         List<Address> addresses = await addressesDataAccess.GetAddresses();
         return await Task.FromResult(request.ApplyTo(addresses));
+    }
+
+    private async void LoadCoordinatesData()
+    {
+        loadCoordinatesButton.Loading = true;
+        await geoDataManager.PopulateApplicationsWithGeoData();
+        loadCoordinatesButton.Loading = false;
     }
 
 }

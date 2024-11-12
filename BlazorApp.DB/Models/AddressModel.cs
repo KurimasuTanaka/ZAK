@@ -29,7 +29,7 @@ public class AddressModel
     public AddressPriorityModel? addressPriority { get; set; } = null;
 
     //Coordinates
-    public AddressesCoordinates? coordinates { get; set; } = null;
+    public AddressCoordinatesModel? coordinates { get; set; } = null;
 
     public AddressModel() {
         

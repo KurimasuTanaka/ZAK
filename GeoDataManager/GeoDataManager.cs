@@ -25,9 +25,9 @@ public class GeoDataManager : IGeoDataManager
     {
         List<Address> addresses = await _addressesDataAccess.GetAddressesWithoutLocation();
 
-        for (int i = 0; i < addresses.Count; i++)
+        for (int i = 0; i < 20; i++)
         {
-            addresses[i].coordinates = new AddressesCoordinates();
+            addresses[i].coordinates = new Coordinates();
             await _coordinatesProvider!.GetCoordinatesForAddress(addresses[i]);
         }
 

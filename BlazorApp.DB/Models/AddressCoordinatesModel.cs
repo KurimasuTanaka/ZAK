@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace BlazorApp.DB;
 
-public class AddressesCoordinates
+public class AddressCoordinatesModel
 {
    // [ForeignKey("addressId")]
     public AddressModel address { get; set; } = new AddressModel();
@@ -13,10 +13,10 @@ public class AddressesCoordinates
     public double lat { get; set; }
     public double lon { get; set; }
 
-    public AddressesCoordinates() {}
-    public AddressesCoordinates(AddressModel addressModel)
+    public AddressCoordinatesModel() {}
+    public AddressCoordinatesModel(AddressCoordinatesModel addressModel)
     {
-        foreach (PropertyInfo property in typeof(AddressesCoordinates).GetProperties().Where(p => p.CanWrite))
+        foreach (PropertyInfo property in typeof(AddressCoordinatesModel).GetProperties().Where(p => p.CanWrite))
         {
             property.SetValue(this, property.GetValue(addressModel, null), null);
         }    

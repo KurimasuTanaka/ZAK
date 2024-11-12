@@ -11,7 +11,7 @@ public class GeoDataManagerTests
     public async void Proper_Address_Loaded_Coordinates_Received()
     {
         // Arrange
-        GeoDataManager.GeoDataManager _geoDataManager = new GeoDataManager.GeoDataManager();
+        ICoordinatesProvider _coordinatesProvider = new NominatimCoordinatesProvider();
 
         
         var address = new Address
@@ -20,11 +20,11 @@ public class GeoDataManagerTests
             building = "54"
         };
 
-        address.coordinates = new AddressesCoordinates();
+        address.coordinates = new Coordinates();
 
         // Act
 
-        await _geoDataManager.GetCoordinatesForAddress(address);
+        await _coordinatesProvider.GetCoordinatesForAddress(address);
 
         // Assert
         Assert.Equal(50.52418025, address.coordinates.lat);
