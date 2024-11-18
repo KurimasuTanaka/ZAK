@@ -54,13 +54,30 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
     }
     public async Task<List<Address>> GetAddressesWithoutLocation()
     {
-        return await _dbContext.addresses.Include(a => a.addressAlias).Where(a => a.coordinates == null).Select(a => new Address(a)).ToListAsync(); 
+        return await _dbContext.addresses.Include(a => a.addressAlias).
+            Where(a => a.coordinates == null || a.coordinates.lat == 0||a.coordinates.lon == 0 ).
+            Select(a => new Address(a)).ToListAsync(); 
 
     }
 
     public async Task UpgdateAddresses(List<Address> addresses)
     {
-        _dbContext.addresses.UpdateRange(addresses);
+        List<AddressModel> addressModels = _dbContext.addresses.ToList();
+
+        foreach (var addressModel in addressModels)
+        {
+            Address address = addresses.Where(a => a.Id == addressModel.Id).FirstOrDefault();
+        
+            if(address is not null)
+            {
+                if(address.addressAlias is not null) addressModel.addressAlias = address.addressAlias;
+                if(address.addressPriority is not null) addressModel.addressPriority = address.addressPriority;
+                if(address.coordinates is not null) addressModel.coordinates = address.coordinates;
+                addressModel.building = addressModel.building;
+                addressModel.streetName = addressModel.streetName;
+                addressModel.districtName = addressModel.districtName;
+            }        
+        }
 
         await _dbContext.SaveChangesAsync();
         return;

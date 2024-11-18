@@ -12,7 +12,7 @@
 <Button @ref="loadCoordinatesButton" Color="ButtonColor.Primary" @onclick="LoadCoordinatesData"> Подтянуть координаты </Button>
 
 
-<Grid TItem="Address" Class="table table-bordered table-striped" DataProvider="@AddressesDataProvider"
+<Grid @ref="addressGrid" TItem="Address" Class="table table-bordered table-striped" DataProvider="@AddressesDataProvider"
      AllowPaging="true" PageSize="10" AllowFiltering="true" Responsive="true">
 
 
@@ -48,6 +48,7 @@
 @code {
 
     private Button loadCoordinatesButton = default!;
+    private Grid<Address> addressGrid = default!;
     private async Task<GridDataProviderResult<Address>> AddressesDataProvider(GridDataProviderRequest<Address> request)
     {
         List<Address> addresses = await addressesDataAccess.GetAddresses();
@@ -56,9 +57,11 @@
 
     private async void LoadCoordinatesData()
     {
-        loadCoordinatesButton.Loading = true;
+        loadCoordinatesButton.ShowLoading("Загрузка...");
         await geoDataManager.PopulateApplicationsWithGeoData();
-        loadCoordinatesButton.Loading = false;
+        await addressGrid.RefreshDataAsync();
+        loadCoordinatesButton.HideLoading();
+
     }
 
 }

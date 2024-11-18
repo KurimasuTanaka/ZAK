@@ -9,16 +9,21 @@ public class NominatimCoordinatesProvider : ICoordinatesProvider
 {
     public async Task GetCoordinatesForAddress(Address address)
     {
-        string addressString = String.Empty;
+        string addressString = "Київ+";
 
-        if (address.addressAlias is not null)
+        if (address.addressAlias is not null )
         {
-            addressString =
-                "Київ+" +
-                address.addressAlias.streetAlias.Replace(' ', '+') + "+" +
-                address.addressAlias.buildingAlias;
-        } addressString =
-            "Київ+" +
+            if(address.addressAlias.streetAlias != "" && address.addressAlias.streetAlias != null)
+            {
+                addressString += address.addressAlias.streetAlias.Replace(' ', '+') + "+";
+            } else addressString += address.streetName.Replace(' ', '+') + "+"; 
+
+            if(address.addressAlias.buildingAlias != "" && address.addressAlias.buildingAlias != null)
+            {
+                addressString += address.addressAlias.buildingAlias.Replace(' ', '+') + "+";
+            } else addressString += address.building.Replace(' ', '+') + "+"; 
+
+        } else addressString +=
             address.streetName.Replace(' ', '+') + "+" +
             address.building;
 
