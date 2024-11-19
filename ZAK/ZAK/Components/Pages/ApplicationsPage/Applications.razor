@@ -1,0 +1,125 @@
+﻿@page "/applications"
+@rendermode InteractiveServer
+@using BlazorApp.DA;
+@using BlazorApp.Enums;
+@using BlazorBootstrap;
+@using ZAK.Components.Pages.ApplicationsPage.ApplicationsActivities;
+@using ZAK.Components.Pages.ApplicationsPage.ApplicationInputComponents;
+
+@inject IApplicationsDataAccess applicationsDataAccess;
+@inject IWebHostEnvironment enviroment;
+
+<ApplicationsActivities ApplicationsInformationWasChanged="Redraw" />
+
+<Card class="my-3">
+  <CardBody>
+    <Switch Label="Show ignored" @bind-Value="showIgnored" @bind-Value:after="Redraw" />
+  </CardBody>
+</Card>
+
+<Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowFiltering="true"
+  AllowPaging="true" PageSize="100" AllowSorting="true" SelectionMode="GridSelectionMode.Multiple" Responsive="true">
+
+  @*Id column with set of interactive components*@
+  <GridColumn TItem="Application" HeaderText="Id" PropertyName="id" SortKeySelector="item => item.id">
+    <div>
+      @context.id
+      <Button>
+        <Icon Name="IconName.Pencil" />
+      </Button>
+    </div>
+    @*Interactive components in Id section ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
+    <CheckBoxInputComponent label="Ігнорувати" applicationId="@context.id" propertyName="ignored"
+      propertyValue="@((bool)context["ignored"])" />
+    <CheckBoxInputComponent label="Важлива заявка" applicationId="@context.id" propertyName="hot"
+      propertyValue="@((bool)context["hot"])" />
+
+    <TimeframeApplicationComponent applicationId="@context.id" firstPart="@context.firstPart"
+      secondPart="@context.secondPart" timeRangeIsSet="@context.timeRangeIsSet" startHour="@context.startHour"
+      endHour="@context.endHour">
+    </TimeframeApplicationComponent>
+  </GridColumn>
+  @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+
+  @*Interactivity column*@
+  <GridColumn TItem="Application" HeaderText="Параметры">
+    <CheckBoxInputComponent label="Интересовался статусом" applicationId="@context.id" propertyName="statusWasChecked"
+      propertyValue="@((bool)context["statusWasChecked"])" />
+    <CheckBoxInputComponent label="Срочка" applicationId="@context.id" propertyName="urgent"
+      propertyValue="@((bool)context["urgent"])" />
+
+    <CheckBoxInputComponent label="Есть свободный кабель" applicationId="@context.id" propertyName="freeCable"
+      propertyValue="@((bool)context["freeCable"])" />
+
+    <CheckBoxInputComponent label="Смена тарифа" applicationId="@context.id" propertyName="tarChangeApp"
+      propertyValue="@((bool)context["tarChangeApp"])" />
+  </GridColumn>
+
+  @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+
+
+  @*Column with name of the district *@
+  <GridColumn TItem="Application" HeaderText="District" PropertyName="districtName" style="width: 5%;"
+    SortKeySelector="item => item.districtName">
+    @context.districtName
+  </GridColumn>
+
+  @*Column name with name of the street*@
+  <GridColumn TItem="Application" HeaderText="Street" PropertyName="streetName"
+    SortKeySelector="item => item.streetName">
+    @(context.streetName + " " + context.building);
+  </GridColumn>
+
+  @*Column with stretching status ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
+  <GridColumn style="width: 10%;" TItem="Application" HeaderText="Stretching" PropertyName="stretchingStatus"
+    SortKeySelector="item => item.stretchingStatus"
+    ColumnClass="@(x =>  StretchingStatusComponent.GetStrechingStatusClass(x.stretchingStatus) )">
+
+    <StretchingStatusComponent applicationId="@context.id" stretchingStatus="@context.stretchingStatus" />
+  </GridColumn>
+  @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+
+  @*Column for comments section*@
+  <GridColumn TItem="Application" HeaderText="Comment" PropertyName="operatorComment">
+    <CommentComponent operatorComment="@context.operatorComment" masterComment="@context.masterComment">
+    </CommentComponent>
+  </GridColumn>
+
+  @*Column for date*@
+  <GridColumn TItem="Application" HeaderText="Date" style="width: 15%;">
+    <span>@context.year.@context.month.@context.day</span>
+    <span>
+      <h6>Дней к дедлайну: </h6> @context.daysToDeadline
+    </span>
+  </GridColumn>
+
+  @*Column for priority
+  <GridColumn TItem="Application" HeaderText="Priority" >
+  <span>@context.year.@context.month.@context.day</span>
+  </GridColumn>
+  *@
+</Grid>
+
+@code {
+  private bool showIgnored = false;
+
+  //Make this thing async
+  List<Application> applications = new List<Application>();
+
+  protected override void OnParametersSet()
+  {
+    if (showIgnored) applications = applicationsDataAccess.GetAllApplications();
+    else applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
+  }
+  public void Redraw()
+  {
+    if (showIgnored) applications = applicationsDataAccess.GetAllApplications();
+    else applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
+
+    StateHasChanged();
+  }
+
+
+
+
+}

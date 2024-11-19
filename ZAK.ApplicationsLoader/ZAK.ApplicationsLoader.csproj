@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ZAK.ApplicationsScrapper\ZAK.ApplicationsScrapper.csproj" />
+    <ProjectReference Include="..\ZAK.Da\ZAK.Da.csproj" />
+    <ProjectReference Include="..\ZAK.GeoDataFetcher\ZAK.GeoDataFetcher.csproj" />
+  </ItemGroup>
+
+</Project>
