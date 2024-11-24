@@ -6,6 +6,8 @@ using BlazorApp.DB;
 using BlazorApp.GeoDataManager;
 using Microsoft.EntityFrameworkCore;
 using ZAK.Components;
+using Syncfusion.Blazor;
+using ZAK.MapRoutesManager;
 
 namespace ZAK;
 
@@ -22,33 +24,37 @@ public class Program
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
+        builder.Services.AddSyncfusionBlazor();
+
+        builder.Services.AddScoped<ICoefficientsDataAccess, CoefficientsDataAccess>();
+        builder.Services.AddScoped<IApplicationsDataAccess, ApplicationsDataAccess>();
+        builder.Services.AddScoped<IDistrictDataAccess, DistrictDataAccess>();
+        builder.Services.AddScoped<IBrigadesDataAccess, BrigadesDataAccess>();
 
 
-    builder.Services.AddScoped<ICoefficientsDataAccess, CoefficientsDataAccess>();
-    builder.Services.AddScoped<IApplicationsDataAccess, ApplicationsDataAccess>();
-    builder.Services.AddScoped<IDistrictDataAccess, DistrictDataAccess>();
-    builder.Services.AddScoped<IBrigadesDataAccess, BrigadesDataAccess>();
+        builder.Services.AddScoped<IFileLoader, FileLoader>();
+        builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();
+        builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
+        builder.Services.AddScoped<IApplicationsLoader, ApplicationsLoader>();
+        builder.Services.AddScoped<IAddressesDataAccess, AddressesDataAccess>();
+        builder.Services.AddScoped<IAddressPriorityDataAccess, AddressPriorityDataAccess>();
+        builder.Services.AddScoped<IAddressAliasDataAccess, AddressAliasDataAccess>();
+        builder.Services.AddScoped<ICoordinatesDataAccess, CoordinatesDataAccess>();
 
 
-    builder.Services.AddScoped<IFileLoader, FileLoader>();
-    builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();
-    builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
-    builder.Services.AddScoped<IApplicationsLoader, ApplicationsLoader>();
-    builder.Services.AddScoped<IAddressesDataAccess, AddressesDataAccess>();
-    builder.Services.AddScoped<IAddressPriorityDataAccess, AddressPriorityDataAccess>();
-    builder.Services.AddScoped<IAddressAliasDataAccess, AddressAliasDataAccess>();
-    builder.Services.AddScoped<ICoordinatesDataAccess, CoordinatesDataAccess>();
+        builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
+
+        builder.Services.AddSingleton<IMapRoutesManager, MapRoutesManager.MapRoutesManager>();
 
 
-    builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
 
-    builder.Services.AddDbContext<BlazorAppDbContext>(
-    options =>
-    {
-        options.UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK2\BlazorApp.DB\DbFiles\testdb2.db");
-        //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-    }
-);
+        builder.Services.AddDbContext<BlazorAppDbContext>(
+        options =>
+        {
+            options.UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK2\BlazorApp.DB\DbFiles\testdb2.db");
+            //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+        }
+    );
 
 
         var app = builder.Build();

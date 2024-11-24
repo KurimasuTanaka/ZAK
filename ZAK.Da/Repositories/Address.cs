@@ -93,6 +93,9 @@ public class Address : AddressModel
     }
 
 
+    public bool resolved = false;
+    public bool connected = false;
+
     public Address() : base()
     {
     }

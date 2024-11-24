@@ -1,0 +1,128 @@
+﻿@using BlazorApp.DA
+
+@inject IApplicationsDataAccess applicationsDataAccess;
+@inject ICoefficientsDataAccess coefficientsDataAccess;
+@inject IAddressesDataAccess addressesDataAccess;
+
+<Modal @ref=applicationsList Title="Выбрать заявку" Size="ModalSize.ExtraLarge">
+    <BodyTemplate>
+        <Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowDetailView="true"
+            AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true" OnRowClick="OnRowClick"
+            AllowRowClick="true">
+            <GridColumns>
+                @*Id column with set of interactive components*@
+                <GridColumn TItem="Application" HeaderText="Id" PropertyName="id">
+                    <div>
+                        @context.id
+                    </div>
+                    @*Interactive components in Id section ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
+                    <CheckBoxInputComponent label="Важлива заявка" applicationId="@context.id" propertyName="hot"
+                        propertyValue="@((bool)context["hot"])" />
+
+                    <TimeframeApplicationComponent applicationId="@context.id" firstPart="@context.firstPart"
+                        secondPart="@context.secondPart" timeRangeIsSet="@context.timeRangeIsSet"
+                        startHour="@context.startHour" endHour="@context.endHour">
+                    </TimeframeApplicationComponent>
+                </GridColumn>
+                @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+
+                @*Column with name of the district *@
+                <GridColumn TItem="Application" HeaderText="District" PropertyName="districtName"
+                    SortKeySelector="item => item.districtName">
+                    @context.districtName
+                </GridColumn>
+
+                @*Column name with name of the street*@
+                <GridColumn TItem="Application" HeaderText="Street" PropertyName="streetName"
+                    SortKeySelector="item => item.streetName">
+                    @(context.streetName + " " + context.building);
+                </GridColumn>
+
+                <GridColumn TItem="Application" HeaderText="Stretched" PropertyName="stretchingStatus"
+                    SortKeySelector="item => item.stretchingStatus">
+                    @context.stretchingStatus
+                </GridColumn>
+
+
+
+                @*Column for date*@
+                <GridColumn TItem="Application" HeaderText="Date">
+                    <span>@context.year.@context.month.@context.day</span>
+                </GridColumn>
+            </GridColumns>
+
+            @*Column for comments section*@
+            <GridDetailView TItem="Application">
+                <div class="row">
+                    <div class="col">
+                        <CommentComponent operatorComment="ffff" masterComment="ccccc" />
+                    </div>
+                </div>
+
+            </GridDetailView>
+
+            <GridColumn TItem="Application" HeaderText="Priority" SortKeySelector="item=> item.priority">
+                <span>@context.priority</span>
+            </GridColumn>
+        </Grid>
+    </BodyTemplate>
+</Modal>
+
+
+@code {
+    public EventCallback<int> applicationWasChosen { get; set; }
+    private Modal applicationsList = default!;
+    List<Application> applications = new List<Application>();
+
+    public async Task ShowAsync(List<int> applicationIds, int time)
+    {
+        applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
+        this.applicationWasChosen = applicationWasChosen;
+
+        //Find near applications
+        Application? newApplication1 = applications.FirstOrDefault(x => x.id == FindNearApplication(applicationIds, time, -1));
+        Application? newApplication2 = applications.FirstOrDefault(x => x.id == FindNearApplication(applicationIds, time, 1));
+ 
+        List<Application> nearApplications = new List<Application>();
+        if(newApplication1 != null) nearApplications.Add(newApplication1);
+        if(newApplication2 != null) nearApplications.Add(newApplication2);
+        
+
+        //Remove applications that are already in the schedule
+        applications = applications.Where(x => !applicationIds.Contains(x.id)).ToList();
+
+        //Get priorities from db  
+        Dictionary<string, double> priorities = await coefficientsDataAccess.GetCoefficientsDictionary();
+
+        //Calculate priority for all applications
+        for (int i = 0; i < applications.Count; i++) applications[i].SetupApplicationPriorityLevel(priorities, nearApplications);
+        
+        await applicationsList.ShowAsync();
+    }
+
+    private int FindNearApplication(List<int> applicationsIds, int time, int direction)
+    {
+        for (int i = time + direction; i < applicationsIds.Count - direction; i += direction)
+        {
+            if(i < 0 || i >= applicationsIds.Count) return 0;
+            if(applicationsIds[i] != 0)
+            {
+                return applicationsIds[i];
+            }
+        }
+        return 0;
+    }
+
+
+    public  async Task HideAsync()
+    {
+        await applicationsList.HideAsync();
+    }
+
+    public void OnRowClick(GridRowEventArgs<Application> application)
+    {
+        applicationWasChosen.InvokeAsync(application.Item.id);
+    }
+
+
+}

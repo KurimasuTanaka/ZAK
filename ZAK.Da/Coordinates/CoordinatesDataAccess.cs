@@ -50,7 +50,9 @@ public class CoordinatesDataAccess(BlazorAppDbContext blazorAppDbContext) : ICoo
         }
         else
         {
-            _blazorAppDbContext.Entry(coordinates).State = EntityState.Modified;
+            AddressCoordinatesModel coordinatesModel = await _blazorAppDbContext.coordinates.FindAsync(coordinates.addressId);
+            coordinatesModel.lat = coordinates.lat;
+            coordinatesModel.lon = coordinates.lon;
         }
 
         await _blazorAppDbContext.SaveChangesAsync();

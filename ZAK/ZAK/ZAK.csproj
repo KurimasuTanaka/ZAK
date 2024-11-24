@@ -12,11 +12,14 @@
     <ProjectReference Include="..\..\ZAK.Db\ZAK.Db.csproj" />
     <ProjectReference Include="..\..\ZAK.Enums\ZAK.Enums.csproj" />
     <ProjectReference Include="..\..\ZAK.GeoDataFetcher\ZAK.GeoDataFetcher.csproj" />
+    <ProjectReference Include="..\..\ZAK.MapRoutesManager\ZAK.MapRoutesManager.csproj" />
     <ProjectReference Include="..\ZAK.Client\ZAK.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.10" />
+    
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Syncfusion.Blazor.Maps" Version="27.1.52" />
     <PackageReference Include="Blazor.Bootstrap" Version="2.2.0" />
     <PackageReference Include="bootstrap" Version="5.3.3" />
     <PackageReference Include="BootstrapBlazor" Version="8.6.3" />

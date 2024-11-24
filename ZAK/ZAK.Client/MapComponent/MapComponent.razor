@@ -1,0 +1,74 @@
+﻿
+@page "/map"
+@rendermode InteractiveAuto
+
+@using BlazorApp.DA
+@using Itinero;
+@using Itinero.IO.Osm;
+@using Itinero.Osm.Vehicles;
+@using Syncfusion.Blazor.Maps
+@using System.Numerics
+@using ZAK.MapRoutesManager
+
+@inject IMapRoutesManager mapRoutesManager
+@inject IApplicationsDataAccess applicationsDataAccess;
+@inject IBrigadesDataAccess brigadesDataAccess;
+
+
+<SfMaps Height="1000" @ref="map">    
+        @* To zoom and pan *@
+    <MapsZoomSettings Enable="true" ZoomFactor="14" DoubleClickZoom="true" MinZoom="1" MaxZoom="400">
+        <MapsZoomToolbarSettings>
+            <MapsZoomToolbarButton ToolbarItems="new List<ToolbarItem>() { ToolbarItem.Zoom, ToolbarItem.ZoomIn, ToolbarItem.ZoomOut,
+            ToolbarItem.Pan, ToolbarItem.Reset }"></MapsZoomToolbarButton>
+        </MapsZoomToolbarSettings>
+    </MapsZoomSettings>
+    <MapsCenterPosition Latitude="50.5182418329232" Longitude="30.499480641838456"></MapsCenterPosition>
+    <MapsLayers>
+        <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
+            @* Add navigation line *@
+            <MapsNavigationLines>
+                @for(int r = 0; r < routes.Count; r++)
+                    {
+                        int color = r;
+                        @for(int i = 0; i < routes[r].Count -1 ; i++)
+                        {
+                            <MapsNavigationLine Width="4.0" Visible="true" Color="@colors[color]"
+                                Latitude="new double[]{routes[r][i].X, routes[r][i+1].X}" Longitude="new double[]{routes[r][i].Y, routes[r][i+1].Y}">
+                                <MapsArrow ShowArrow="true" Color="@colors[color]" Size="2"></MapsArrow>
+                            </MapsNavigationLine>
+                        }
+                    } 
+            </MapsNavigationLines>
+        </MapsLayer>
+    </MapsLayers>
+</SfMaps>
+
+@code {
+    List<List<Vector2>> routes = new();
+
+    List<string> colors = new List<string> { "red", "blue", "green", "yellow", "purple", "black","orange", "pink", "brown" };
+
+    SfMaps map = default!;
+    protected override void OnParametersSet()
+    {
+        try
+        {
+            routes = mapRoutesManager.GetRoutesAsync(brigadesDataAccess, applicationsDataAccess).Result;
+            StateHasChanged();
+
+        } catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+
+    public async Task RefreshMap()
+    {
+        routes = await mapRoutesManager.GetRoutesAsync(brigadesDataAccess, applicationsDataAccess);
+        map.Refresh();
+        StateHasChanged();
+    }   
+
+
+}        

@@ -7,11 +7,7 @@
 
 @inject IJSRuntime Js
 
-<Modal @ref="applicationsList" Title="Выбрать заявку" Size="ModalSize.ExtraLarge">
-    <BodyTemplate>
-        <ApplicationsRatedList @ref="appList" />
-    </BodyTemplate>
-</Modal>
+<ApplicationsRatedListModal @ref="applicationsRatedList"/>
 
 <Card>
     <CardTitle style="display: flex; flex-direction: row; align-items:center;">
@@ -85,20 +81,17 @@
     </Card>
 
     @code {
-    [Parameter]
-    public Brigade brigade { get; set; } = new();
-    [Parameter]
-    public EventCallback UpdateBrigadeLists { get; set; }
-
-    [Parameter]
-    public EventCallback<ApplicationScheduled> AddApplicationToSwap { get; set; }
+    [Parameter] public Brigade brigade { get; set; } = new();
+    [Parameter] public EventCallback UpdateBrigadeLists { get; set; }
+    [Parameter] public EventCallback<ApplicationScheduled> AddApplicationToSwap { get; set; }
+    [Parameter] public EventCallback RefreshMap { get; set; }
 
     private Grid<ApplicationScheduled> brigadeApplicationsGrid = default!;
 
-    public Modal applicationsList = default!;
-    public ApplicationsRatedList appList = default!;
+    private ApplicationsRatedListModal applicationsRatedList = default!;
+    
 
-    private Collapse collapseApplicationsList;
+    private Collapse collapseApplicationsList = default!;
 
     private async Task ToggleApplicationsList() => await collapseApplicationsList.ToggleAsync();
 
@@ -124,14 +117,13 @@
     {
         chosenId = applicationId;
 
-        await applicationsList.HideAsync();
+        await applicationsRatedList.HideAsync();
 
 
         await brigadesDataAccess.ChangeBrigadeApplication(brigade.id, chosenTime, chosenId);
         brigade.applications[chosenTime] = applicationsDataAccess.GetApplication(applicationId).Result;
 
         await RedrawBrigadeTable();
-
     }
 
     int chosenTime = 0;
@@ -139,8 +131,8 @@
     {
         chosenTime = applicationTime;
 
-        await applicationsList.ShowAsync();
-        appList.applicationWasChosen = new EventCallback(this, ApplicationWasChosen);
+        await applicationsRatedList.ShowAsync(brigade.applicationsIds, applicationTime);
+        applicationsRatedList.applicationWasChosen = EventCallback.Factory.Create<int>(this, ApplicationWasChosen);
 
         return;
     }
@@ -191,6 +183,7 @@
     public async Task RedrawBrigadeTable()
     {
         await brigadeApplicationsGrid.RefreshDataAsync();
+        await RefreshMap.InvokeAsync();
         StateHasChanged();
     }
 

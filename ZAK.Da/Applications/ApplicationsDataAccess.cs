@@ -62,7 +62,10 @@ public class ApplicationsDataAccess(BlazorAppDbContext blazorAppDbContext) : IAp
 
     public List<Application> GetAllApplicationsWithIgnoring()
     {
-        return _dbContext.applications.Where(app => app.ignored != true).Select(application => new Application(application)).ToList();
+        return _dbContext.applications.
+            Include(a=>a.address).ThenInclude(a => a.coordinates).
+            Include(a=>a.address).ThenInclude(a => a.district).
+            Where(app => app.ignored != true).Select(application => new Application(application)).ToList();
     }
 
     public async Task SwitchApplicationHotStatus(int id)
@@ -140,7 +143,10 @@ public class ApplicationsDataAccess(BlazorAppDbContext blazorAppDbContext) : IAp
 
     public async Task<Application> GetApplication(int id)
     {
-        ApplicationModel? application =  await _dbContext.applications.FindAsync(id);
+        ApplicationModel? application =  await _dbContext.applications.
+            Include(a=>a.address).
+            ThenInclude(a=>a.coordinates).
+            FirstOrDefaultAsync(a=>a.id == id);
         if (application is null) application = new ApplicationModel();
         return new Application(application);
     }

@@ -15,11 +15,7 @@ public class ApplicationScheduled : Application
     {
     }
 
-    public ApplicationScheduled(ApplicationModel applicationModel) : this(applicationModel, 0)
-    {
-    }
-
-    public ApplicationScheduled(ApplicationModel applicationModel, int applicationScheduledTime) : base(applicationModel, 0,applicationScheduledTime)
+    public ApplicationScheduled(ApplicationModel applicationModel) 
     {
     }
 

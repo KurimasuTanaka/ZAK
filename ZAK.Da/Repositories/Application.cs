@@ -5,9 +5,6 @@ namespace BlazorApp.DA;
 
 public class Application : ApplicationModel
 {
-    public double lat = 0;
-    public double lon = 0;
-
     public double priority = 0.0;
 
     public int daysToDeadline = 0;
@@ -50,12 +47,7 @@ public class Application : ApplicationModel
     }
 
     public Application() { }
-    public Application(ApplicationModel model) : this(model, 0, 0) { }
-    public Application(ApplicationModel model, double lat, double lon) : base(model)
-    {
-        this.lat = lat;
-        this.lon = lon;
-
+    public Application(ApplicationModel model) : base(model) { 
         SetupApplicationDeadline();
     }
 
@@ -93,16 +85,28 @@ public class Application : ApplicationModel
 
     }
 
-    public void SetupApplicationPriorityLevel(Dictionary<string, double> coefficients, double buildingPriority)
+    public void SetupApplicationPriorityLevel(Dictionary<string, double> coefficients, List<Application> nearApplications)
     {
+        double distance = 0.0;
+        foreach (Application application in nearApplications)
+        {
+            distance += 
+                (Math.Sqrt(
+                    Math.Pow(application.address.coordinates.lat - this.address.coordinates.lat, 2) + 
+                    Math.Pow(application.address.coordinates.lon - this.address.coordinates.lon, 2)));
+        }
+
         priority =
-            0 /*there should be a distance*/ * coefficients["distance"]
-            + buildingPriority * coefficients["housePriority"]
-            + daysToDeadline * coefficients["deadline"]
+            (1/distance) * coefficients["distance"]
+            + (address.addressPriority is null ? 0.0 : address.addressPriority.priority) * coefficients["housePriority"]
             + (hot ? 1 : 0) * coefficients["urgency"]
             + (statusWasChecked ? 1 : 0) * coefficients["specified"]
             + (freeCable ? 1 : 0) * coefficients["freeCable"]
             - (tarChangeApp ? 1 : 0) * coefficients["tarrifeChangeApplication"];
+
+        if(daysToDeadline > 0) priority += 1/daysToDeadline * coefficients["deadline"];
+        else if(daysToDeadline < 0) priority += Math.Abs(daysToDeadline)/1 * coefficients["deadline"];
+        else priority += 1 * coefficients["deadline"];
     }
 
     public void Copy(Application source)

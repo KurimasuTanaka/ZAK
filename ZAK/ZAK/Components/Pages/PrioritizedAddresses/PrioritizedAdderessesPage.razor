@@ -5,15 +5,23 @@
 @using BlazorApp.Enums;
 @using BlazorApp.GeoDataManager
 @using BlazorBootstrap;
+@using ZAK.MapRoutesManager
 
 @inject IAddressesDataAccess addressesDataAccess;
 @inject IGeoDataManager geoDataManager;
 
+@inject IMapRoutesManager mapRoutesManager;
+
 <Button @ref="loadCoordinatesButton" Color="ButtonColor.Primary" @onclick="LoadCoordinatesData"> Подтянуть координаты </Button>
 
+<Card>
+    <CardBody>
+        <p>Было найдено @(unresolvedAddressesCount) незарезолвленых адресов</p>
+    </CardBody>
+</Card>
 
 <Grid @ref="addressGrid" TItem="Address" Class="table table-bordered table-striped" DataProvider="@AddressesDataProvider"
-     AllowPaging="true" PageSize="10" AllowFiltering="true" Responsive="true">
+     AllowPaging="true" PageSize="10" AllowFiltering="true" AllowSorting="true" Responsive="true">
 
 
         <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName" FilterTextboxWidth="200"
@@ -35,13 +43,21 @@
             <AliasInputComponent addressId="context.Id" alias="@context.buildingAlias"streetAlias="@false" />
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Широта">
+        <GridColumn TItem="Address" HeaderText="Широта" PropertyName="Latitude">
             <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Latitude" Lat="@true" /> 
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Долгота">
+        <GridColumn TItem="Address" HeaderText="Долгота" PropertyName="Longtitude">
             <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Longtitude" Lon="@true" />
         </GridColumn>
 
+        <GridColumn TItem="Address" HeaderText="Рез" PropertyName="resolved" SortKeySelector="item => item.resolved">
+            <AddressResolvedComponent resolved="context.resolved" />
+        </GridColumn>
+
+
+        <GridColumn TItem="Address" HeaderText="Кон." PropertyName="connected">
+            <AddressResolvedComponent resolved="context.connected" />
+        </GridColumn>
 </Grid>
 
 
@@ -49,9 +65,20 @@
 
     private Button loadCoordinatesButton = default!;
     private Grid<Address> addressGrid = default!;
+
+    int unresolvedAddressesCount = 0;
     private async Task<GridDataProviderResult<Address>> AddressesDataProvider(GridDataProviderRequest<Address> request)
     {
         List<Address> addresses = await addressesDataAccess.GetAddresses();
+
+        foreach (Address address in addresses)
+        {
+            address.resolved = mapRoutesManager.CheckResolving(address, 150);
+        }
+        List<Address> unres = addresses.Select(a => a).Where(a => a.resolved is false).ToList();
+        unresolvedAddressesCount = unres.Count;
+        StateHasChanged();
+
         return await Task.FromResult(request.ApplyTo(addresses));
     }
 
@@ -60,6 +87,8 @@
         loadCoordinatesButton.ShowLoading("Загрузка...");
         await geoDataManager.PopulateApplicationsWithGeoData();
         await addressGrid.RefreshDataAsync();
+
+
         loadCoordinatesButton.HideLoading();
 
     }

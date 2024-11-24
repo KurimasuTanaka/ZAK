@@ -5,10 +5,11 @@
 <div style="width: 50%">
     <Button Color="ButtonColor.Primary" @onclick="AddNewBrigade">Добавить бригаду</Button>
 
-    <BrigadeList @ref=@brigadeList />
+    <BrigadeList @ref=@brigadeList  RefreshMap="async (value) => {await RefreshMap.InvokeAsync();}"/>
 </div>
 
 @code {
+    [Parameter] public EventCallback RefreshMap { get; set; }
 
     BrigadeList brigadeList;
 

@@ -1,8 +1,34 @@
-﻿<div style="width: 50%; background-color:red">
- dfdfdfd
+﻿@using System.Numerics
+@using BlazorApp.DA
+@using Syncfusion.Licensing
+@using ZAK.MapRoutesManager
+@using ZAK.Client.MapComponent
+
+@inject IMapRoutesManager mapRoutesManager
+@inject IApplicationsDataAccess applicationsDataAccess;
+@inject IBrigadesDataAccess brigadesDataAccess;
+
+<div style="width: 50%">
+    <MapComponent @ref="mapComponent" />
 </div>
 
 
 @code {
+    
+    MapComponent mapComponent = default!;
 
+    public async Task RefreshMap()
+    {
+        await mapComponent.RefreshMap();
+    }
+
+
+    protected override void OnInitialized()
+    {
+        //Register Syncfusion license key
+        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NDaF5cWWtCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH5feXRRRWheVEd2V0Q=");
+
+        //Validate the registered license key
+        bool isValid = SyncfusionLicenseProvider.ValidateLicense(Platform.Blazor);
+    }
 }

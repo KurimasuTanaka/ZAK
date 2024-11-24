@@ -5,13 +5,19 @@
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
 
-<ApplicationsPicker />
-
 <div style="display: flex; flex-direction: row">
-    <SchedulePart />
-    <MapPart />
+    <SchedulePart RefreshMap="RefreshMap" />
+    <MapPart @ref="mapPart"/>
 </div>
 
 @code {
+    EventCallback refreshMap { get; set; }
+
+    MapPart mapPart = default!;
+
+    private async void RefreshMap()
+    {
+        await mapPart.RefreshMap();
+    }
 
 }

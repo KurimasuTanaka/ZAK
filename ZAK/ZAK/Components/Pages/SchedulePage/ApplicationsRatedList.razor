@@ -7,6 +7,7 @@
 
 @inject IAddressesDataAccess addressesDataAccess;
 @inject ICoefficientsDataAccess coefficientsDataAccess;
+@inject IBrigadesDataAccess brigadesDataAccess;
 
 <Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowDetailView="true"
     AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true" OnRowClick="OnRowClick"
@@ -19,8 +20,8 @@
             </div>
             @*Interactive components in Id section ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
             <CheckBoxInputComponent label="Важлива заявка" applicationId="@context.id" propertyName="hot"
-            propertyValue="@((bool)context["hot"])" />
-            
+                propertyValue="@((bool)context["hot"])" />
+
             <TimeframeApplicationComponent applicationId="@context.id" firstPart="@context.firstPart"
                 secondPart="@context.secondPart" timeRangeIsSet="@context.timeRangeIsSet" startHour="@context.startHour"
                 endHour="@context.endHour">
@@ -74,37 +75,54 @@
     [Parameter]
     public EventCallback applicationWasChosen { get; set; }
 
+    [Parameter] public List<int> brigadeApplicationIds { get; set; } = new List<int>();
+    [Parameter] public int timeSlot { get; set; } = 0;
 
     List<Application> applications = new List<Application>();
+
+    private async Task<List<Application>> CalculatePriorty(List<Application> applications)
+    {
+        Dictionary<string, double> priorities = await coefficientsDataAccess.GetCoefficientsDictionary();
+        List<Address> addresses = await addressesDataAccess.GetAddresses();
+
+        for (int i = 0; i < applications.Count; i++)
+        {
+            if (true)
+            {
+                applications[i].SetupApplicationPriorityLevel(priorities, new List<Application>());
+            }
+            else
+            if (i == 0)
+            {
+                applications[i].SetupApplicationPriorityLevel(priorities, new List<Application> { applications[i + 1] });
+            }
+            else if (i == applications.Count - 1)
+            {
+                applications[i].SetupApplicationPriorityLevel(priorities, new List<Application> { applications[i - 1] });
+            }
+            else
+            {
+                applications[i].SetupApplicationPriorityLevel(priorities, new List<Application> { applications[i - 1], applications[i +
+1] });
+            }
+        }
+
+        applications.Sort((a, b) => b.priority.CompareTo(a.priority));
+
+        return applications;
+    }
 
     protected override async void OnParametersSet()
     {
         applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
 
-        Dictionary<string, double> priorities = await coefficientsDataAccess.GetCoefficientsDictionary();
-        List<Address> addresses = await addressesDataAccess.GetAddresses();
+        applications = await CalculatePriorty(applications);
 
-        foreach (Application app in applications)
-        {
-            Address? address = addresses.Find(a => a.streetName == app.streetName && a.building == app.building);
-            app.SetupApplicationPriorityLevel(priorities, address?.priority ?? 0.0);
-        }
     }
     public async void Redraw()
     {
         applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
-        List<Address> addresses = await addressesDataAccess.GetAddresses();
-
-        Dictionary<string, double> priorities = await coefficientsDataAccess.GetCoefficientsDictionary();
-
-        foreach (Application app in applications)
-        {
-            Address? address = addresses.Find(a => a.streetName == app.streetName && a.building == app.building);
-
-            app.SetupApplicationPriorityLevel(priorities, await addressesDataAccess.GetPriorityByAddress(app.streetName,
-            app.building));
-        }
-
+        applications = await CalculatePriorty(applications);
 
         StateHasChanged();
     }

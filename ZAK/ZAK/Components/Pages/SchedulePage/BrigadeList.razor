@@ -5,11 +5,15 @@
 
 @foreach(Brigade brigade in brigades)
 {
-    <BrigadeView @ref="@Ref"  brigade="@brigade" UpdateBrigadeLists="UpdateList" AddApplicationToSwap="AddSwapApplication"/>
+    <BrigadeView @ref="@Ref"  brigade="@brigade" 
+        UpdateBrigadeLists="UpdateList" 
+        AddApplicationToSwap="AddSwapApplication" 
+        RefreshMap="async (value) => {await RefreshMap.InvokeAsync();}"/>
 }
 
 
 @code {
+    [Parameter] public EventCallback RefreshMap { get; set; }
 
     private List<Brigade> brigades = new();
 

@@ -15,6 +15,12 @@ public class NominatimCoordinatesProvider : ICoordinatesProvider
         {
             if(address.addressAlias.streetAlias != "" && address.addressAlias.streetAlias != null)
             {
+
+                if(address.addressAlias.streetAlias == "провулок Балтійський")
+                {
+                    int i =0;
+                }
+
                 addressString += address.addressAlias.streetAlias.Replace(' ', '+') + "+";
             } else addressString += address.streetName.Replace(' ', '+') + "+"; 
 
@@ -46,7 +52,14 @@ public class NominatimCoordinatesProvider : ICoordinatesProvider
             JsonNode? jsonNode = JsonNode.Parse(responseString!);
             if(jsonNode is null) return;
             
-            if(jsonNode.AsArray().Count != 1) return;
+            if(jsonNode.AsArray().Count > 1)
+            {
+                if(jsonNode[0]!.AsObject().TryGetPropertyValue("addresstype", out var addresstype));
+                if(addresstype is not null) {
+                    string addresstypeString = addresstype.ToString();
+                    if(!addresstypeString.Equals("building")) return;
+                } 
+            } else if(jsonNode.AsArray().Count == 0) return;
 
             string lat = jsonNode[0]!.AsObject().TryGetPropertyValue("lat", out var latValue) ? latValue!.ToString() : "0.0";
             string lon = jsonNode[0]!.AsObject().TryGetPropertyValue("lon", out var lonValue) ? lonValue!.ToString() : "0.0";
