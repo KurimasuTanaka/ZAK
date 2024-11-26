@@ -16,3 +16,11 @@ namespace BlazorApp.Enums;
         DoNotStrech
 
     }
+
+    public enum BlackoutZone 
+    {
+        White, 
+        Gray,
+        Black,
+        Unknown    
+    }

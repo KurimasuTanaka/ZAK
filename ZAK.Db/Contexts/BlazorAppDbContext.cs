@@ -18,7 +18,7 @@ public class BlazorAppDbContext : DbContext
 
         public virtual DbSet<AddressCoordinatesModel> coordinates {get; set;}
 
-        public virtual DbSet<ShutdownModel> shutdowns {get; set;}
+        public virtual DbSet<BlackoutModel> shutdowns {get; set;}
 
         public BlazorAppDbContext() {}
         public BlazorAppDbContext(DbContextOptions optionsBuilder) : base(optionsBuilder) {}

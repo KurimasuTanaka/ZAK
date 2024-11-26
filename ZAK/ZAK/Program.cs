@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 using ZAK.Components;
 using Syncfusion.Blazor;
 using ZAK.MapRoutesManager;
-using ZAK.Db.Models;
 using ZAK.Db;
 
 namespace ZAK;
@@ -41,7 +40,7 @@ public class Program
         builder.Services.AddScoped<IAddressPriorityDataAccess, AddressPriorityDataAccess>();
         builder.Services.AddScoped<IAddressAliasDataAccess, AddressAliasDataAccess>();
         builder.Services.AddScoped<ICoordinatesDataAccess, CoordinatesDataAccess>();
-
+        builder.Services.AddScoped<IBlackoutScheduleDataAccess, BlackoutScheduleDataAccess>();
 
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
 
