@@ -11,14 +11,17 @@
 
 <div>
   <InputFile OnChange="LoadFile"></InputFile>
-  <Button class="p-2" Color="ButtonColor.Info" @onclick="LoadNewApplicationsWithReplacement">Load applications</Button>
-  <Button class="p-2" Color="ButtonColor.Info" @onclick="LoadNewApplications">Add applications</Button>
+  <Button @ref="LoadWithRemoval" class="p-2" Color="ButtonColor.Info" @onclick="LoadNewApplicationsWithReplacement">Загрузить заявки</Button>
+  <Button @ref="LoadNew" class="p-2" Color="ButtonColor.Info" @onclick="LoadNewApplications">Добавить заявки</Button>
 </div>
 
 @code
 {
   [Parameter]
   public EventCallback ApplicationsInformationWasChanged { get; set; }
+
+  private Button LoadWithRemoval = default!;
+  private Button LoadNew = default!;
 
   string pathToApplicationsFile = String.Empty;
   IBrowserFile applicationsFileToLoad;
@@ -27,6 +30,8 @@
 
   private async void LoadNewApplications()
   {
+    LoadNew.ShowLoading("Загрузка заявок...");
+
     if (applicationsFileToLoad is null)
     {
       return;
@@ -40,12 +45,15 @@
 
     await ApplicationsInformationWasChanged.InvokeAsync();
 
-    //TODO: Fix issue with deleting of used files
-    //fileLoader.DeleteTempFiles();
+    fileLoader.DeleteTempFiles();
+
+    LoadNew.HideLoading();
   }
 
   private async void LoadNewApplicationsWithReplacement()
   {
+    LoadWithRemoval.ShowLoading("Загрузка заявок...");
+
     if (applicationsFileToLoad is null)
     {
       return;
@@ -58,8 +66,9 @@
 
     await ApplicationsInformationWasChanged.InvokeAsync();
 
-    //TODO: Fix issue with deleting of used files
     fileLoader.DeleteTempFiles();
+
+    LoadWithRemoval.HideLoading();
   }
 
   public void LoadFile(InputFileChangeEventArgs e)

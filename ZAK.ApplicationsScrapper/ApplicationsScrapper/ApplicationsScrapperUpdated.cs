@@ -28,20 +28,22 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
         application = ScrapApplicationId(application, applicationNode);
 
         application = ScrapApplicationDistrict(application, applicationNode);
-        
+
         application = ScrapApplicationStreetName(application, applicationNode);
         application = ScrapApplicationBuilding(application, applicationNode);
-        
+
         application = ScrapApplicationDate(application, applicationNode);
         application = ScrapApplicationStretchingStatus(application, applicationNode);
         application = ScrapApplicationOperatorComment(application, applicationNode);
         application = ScrapApplicationMasterComment(application, applicationNode);
-    
+
         application = TryScrapApplicationFreeCable(application, applicationNode);
         application = TryScrapApplicationStatusWasChecked(application, applicationNode);
         application = TryScrapApplicationTarChangeApp(application, applicationNode);
         application = TryScrapApplicationTiming(application, applicationNode);
 
+        application = TryScrapApplicationDeadline(application);
+        application = TryScrapApplicationArrangmentStatus(application);
 
         return application;
     }
@@ -113,48 +115,122 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
 
     private Application TryScrapApplicationFreeCable(Application application, HtmlNode applicationNode)
     {
-        if(
+        if (
             application.operatorComment.Contains("вільний кабель", StringComparison.CurrentCultureIgnoreCase) ||
             application.operatorComment.Contains("свободный кабель", StringComparison.CurrentCultureIgnoreCase) ||
             application.operatorComment.Contains("має бути кабель", StringComparison.CurrentCultureIgnoreCase) ||
-            application.operatorComment.Contains("должен быть кабель", StringComparison.CurrentCultureIgnoreCase) 
+            application.operatorComment.Contains("должен быть кабель", StringComparison.CurrentCultureIgnoreCase)
         ) application.freeCable = true;
-        
+
         return application;
     }
     private Application TryScrapApplicationStatusWasChecked(Application application, HtmlNode applicationNode)
     {
-        if(
+        if (
             application.operatorComment.Contains("цікавився статусом", StringComparison.CurrentCultureIgnoreCase) ||
-            application.operatorComment.Contains("интересовался статусом", StringComparison.CurrentCultureIgnoreCase) 
+            application.operatorComment.Contains("интересовался статусом", StringComparison.CurrentCultureIgnoreCase)
         ) application.statusWasChecked = true;
 
         return application;
     }
     private Application TryScrapApplicationTarChangeApp(Application application, HtmlNode applicationNode)
     {
-        if(
+        if (
             application.operatorComment.Contains("Перехід на Гігабіт", StringComparison.CurrentCultureIgnoreCase) ||
             application.operatorComment.Contains("перехід", StringComparison.CurrentCultureIgnoreCase) ||
-            application.operatorComment.Contains("переход", StringComparison.CurrentCultureIgnoreCase) 
-        ) application.tarChangeApp= true;
+            application.operatorComment.Contains("переход", StringComparison.CurrentCultureIgnoreCase)
+        ) application.tarChangeApp = true;
 
 
         return application;
     }
     private Application TryScrapApplicationTiming(Application application, HtmlNode applicationNode)
     {
-        if(
+        //Part of the day
+        if (
             application.operatorComment.Contains("першу половину", StringComparison.CurrentCultureIgnoreCase) ||
             application.operatorComment.Contains("1 половину", StringComparison.CurrentCultureIgnoreCase) ||
-            application.operatorComment.Contains("первую половину", StringComparison.CurrentCultureIgnoreCase) 
-        ) application.firstPart = true;
+            application.operatorComment.Contains("первую половину", StringComparison.CurrentCultureIgnoreCase)
+        )
+        {
+            application.firstPart = true;
+            return application;
+        }
 
-        if(
+        if (
             application.operatorComment.Contains("другу половину", StringComparison.CurrentCultureIgnoreCase) ||
             application.operatorComment.Contains("вторую половину", StringComparison.CurrentCultureIgnoreCase) ||
-            application.operatorComment.Contains("2 половину", StringComparison.CurrentCultureIgnoreCase) 
-        ) application.secondPart = true;
+            application.operatorComment.Contains("2 половину", StringComparison.CurrentCultureIgnoreCase)
+        )
+        {
+            application.secondPart = true;
+            return application;
+        }
+
+        return application;
+    }
+
+    private Application TryScrapApplicationDeadline(Application application)
+    {
+        string timerangeLine = "";
+        try
+        {
+            timerangeLine = application.operatorComment.Substring(application.operatorComment.IndexOf("Терміни"), 15);
+        }
+        catch (Exception e)
+        {
+            return application;
+        }
+
+        string[] timerange = timerangeLine.Split([' ','-' ]);
+
+        int number = 0;
+        bool firstNumberWasFound = false;
+        bool vidWasFound = false;
+        foreach (string word in timerange)
+        {
+            //In case terms are written in "Від 10 днів" format
+            if (vidWasFound)
+            {
+                string wordWithoutNumber = new string(word.Where(c => char.IsDigit(c)).ToArray());
+
+                Int32.TryParse(wordWithoutNumber, out number);
+                if (number != 0)
+                {
+                    application.maxDaysForConnection = number + 10;
+                    return application;
+                }
+
+            }
+            if (word == "від")
+            {
+                vidWasFound = true;
+                continue;
+            }
+
+            //In regular case
+            Int32.TryParse(word, out number);
+            if (number != 0)
+            {
+                if (firstNumberWasFound)
+                {
+                    application.maxDaysForConnection = number;
+                }
+                else firstNumberWasFound = true;
+            }
+        }
+
+        return application;
+    }
+
+    private Application TryScrapApplicationArrangmentStatus(Application application)
+    {
+        if (
+            application.operatorComment.ToLower().Contains("домовлена") ||
+            application.operatorComment.ToLower().Contains("договорена") ||
+            application.operatorComment.ToLower().Contains("домовлено") ||
+            application.operatorComment.ToLower().Contains("договорено")
+        ) application.ignored = true;
 
         return application;
     }

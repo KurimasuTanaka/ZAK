@@ -1,6 +1,7 @@
 using System;
 using BlazorApp.DA;
-using BlazorApp.DB;
+using ZAK.Db;
+using ZAK.Db.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;

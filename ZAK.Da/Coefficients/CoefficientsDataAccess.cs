@@ -1,8 +1,6 @@
-using System;
-using BlazorApp.DA;
-using BlazorApp.DB;
-using BlazorApp.DB.Models;
 using Microsoft.EntityFrameworkCore;
+using ZAK.Db;
+using ZAK.Db.Models;
 
 namespace BlazorApp.DA;
 

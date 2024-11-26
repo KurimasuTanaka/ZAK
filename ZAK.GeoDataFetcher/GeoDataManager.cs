@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using BlazorApp.DA;
-using BlazorApp.DB;
+using ZAK.Db.Models;
 
 namespace BlazorApp.GeoDataManager;
 public class GeoDataManager : IGeoDataManager

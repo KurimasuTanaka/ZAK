@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlazorApp.DB;
+namespace ZAK.Db.Models;
 
 
 public class AddressModel 

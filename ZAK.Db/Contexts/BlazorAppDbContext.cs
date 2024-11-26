@@ -1,8 +1,8 @@
-﻿using BlazorApp.DB.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ZAK.Db.Models;
 
-namespace BlazorApp.DB;
+namespace ZAK.Db;
 
 public class BlazorAppDbContext : DbContext
 {
@@ -18,6 +18,7 @@ public class BlazorAppDbContext : DbContext
 
         public virtual DbSet<AddressCoordinatesModel> coordinates {get; set;}
 
+        public virtual DbSet<ShutdownModel> shutdowns {get; set;}
 
         public BlazorAppDbContext() {}
         public BlazorAppDbContext(DbContextOptions optionsBuilder) : base(optionsBuilder) {}

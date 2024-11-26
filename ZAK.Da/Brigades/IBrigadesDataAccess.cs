@@ -1,4 +1,4 @@
-﻿using BlazorApp.DB;
+﻿using ZAK.Db.Models;
 
 namespace BlazorApp.DA;
 

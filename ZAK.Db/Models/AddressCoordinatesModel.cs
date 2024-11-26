@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
-namespace BlazorApp.DB;
+namespace ZAK.Db.Models;
 
 public class AddressCoordinatesModel
 {

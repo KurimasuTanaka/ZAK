@@ -1,5 +1,5 @@
-﻿using BlazorApp.DB;
-using BlazorApp.Enums;
+﻿using ZAK.Db;
+using ZAK.Db.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlazorApp.DA;

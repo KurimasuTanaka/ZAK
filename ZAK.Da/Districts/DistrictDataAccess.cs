@@ -1,7 +1,8 @@
 ﻿namespace BlazorApp.DA;
 
 using System.Collections.Generic;
-using BlazorApp.DB;
+using ZAK.Db;
+using ZAK.Db.Models;
 
 public class DistrictDataAccess : IDistrictDataAccess
 {

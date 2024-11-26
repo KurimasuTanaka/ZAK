@@ -1,5 +1,5 @@
-using System;
-using BlazorApp.DB;
+using ZAK.Db;
+using ZAK.Db.Models;
 
 namespace BlazorApp.DA;
 

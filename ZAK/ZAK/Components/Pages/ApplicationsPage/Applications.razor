@@ -53,6 +53,8 @@
 
     <CheckBoxInputComponent label="Смена тарифа" applicationId="@context.id" propertyName="tarChangeApp"
       propertyValue="@((bool)context["tarChangeApp"])" />
+
+    <InputDeadlineComponent applicationId="@context.id" daysForConnection="@context.maxDaysForConnection" />
   </GridColumn>
 
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
@@ -92,12 +94,6 @@
       <h6>Дней к дедлайну: </h6> @context.daysToDeadline
     </span>
   </GridColumn>
-
-  @*Column for priority
-  <GridColumn TItem="Application" HeaderText="Priority" >
-  <span>@context.year.@context.month.@context.day</span>
-  </GridColumn>
-  *@
 </Grid>
 
 @code {

@@ -1,6 +1,3 @@
-using System;
-using BlazorApp.DA;
-
 namespace BlazorApp.DA;
 
 public interface ICoefficientsDataAccess

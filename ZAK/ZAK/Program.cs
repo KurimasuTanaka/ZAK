@@ -2,12 +2,13 @@ using ApplicationsScrappingModule;
 using BlazorApp;
 using BlazorApp.ApplicationsLoader;
 using BlazorApp.DA;
-using BlazorApp.DB;
 using BlazorApp.GeoDataManager;
 using Microsoft.EntityFrameworkCore;
 using ZAK.Components;
 using Syncfusion.Blazor;
 using ZAK.MapRoutesManager;
+using ZAK.Db.Models;
+using ZAK.Db;
 
 namespace ZAK;
 
@@ -51,7 +52,7 @@ public class Program
         builder.Services.AddDbContext<BlazorAppDbContext>(
         options =>
         {
-            options.UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK2\BlazorApp.DB\DbFiles\testdb2.db");
+            options.UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK3\ZAK.Db\DbFiles\testdb2.db");
             //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         }
     );

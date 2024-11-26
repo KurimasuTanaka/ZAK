@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-namespace BlazorApp.DB.Models;
+namespace ZAK.Db.Models;
 
 public class CoefficientModel
 {

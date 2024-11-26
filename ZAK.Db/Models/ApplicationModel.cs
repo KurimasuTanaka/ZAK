@@ -3,7 +3,7 @@ using BlazorApp.Enums;
 using System.Reflection;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BlazorApp.DB;
+namespace ZAK.Db.Models;
 
 
     public class ApplicationModel 

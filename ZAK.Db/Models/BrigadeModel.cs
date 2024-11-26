@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.ComponentModel.DataAnnotations;
 
-namespace BlazorApp.DB;
+namespace ZAK.Db.Models;
 
 public class BrigadeModel
 {
