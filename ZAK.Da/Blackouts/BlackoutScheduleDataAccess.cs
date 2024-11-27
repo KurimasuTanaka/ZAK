@@ -15,6 +15,11 @@ public class BlackoutScheduleDataAccess : IBlackoutScheduleDataAccess
         _dbContext = dbContext;
     }
 
+    public async Task<List<BlackoutModel>> GetBlackouts()
+    {
+        return await _dbContext.shutdowns.ToListAsync();
+    }
+
     public async Task<BlackoutZone> GetZone(int group, int day, int time)
     {
         BlackoutModel? blackoutModel = await _dbContext.shutdowns.FirstOrDefaultAsync(s => s.group == group && s.day == day && s.time == time);

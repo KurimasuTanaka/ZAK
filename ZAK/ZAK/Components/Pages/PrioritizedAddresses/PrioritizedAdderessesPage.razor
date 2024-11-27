@@ -50,13 +50,13 @@
             <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Longtitude" Lon="@true" />
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Рез" PropertyName="resolved" SortKeySelector="item => item.resolved">
+        <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" SortKeySelector="item => item.resolved">
             <AddressResolvedComponent resolved="context.resolved" />
         </GridColumn>
 
 
-        <GridColumn TItem="Address" HeaderText="Кон." PropertyName="connected">
-            <AddressResolvedComponent resolved="context.connected" />
+        <GridColumn TItem="Address" HeaderText="Група" PropertyName="blackoutGroup">
+            <AddressBlackoutGroupComponent addressId="context.Id" group="@context.blackoutGroup" />
         </GridColumn>
 </Grid>
 

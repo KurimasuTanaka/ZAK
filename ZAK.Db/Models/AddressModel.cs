@@ -31,6 +31,9 @@ public class AddressModel
     //Coordinates
     public AddressCoordinatesModel? coordinates { get; set; } = null;
 
+
+    public int blackoutGroup { get; set; } = 0;
+
     public AddressModel() {
         
     }

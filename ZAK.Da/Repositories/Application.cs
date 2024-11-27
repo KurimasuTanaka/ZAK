@@ -97,6 +97,8 @@ public class Application : ApplicationModel
                     Math.Pow(application.address.coordinates.lon - this.address.coordinates.lon, 2)));
         }
 
+        if(distance == 0) distance = 1;
+
         priority =
             (1/distance) * coefficients["distance"]
             + (address.addressPriority is null ? 0.0 : address.addressPriority.priority) * coefficients["housePriority"]

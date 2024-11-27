@@ -10,4 +10,6 @@ public interface IAddressesDataAccess
     public Task<List<Address>> GetAddressesWithoutLocation();
     public Task UpgdateAddresses(List<Address> addresses);
     public Task AddAddress(Address address);
+
+    public Task SetBlackoutGroup(int id, int group);
 }

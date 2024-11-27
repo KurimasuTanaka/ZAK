@@ -83,4 +83,15 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
         await _dbContext.SaveChangesAsync();
         return;
     }
+
+    public Task SetBlackoutGroup(int id, int group)
+    {
+        AddressModel? address = _dbContext.addresses.Find(id);
+        if(address is not null)
+        {
+            address.blackoutGroup = group;
+            return _dbContext.SaveChangesAsync();
+        }
+        else return Task.CompletedTask;
+    }
 }
