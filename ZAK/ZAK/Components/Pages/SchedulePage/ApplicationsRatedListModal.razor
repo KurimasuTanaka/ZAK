@@ -3,12 +3,13 @@
 @inject IApplicationsDataAccess applicationsDataAccess;
 @inject ICoefficientsDataAccess coefficientsDataAccess;
 @inject IAddressesDataAccess addressesDataAccess;
+@inject IBlackoutScheduleDataAccess blackoutScheduleDataAccess;
 
 <Modal @ref=applicationsList Title="Выбрать заявку" Size="ModalSize.ExtraLarge">
     <BodyTemplate>
         <Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowDetailView="true"
             AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true" OnRowClick="OnRowClick"
-            AllowRowClick="true">
+            AllowRowClick="true" style="width: 100%; height: 100%; border-collapse: collapse;">
             <GridColumns>
                 @*Id column with set of interactive components*@
                 <GridColumn TItem="Application" HeaderText="Id" PropertyName="id">
@@ -49,6 +50,30 @@
                 <GridColumn TItem="Application" HeaderText="Date">
                     <span>@context.year.@context.month.@context.day</span>
                 </GridColumn>
+
+                <GridColumn TItem="Application" HeaderText="Приоритет" SortKeySelector="item=> item.priority">
+                    <span>@context.priority</span>
+                </GridColumn>
+
+                <style>
+                    .blackoutCell {
+                        position: relative;
+                        padding: 0;
+                        margin: 0;
+                    }
+                </style>
+
+                <GridColumn TItem="Application" HeaderText="220" ColumnClass="@(x => "blackoutCell")">
+                    <table
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-collapse: collapse;">
+                        <tr>
+                            <BlackoutTimeComponent blackoutZone="@context.blackoutZones[0]" />
+                            <BlackoutTimeComponent blackoutZone="@context.blackoutZones[1]" />
+                            <BlackoutTimeComponent blackoutZone="@context.blackoutZones[2]" />
+                        </tr>
+                    </table>
+
+                </GridColumn>
             </GridColumns>
 
             @*Column for comments section*@
@@ -61,9 +86,8 @@
 
             </GridDetailView>
 
-            <GridColumn TItem="Application" HeaderText="Priority" SortKeySelector="item=> item.priority">
-                <span>@context.priority</span>
-            </GridColumn>
+
+
         </Grid>
     </BodyTemplate>
 </Modal>
@@ -82,21 +106,58 @@
         //Find near applications
         Application? newApplication1 = applications.FirstOrDefault(x => x.id == FindNearApplication(applicationIds, time, -1));
         Application? newApplication2 = applications.FirstOrDefault(x => x.id == FindNearApplication(applicationIds, time, 1));
- 
+
         List<Application> nearApplications = new List<Application>();
-        if(newApplication1 != null) nearApplications.Add(newApplication1);
-        if(newApplication2 != null) nearApplications.Add(newApplication2);
-        
+        if (newApplication1 != null) nearApplications.Add(newApplication1);
+        if (newApplication2 != null) nearApplications.Add(newApplication2);
+
 
         //Remove applications that are already in the schedule
         applications = applications.Where(x => !applicationIds.Contains(x.id)).ToList();
 
-        //Get priorities from db  
+        //Get priorities from db
         Dictionary<string, double> priorities = await coefficientsDataAccess.GetCoefficientsDictionary();
 
         //Calculate priority for all applications
-        for (int i = 0; i < applications.Count; i++) applications[i].SetupApplicationPriorityLevel(priorities, nearApplications);
-        
+        for (int i = 0; i < applications.Count; i++) applications[i].SetupApplicationPriorityLevel(priorities,
+        nearApplications);
+
+        //Find new zones for applications
+        List<BlackoutModel> blackoutZones = await blackoutScheduleDataAccess.GetBlackouts();
+
+        DateTime tomorrow = DateTime.Today.AddDays(1);
+        int day = 0;
+        switch (tomorrow.DayOfWeek)
+        {
+            case DayOfWeek.Monday:
+                day = 1;
+                break;
+            case DayOfWeek.Tuesday:
+                day = 2;
+                break;
+            case DayOfWeek.Wednesday:
+                day = 3;
+                break;
+            case DayOfWeek.Thursday:
+                day = 4;
+                break;
+            case DayOfWeek.Friday:
+                day = 5;
+                break;
+            case DayOfWeek.Saturday:
+                day = 6;
+                break;
+            case DayOfWeek.Sunday:
+                day = 7;
+                break;
+        }
+
+
+        foreach (var application in applications)
+        {
+            application.SetupBlackoutZones(blackoutZones, day, time);
+        }
+
         await applicationsList.ShowAsync();
     }
 
@@ -104,8 +165,8 @@
     {
         for (int i = time + direction; i < applicationsIds.Count - direction; i += direction)
         {
-            if(i < 0 || i >= applicationsIds.Count) return 0;
-            if(applicationsIds[i] != 0)
+            if (i < 0 || i >= applicationsIds.Count) return 0;
+            if (applicationsIds[i] != 0)
             {
                 return applicationsIds[i];
             }
@@ -114,7 +175,7 @@
     }
 
 
-    public  async Task HideAsync()
+    public async Task HideAsync()
     {
         await applicationsList.HideAsync();
     }

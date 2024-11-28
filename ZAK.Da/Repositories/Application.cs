@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using BlazorApp.Enums;
 using ZAK.Db;
 using ZAK.Db.Models;
 
@@ -10,6 +11,7 @@ public class Application : ApplicationModel
 
     public int daysToDeadline = 0;
 
+    public BlackoutZone[] blackoutZones = [BlackoutZone.Unknown, BlackoutZone.Unknown, BlackoutZone.Unknown];
 
     public string streetName 
     {
@@ -86,15 +88,27 @@ public class Application : ApplicationModel
 
     }
 
+    public void SetupBlackoutZones(List<BlackoutModel> blackoutModels,int day, int time )
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            BlackoutZone blackoutZone = blackoutModels.FirstOrDefault(b => 
+                b.group == this.address.blackoutGroup &&
+                b.day == day && b.time == time + 10 + i)?.zone ?? BlackoutZone.Unknown;
+
+            blackoutZones[i] = blackoutZone;    
+        }
+    }
+
     public void SetupApplicationPriorityLevel(Dictionary<string, double> coefficients, List<Application> nearApplications)
     {
         double distance = 0.0;
         foreach (Application application in nearApplications)
         {
-            distance += 
-                (Math.Sqrt(
-                    Math.Pow(application.address.coordinates.lat - this.address.coordinates.lat, 2) + 
-                    Math.Pow(application.address.coordinates.lon - this.address.coordinates.lon, 2)));
+            // distance += 
+            //     (Math.Sqrt(
+            //         Math.Pow(application.address.coordinates.lat - this.address.coordinates.lat, 2) + 
+            //         Math.Pow(application.address.coordinates.lon - this.address.coordinates.lon, 2)));
         }
 
         if(distance == 0) distance = 1;
