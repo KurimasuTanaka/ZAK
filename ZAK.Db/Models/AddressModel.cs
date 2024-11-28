@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using BlazorApp.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace ZAK.Db.Models;
@@ -31,6 +32,7 @@ public class AddressModel
     //Coordinates
     public AddressCoordinatesModel? coordinates { get; set; } = null;
 
+    public EquipmentAccess equipmentAccess { get; set; } = EquipmentAccess.Unknown;
 
     public int blackoutGroup { get; set; } = 0;
 

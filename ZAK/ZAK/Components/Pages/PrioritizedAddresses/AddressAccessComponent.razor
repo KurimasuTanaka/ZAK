@@ -1,0 +1,18 @@
+﻿@inject IAddressesDataAccess addressesDataAccess;
+
+<InputSelect @bind-Value="@equipmentAccess"  @bind-Value:after="UpdateEquipmentAccess">
+    @foreach (EquipmentAccess access in Enum.GetValues(typeof(EquipmentAccess)))
+    {
+        <option value="@access">@access.GetDisplayName()</option>
+    }
+</InputSelect>
+
+@code {
+    [Parameter] public EquipmentAccess equipmentAccess { get; set; }
+    [Parameter] public int addressId { get; set; }
+
+    void UpdateEquipmentAccess()
+    {
+        addressesDataAccess.UpdateEquipmentAccess(addressId, equipmentAccess);
+    }
+}

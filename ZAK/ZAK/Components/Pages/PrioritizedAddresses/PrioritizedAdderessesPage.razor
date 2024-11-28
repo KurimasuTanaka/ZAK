@@ -58,6 +58,10 @@
         <GridColumn TItem="Address" HeaderText="Група" PropertyName="blackoutGroup">
             <AddressBlackoutGroupComponent addressId="context.Id" group="@context.blackoutGroup" />
         </GridColumn>
+
+        <GridColumn TItem="Address" HeaderText="Доступ">
+            <AddressAccessComponent addressId="context.Id" />
+        </GridColumn>
 </Grid>
 
 

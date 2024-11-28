@@ -1,4 +1,5 @@
 using System;
+using BlazorApp.Enums;
 
 namespace BlazorApp.DA;
 
@@ -11,5 +12,6 @@ public interface IAddressesDataAccess
     public Task UpgdateAddresses(List<Address> addresses);
     public Task AddAddress(Address address);
 
+    public Task UpdateEquipmentAccess(int id, EquipmentAccess access);
     public Task SetBlackoutGroup(int id, int group);
 }

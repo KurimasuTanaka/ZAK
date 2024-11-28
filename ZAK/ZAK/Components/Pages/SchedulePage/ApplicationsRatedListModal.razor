@@ -41,7 +41,7 @@
 
                 <GridColumn TItem="Application" HeaderText="Stretched" PropertyName="stretchingStatus"
                     SortKeySelector="item => item.stretchingStatus">
-                    @context.stretchingStatus
+                    @(context.stretchingStatus.GetDisplayName())
                 </GridColumn>
 
 
@@ -74,6 +74,11 @@
                     </table>
 
                 </GridColumn>
+
+                <GridColumn TItem="Application" HeaderText="Доступ">
+                    @(context.address.equipmentAccess.GetDisplayName())
+                </GridColumn>
+
             </GridColumns>
 
             @*Column for comments section*@

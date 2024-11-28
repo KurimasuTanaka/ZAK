@@ -2,6 +2,7 @@ using System;
 using ZAK.Db;
 using ZAK.Db.Models;
 using Microsoft.EntityFrameworkCore;
+using BlazorApp.Enums;
 
 namespace BlazorApp.DA;
 
@@ -90,6 +91,17 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
         if(address is not null)
         {
             address.blackoutGroup = group;
+            return _dbContext.SaveChangesAsync();
+        }
+        else return Task.CompletedTask;
+    }
+
+    public Task UpdateEquipmentAccess(int id, EquipmentAccess access)
+    {
+        AddressModel? address = _dbContext.addresses.Find(id);
+        if(address is not null)
+        {
+            address.equipmentAccess = access;
             return _dbContext.SaveChangesAsync();
         }
         else return Task.CompletedTask;
