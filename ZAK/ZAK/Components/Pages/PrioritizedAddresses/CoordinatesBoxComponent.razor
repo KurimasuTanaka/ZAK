@@ -1,0 +1,18 @@
+﻿<div>
+    <table >
+        <tr>
+            <td>
+                <AddressCoordinatesClearButtonComponent addressId="@context.Id" />
+            </td>
+            <td>
+                <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Latitude" Lat="@true" />
+            </td>
+            <td>
+                <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Longtitude" Lon="@true" />
+            </td>
+        </tr>
+    </table>
+</div>
+@code {
+    [Parameter] public Address context { get; set; } = default!;
+}

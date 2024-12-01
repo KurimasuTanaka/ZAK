@@ -7,8 +7,8 @@ class Program
     static async Task Main(string[] args)
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
+        builder.Services.AddBlazorBootstrap();
         builder.Services.AddSyncfusionBlazor();
-
         await builder.Build().RunAsync();
     }
 }

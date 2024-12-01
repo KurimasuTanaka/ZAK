@@ -1,67 +1,62 @@
 ﻿@page "/addresses"
 @rendermode InteractiveServer
 
-@using BlazorApp.DA;
-@using BlazorApp.Enums;
-@using BlazorApp.GeoDataManager
-@using BlazorBootstrap;
-@using ZAK.MapRoutesManager
-
 @inject IAddressesDataAccess addressesDataAccess;
 @inject IGeoDataManager geoDataManager;
 
 @inject IMapRoutesManager mapRoutesManager;
 
-<Button @ref="loadCoordinatesButton" Color="ButtonColor.Primary" @onclick="LoadCoordinatesData"> Подтянуть координаты </Button>
+<Button @ref="loadCoordinatesButton" Color="ButtonColor.Primary" @onclick="LoadCoordinatesData"> Подтянуть координаты
+</Button>
 
-<Card>
-    <CardBody>
-        <p>Было найдено @(unresolvedAddressesCount) незарезолвленых адресов</p>
-    </CardBody>
-</Card>
+<Callout Color="CalloutColor.Success">
+    <p>Было найдено @(unresolvedAddressesCount) незарезолвленых адресов</p>
+</Callout>
 
-<Grid @ref="addressGrid" TItem="Address" Class="table table-bordered table-striped" DataProvider="@AddressesDataProvider"
-     AllowPaging="true" PageSize="10" AllowFiltering="true" AllowSorting="true" Responsive="true">
+<Grid @ref="addressGrid" TItem="Address" Class="table table-hover table-bordered table-striped"
+    DataProvider="AddressesDataProvider" AllowPaging="true" PageSize="50" AllowFiltering="true" AllowSorting="true"
+    Responsive="true">
 
+    <GridColumns>
 
-        <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName" FilterTextboxWidth="200"
-            SortKeySelector="item => item.streetName">
-            @context.streetName
-        </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Будинок" PropertyName="building"
-            SortKeySelector="item => item.building">
-            @context.building
-        </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority">
-            <PriorityInputComponent addressId="context.Id" priority="context.priority" />
-        </GridColumn>
+    
 
-        <GridColumn TItem="Address" HeaderText="Альт. вулиця" PropertyName="streetAlias">
-            <AliasInputComponent addressId="context.Id" alias="@context.streetAlias" streetAlias="@true"/>
-        </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias">
-            <AliasInputComponent addressId="context.Id" alias="@context.buildingAlias"streetAlias="@false" />
-        </GridColumn>
+    <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName" FilterTextboxWidth="200"
+        SortKeySelector="item => item.streetName">
+        @context.streetName
+    </GridColumn>
+    <GridColumn TItem="Address" HeaderText="Будинок" PropertyName="building" SortKeySelector="item => item.building">
+        @context.building
+    </GridColumn>
+    <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority">
+        <PriorityInputComponent addressId="context.Id" priority="context.priority" />
+    </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Широта" PropertyName="Latitude">
-            <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Latitude" Lat="@true" /> 
-        </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Долгота" PropertyName="Longtitude">
-            <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Longtitude" Lon="@true" />
-        </GridColumn>
-
-        <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" SortKeySelector="item => item.resolved">
-            <AddressResolvedComponent resolved="context.resolved" />
-        </GridColumn>
+    <GridColumn TItem="Address" HeaderText="Альт. вулиця" PropertyName="streetAlias">
+        <AliasInputComponent addressId="context.Id" alias="@context.streetAlias" streetAlias="@true" />
+    </GridColumn>
+    <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias">
+        <AliasInputComponent addressId="context.Id" alias="@context.buildingAlias" streetAlias="@false" />
+    </GridColumn>
 
 
-        <GridColumn TItem="Address" HeaderText="Група" PropertyName="blackoutGroup">
-            <AddressBlackoutGroupComponent addressId="context.Id" group="@context.blackoutGroup" />
-        </GridColumn>
+    <GridColumn TItem="Address" HeaderText="Широта \ Долгота" PropertyName="Latitude" ColumnClass="@(x => "blackoutCell")">
+        <CoordinatesBoxComponent context="context" />
+    </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Доступ">
-            <AddressAccessComponent addressId="context.Id" />
-        </GridColumn>
+    <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" SortKeySelector="item => item.resolved">
+        <AddressResolvedComponent resolved="context.resolved" />
+    </GridColumn>
+
+
+    <GridColumn TItem="Address" HeaderText="Група" PropertyName="blackoutGroup">
+        <AddressBlackoutGroupComponent addressId="context.Id" group="@context.blackoutGroup" />
+    </GridColumn>
+
+    <GridColumn TItem="Address" HeaderText="Доступ">
+        <AddressAccessComponent addressId="context.Id" />
+    </GridColumn>
+    </GridColumns>
 </Grid>
 
 

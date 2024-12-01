@@ -1,0 +1,17 @@
+﻿@inject ICoordinatesDataAccess cooridinatesDataAccess;
+
+<Button @onclick="DeleteCoordinates">
+    <Icon Name="IconName.X" />
+</Button>
+@code {
+    [Parameter] public int addressId { get; set; }
+
+    private async void DeleteCoordinates()
+    {
+        Coordinates coordinates = await cooridinatesDataAccess.GetCoordinatesByIdAsync(addressId);
+        coordinates.lat = 0.0;
+        coordinates.lon = 0.0;
+        await cooridinatesDataAccess.UpdateCoordinatesAsync(coordinates);
+    }
+
+}

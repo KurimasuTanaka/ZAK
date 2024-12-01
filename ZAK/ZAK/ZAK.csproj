@@ -20,9 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Syncfusion.Blazor.Maps" Version="27.1.52" />
-    <PackageReference Include="Blazor.Bootstrap" Version="2.2.0" />
-    <PackageReference Include="bootstrap" Version="5.3.3" />
-    <PackageReference Include="BootstrapBlazor" Version="8.6.3" />
+    <PackageReference Include="Blazor.Bootstrap" Version="3.2.0" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.6">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

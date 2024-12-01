@@ -17,13 +17,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddBlazorBootstrap();
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
+        builder.Services.AddBlazorBootstrap();
         builder.Services.AddSyncfusionBlazor();
 
         builder.Services.AddScoped<ICoefficientsDataAccess, CoefficientsDataAccess>();
