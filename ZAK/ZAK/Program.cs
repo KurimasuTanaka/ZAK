@@ -8,6 +8,8 @@ using ZAK.Components;
 using Syncfusion.Blazor;
 using ZAK.MapRoutesManager;
 using ZAK.Db;
+using Microsoft.AspNetCore.Authorization;
+using ZAK.Auth;
 
 namespace ZAK;
 
@@ -46,7 +48,7 @@ public class Program
 
         builder.Services.AddSingleton<IMapRoutesManager, MapRoutesManager.MapRoutesManager>();
 
-
+        builder.Services.AddSingleton<IAuthorizationHandler, PassHandler>();
 
         builder.Services.AddDbContext<BlazorAppDbContext>(
         options =>
@@ -55,7 +57,14 @@ public class Program
             //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         }
     );
-
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("PassPolicy", policy =>
+            {
+                policy.Requirements.Add(new PassRequirement("123"));
+            });
+        });
+        builder.Services.AddCascadingAuthenticationState();
 
         var app = builder.Build();
 
