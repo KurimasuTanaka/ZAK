@@ -9,7 +9,7 @@ using Syncfusion.Blazor;
 using ZAK.MapRoutesManager;
 using ZAK.Db;
 using Microsoft.AspNetCore.Authorization;
-using ZAK.Auth;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace ZAK;
 
@@ -27,6 +27,16 @@ public class Program
 
         builder.Services.AddBlazorBootstrap();
         builder.Services.AddSyncfusionBlazor();
+
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.Cookie.Name = "Login_Pass";
+                options.Cookie.MaxAge = TimeSpan.FromDays(30);
+            });
+
+        builder.Services.AddAuthorization();
+        builder.Services.AddCascadingAuthenticationState();
 
         builder.Services.AddScoped<ICoefficientsDataAccess, CoefficientsDataAccess>();
         builder.Services.AddScoped<IApplicationsDataAccess, ApplicationsDataAccess>();
@@ -48,7 +58,6 @@ public class Program
 
         builder.Services.AddSingleton<IMapRoutesManager, MapRoutesManager.MapRoutesManager>();
 
-        builder.Services.AddSingleton<IAuthorizationHandler, PassHandler>();
 
         builder.Services.AddDbContext<BlazorAppDbContext>(
         options =>
@@ -57,14 +66,7 @@ public class Program
             //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
         }
     );
-        builder.Services.AddAuthorization(options =>
-        {
-            options.AddPolicy("PassPolicy", policy =>
-            {
-                policy.Requirements.Add(new PassRequirement("123"));
-            });
-        });
-        builder.Services.AddCascadingAuthenticationState();
+
 
         var app = builder.Build();
 
@@ -85,10 +87,14 @@ public class Program
         app.UseStaticFiles();
         app.UseAntiforgery();
 
+
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode()
             .AddInteractiveWebAssemblyRenderMode()
             .AddAdditionalAssemblies(typeof(Client._Imports).Assembly);
+
+        app.UseAuthorization();
+        app.UseAuthentication();
 
         app.Run();
     }

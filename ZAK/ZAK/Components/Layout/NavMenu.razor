@@ -1,43 +1,46 @@
-﻿
+﻿@using Microsoft.AspNetCore.Components.Authorization
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<AuthorizeView>
 
-  <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-    <a class="navbar-brand p-2" href="#">LocalNet График</a>
-    
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <NavLink class="nav-link" href="applications">
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+    <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+      <a class="navbar-brand p-2" href="#">LocalNet График</a>
+
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <NavLink class="nav-link" href="applications">
             Заявки
-        </NavLink>
-      </li>
-      <li class="nav-item">
-        <NavLink class="nav-link" href="schedule">
+          </NavLink>
+        </li>
+        <li class="nav-item">
+          <NavLink class="nav-link" href="schedule">
             График
-        </NavLink>
-      </li>
-      <li class="nav-item">
-        <NavLink class="nav-link" href="coefficients">
+          </NavLink>
+        </li>
+        <li class="nav-item">
+          <NavLink class="nav-link" href="coefficients">
             Коефициенты
-        </NavLink>
-      </li>
-      <li class="nav-item">
-        <NavLink class="nav-link" href="addresses">
+          </NavLink>
+        </li>
+        <li class="nav-item">
+          <NavLink class="nav-link" href="addresses">
             Адреса
-        </NavLink>
-      </li>
-      <li class="nav-item">
-        <NavLink class="nav-link" href="blackout">
+          </NavLink>
+        </li>
+        <li class="nav-item">
+          <NavLink class="nav-link" href="blackout">
             График отключений
-        </NavLink>
-      </li>
+          </NavLink>
+        </li>
 
-    </ul>
-    
-  </div>
+      </ul>
 
-</nav>
+    </div>
 
+  </nav>
+</AuthorizeView>
 @*
 
 <div class="top-row ps-3 navbar navbar-dark">

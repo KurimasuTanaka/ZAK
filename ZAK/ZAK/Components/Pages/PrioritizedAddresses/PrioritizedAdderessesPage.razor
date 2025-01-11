@@ -1,6 +1,9 @@
 ﻿@page "/addresses"
 @rendermode InteractiveServer
 
+@* @attribute [Authorize] *@
+
+
 @inject IAddressesDataAccess addressesDataAccess;
 @inject IGeoDataManager geoDataManager;
 

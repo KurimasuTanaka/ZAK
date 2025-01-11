@@ -1,8 +1,12 @@
 ﻿@page "/applications"
+@* @attribute [Authorize] *@
 @rendermode InteractiveServer
+
+
 @using BlazorApp.DA;
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
+@using Microsoft.AspNetCore.Authorization
 @using ZAK.Components.Pages.ApplicationsPage.ApplicationsActivities;
 @using ZAK.Components.Pages.ApplicationsPage.ApplicationInputComponents;
 

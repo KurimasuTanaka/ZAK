@@ -1,0 +1,51 @@
+﻿@* @page "/Login" *@
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject NavigationManager NavigationManager
+
+<div style="display: flex; justify-content: center; width: 100%;">
+    <Card>
+        <CardBody>
+            <CardTitle>Авторизация</CardTitle>
+            <EditForm Model="userModel" method="Post" OnValidSubmit="Authorize" FormName="loginForm">
+                <InputText  type="password" placeholder="Пароль" @bind-Value="userModel.Password" />
+                <button type="submit" class="btn btn-warning">Войти</button>
+            </EditForm>
+        </CardBody>
+    </Card>
+</div>
+
+@code {
+
+    [CascadingParameter]
+    public HttpContext? context { get; set; }
+
+    [SupplyParameterFromForm(FormName = "loginForm")]
+    private UserModel userModel { get; set; } = new UserModel();
+
+    private async Task Authorize()
+    {
+        if (userModel.Password != "123") return;
+
+        var identity = new ClaimsIdentity(
+        [
+        new Claim(ClaimTypes.Name, userModel.Password),
+],
+        "Custom Authentication");
+
+        var newUser = new ClaimsPrincipal(identity);
+
+        await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, newUser);
+    }
+
+
+    class UserModel
+    {
+        public string Password { get; set; } = "";
+    }
+}

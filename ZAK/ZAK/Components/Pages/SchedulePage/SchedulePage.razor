@@ -2,6 +2,9 @@
 @page "/schedule"
 @rendermode InteractiveServer
 
+@* @attribute [Authorize] *@
+
+
 <div style="display: flex; flex-direction: row">
     <SchedulePart RefreshMap="RefreshMap" />
     <MapPart @ref="mapPart"/>
