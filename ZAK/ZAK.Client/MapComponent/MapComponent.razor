@@ -35,7 +35,7 @@
                         {
                             <MapsNavigationLine Width="4.0" Visible="true" Color="@colors[color]"
                                 Latitude="new double[]{routes[r][i].X, routes[r][i+1].X}" Longitude="new double[]{routes[r][i].Y, routes[r][i+1].Y}">
-                                <MapsArrow ShowArrow="true" Color="@colors[color]" Size="2"></MapsArrow>
+                                <MapsArrow ShowArrow="true" Color="@colors[color]" Size="5"></MapsArrow>
                             </MapsNavigationLine>
                         }
                     } 
@@ -61,6 +61,9 @@
         {
             Console.WriteLine(e.Message);
         }
+
+        //Applications markers
+        
     }
 
     public async Task RefreshMap()
