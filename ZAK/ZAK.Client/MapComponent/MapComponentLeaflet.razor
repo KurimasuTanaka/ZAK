@@ -1,0 +1,23 @@
+﻿@rendermode InteractiveAuto
+
+@inject IJSRuntime Js
+
+<div id="map">placeholder</div>
+
+
+<style>
+    #map { height: 900px; }
+</style>
+@code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Js.InvokeVoidAsync("setupMap");
+
+            StateHasChanged();
+        }
+    }
+
+}

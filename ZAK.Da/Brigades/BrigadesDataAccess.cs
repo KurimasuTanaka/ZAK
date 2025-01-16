@@ -34,13 +34,13 @@ public class BrigadesDataAccess : IBrigadesDataAccess
 
     public async Task ChangeBrigadeNumber(int id, int number)
     {
-        BrigadeModel? brigade = await _dbContext.brigades.FindAsync(id);
-        if (brigade is not null)
-        {
-            brigade.brigadeNumber = number;
+        // BrigadeModel? brigade = await _dbContext.brigades.FindAsync(id);
+        // if (brigade is not null)
+        // {
+        //     brigade.brigadeNumber = number;
 
-            await _dbContext.SaveChangesAsync();
-        }
+        //     await _dbContext.SaveChangesAsync();
+        // }
         return;
     }
 

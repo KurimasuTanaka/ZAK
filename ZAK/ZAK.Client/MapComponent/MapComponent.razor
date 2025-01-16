@@ -1,5 +1,4 @@
-﻿
-@page "/map"
+﻿@page "/map"
 @rendermode InteractiveAuto
 
 @using BlazorApp.DA
@@ -15,8 +14,8 @@
 @inject IBrigadesDataAccess brigadesDataAccess;
 
 
-<SfMaps Height="1000" @ref="map">    
-        @* To zoom and pan *@
+<SfMaps Height="1000" @ref="map">
+    @* To zoom and pan *@
     <MapsZoomSettings Enable="true" ZoomFactor="14" DoubleClickZoom="true" MinZoom="1" MaxZoom="400">
         <MapsZoomToolbarSettings>
             <MapsZoomToolbarButton ToolbarItems="new List<ToolbarItem>() { ToolbarItem.Zoom, ToolbarItem.ZoomIn, ToolbarItem.ZoomOut,
@@ -28,26 +27,50 @@
         <MapsLayer UrlTemplate="https://tile.openstreetmap.org/level/tileX/tileY.png" TValue="string">
             @* Add navigation line *@
             <MapsNavigationLines>
-                @for(int r = 0; r < routes.Count; r++)
+                @for (int r = 0; r < routes.Count; r++)
+                {
+                    int color = r;
+                    @for (int i = 0; i < routes[r].Count - 1; i++)
                     {
-                        int color = r;
-                        @for(int i = 0; i < routes[r].Count -1 ; i++)
-                        {
-                            <MapsNavigationLine Width="4.0" Visible="true" Color="@colors[color]"
-                                Latitude="new double[]{routes[r][i].X, routes[r][i+1].X}" Longitude="new double[]{routes[r][i].Y, routes[r][i+1].Y}">
-                                <MapsArrow ShowArrow="true" Color="@colors[color]" Size="5"></MapsArrow>
-                            </MapsNavigationLine>
-                        }
-                    } 
+                        <MapsNavigationLine Width="4.0" Visible="true" Color="@colors[color]"
+                            Latitude="new double[]{routes[r][i].X, routes[r][i+1].X}"
+                            Longitude="new double[]{routes[r][i].Y, routes[r][i+1].Y}">
+                            <MapsArrow ShowArrow="true" Color="@colors[color]" Size="5"></MapsArrow>
+                        </MapsNavigationLine>
+                    }
+                }
             </MapsNavigationLines>
+            <MapsMarkerSettings>
+                <MapsMarker Visible="true" DataSource="applicationMarkers" Shape="MarkerType.Diamond" Height="15" Fill="green"
+                    Width="15" TValue="ApplicationMarker">
+                    <MapsMarkerTooltipSettings ValuePath="Id" Visible="true"></MapsMarkerTooltipSettings>
+                </MapsMarker>
+            </MapsMarkerSettings>
         </MapsLayer>
     </MapsLayers>
 </SfMaps>
 
 @code {
+
+    public class ApplicationMarker
+    {
+        public int Id { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+
+        public ApplicationMarker(int id, double latitude, double longitude)
+        {
+            Id = id;
+            Latitude = latitude;
+            Longitude = longitude;
+        }
+    }
+
     List<List<Vector2>> routes = new();
 
-    List<string> colors = new List<string> { "red", "blue", "green", "yellow", "purple", "black","orange", "pink", "brown" };
+    List<string> colors = new List<string> { "red", "blue", "green", "yellow", "purple", "black","orange", "pink", "brown"};
+
+    List<ApplicationMarker> applicationMarkers  = new List<ApplicationMarker>();
 
     SfMaps map = default!;
     protected override void OnParametersSet()
@@ -57,13 +80,15 @@
             routes = mapRoutesManager.GetRoutesAsync(brigadesDataAccess, applicationsDataAccess).Result;
             StateHasChanged();
 
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Console.WriteLine(e.Message);
         }
 
         //Applications markers
-        
+        applicationMarkers = applicationsDataAccess.GetAllApplicationsWithIgnoring().
+            Select(a => new ApplicationMarker(a.id, a.address.coordinates.lat, a.address.coordinates.lon)).ToList();
     }
 
     public async Task RefreshMap()
@@ -71,7 +96,7 @@
         routes = await mapRoutesManager.GetRoutesAsync(brigadesDataAccess, applicationsDataAccess);
         map.Refresh();
         StateHasChanged();
-    }   
+    }
 
 
-}        
+}

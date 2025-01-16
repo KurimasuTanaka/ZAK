@@ -9,17 +9,17 @@
 @inject IBrigadesDataAccess brigadesDataAccess;
 
 <div style="width: 50%">
-    <MapComponent @ref="mapComponent" />
+    <MapComponentLeaflet @ref="mapComponent" />
 </div>
 
 
 @code {
     
-    MapComponent mapComponent = default!;
+    MapComponentLeaflet mapComponent = default!;
 
     public async Task RefreshMap()
     {
-        await mapComponent.RefreshMap();
+        //await mapComponent.RefreshMap();
     }
 
 
