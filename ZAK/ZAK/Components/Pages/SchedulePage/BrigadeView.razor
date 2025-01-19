@@ -166,6 +166,7 @@
     private bool wasRowButtonPressed = false;
     public async Task RowButtonWasPressed()
     {
+        await RefreshMap.InvokeAsync();
         wasRowButtonPressed = true;
         await Task.Delay(500);
         wasRowButtonPressed = false;

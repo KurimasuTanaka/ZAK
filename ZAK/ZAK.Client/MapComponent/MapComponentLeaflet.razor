@@ -1,12 +1,25 @@
-﻿@rendermode InteractiveAuto
+﻿@using System.Numerics
+@using BlazorApp.DA
+@using ZAK.MapRoutesManager
+
+@rendermode InteractiveAuto
 
 @inject IJSRuntime Js
+
+@inject IMapRoutesManager mapRoutesManager
+@inject IApplicationsDataAccess applicationsDataAccess;
+@inject IBrigadesDataAccess brigadesDataAccess;
+
+
+
 
 <div id="map">placeholder</div>
 
 
 <style>
-    #map { height: 900px; }
+    #map {
+        height: 900px;
+    }
 </style>
 @code {
 
@@ -14,10 +27,55 @@
     {
         if (firstRender)
         {
-            await Js.InvokeVoidAsync("setupMap");
+            await Js.InvokeVoidAsync("initMap");
+            await DrawPaths();
+
+
+            //Draw pathes
+
 
             StateHasChanged();
         }
+
+    }
+
+    public async Task DrawPaths()
+    {
+        List<List<Vector2>> routes = await mapRoutesManager.GetRoutesAsync(brigadesDataAccess, applicationsDataAccess);
+        for(int i = 0; i < routes.Count; i++)
+        {
+            await DrawPath(routes[i], i);
+        }
+
+    }
+
+    public async Task DrawPath(List<Vector2> path, int brigadeNumber)
+    {
+        string pathString = "";
+        foreach (var point in path)
+        {
+            pathString += point.X + " " + point.Y + " ";
+            int l = pathString.Length;
+        }
+
+        string color = "";
+        switch(brigadeNumber)
+        {
+            case 0: color = "#ffbe0b"; break;
+            case 1: color = "#3a5a40"; break;
+            case 2: color = "#ff006e"; break;
+            case 3: color = "#8338ec"; break;
+            case 4: color = "#3a86ff"; break;
+        }
+
+        await Js.InvokeVoidAsync("drawPath", pathString, color);
+    }
+
+    public async Task RefreshMap()
+    {
+        await Js.InvokeVoidAsync("clearMap");
+        await DrawPaths();
+        StateHasChanged();
     }
 
 }
