@@ -20,6 +20,39 @@
     #map {
         height: 900px;
     }
+
+    .div-icon-reg-str {
+        border: 3px solid #85dc85;
+        background-color: #878786;
+        border-radius: 50%;
+        text-align: center;
+    }
+
+    .div-icon-reg-nstr {
+        border: 3px solid #ff700e;
+        background-color: #878786;
+        border-radius: 50%;
+        text-align: center;
+    }
+
+    .div-icon-imp-str {
+        border: 3px solid #85dc85;
+        background-color: red;
+        border-radius: 50%;
+        text-align: center;
+        padding:5px;
+    }
+
+    .div-icon-imp-nstr {
+        border: 3px solid #ff700e;
+        background-color: red;
+        border-radius: 50%;
+        text-align: center;
+        padding:5px;
+    }
+
+    
+
 </style>
 @code {
 
@@ -29,9 +62,8 @@
         {
             await Js.InvokeVoidAsync("initMap");
             await DrawPaths();
+            await DrawMarkers();
 
-
-            //Draw pathes
 
 
             StateHasChanged();
@@ -39,10 +71,30 @@
 
     }
 
+    public async Task DrawMarkers()
+    {
+        List<Application> applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
+
+        foreach (var application in applications)
+        {
+        string markersString = "";
+            markersString += 
+                application.address.coordinates.lat + " " + 
+                application.address.coordinates.lon + " " + 
+                application.id + " " + 
+                application.stretchingStatus + " " +
+                application.hot + " ";
+
+
+            await Js.InvokeVoidAsync("drawMarker", markersString);
+        }
+
+    }
+
     public async Task DrawPaths()
     {
         List<List<Vector2>> routes = await mapRoutesManager.GetRoutesAsync(brigadesDataAccess, applicationsDataAccess);
-        for(int i = 0; i < routes.Count; i++)
+        for (int i = 0; i < routes.Count; i++)
         {
             await DrawPath(routes[i], i);
         }
@@ -59,7 +111,7 @@
         }
 
         string color = "";
-        switch(brigadeNumber)
+        switch (brigadeNumber)
         {
             case 0: color = "#ffbe0b"; break;
             case 1: color = "#3a5a40"; break;
