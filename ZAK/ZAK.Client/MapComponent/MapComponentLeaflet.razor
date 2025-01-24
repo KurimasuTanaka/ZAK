@@ -1,5 +1,6 @@
 ﻿@using System.Numerics
 @using BlazorApp.DA
+@using System.Text.Json
 @using ZAK.MapRoutesManager
 
 @rendermode InteractiveAuto
@@ -40,7 +41,7 @@
         background-color: red;
         border-radius: 50%;
         text-align: center;
-        padding:5px;
+        padding: 5px;
     }
 
     .div-icon-imp-nstr {
@@ -48,11 +49,8 @@
         background-color: red;
         border-radius: 50%;
         text-align: center;
-        padding:5px;
+        padding: 5px;
     }
-
-    
-
 </style>
 @code {
 
@@ -77,28 +75,49 @@
 
         foreach (var application in applications)
         {
-        string markersString = "";
-            markersString += 
-                application.address.coordinates.lat + " " + 
-                application.address.coordinates.lon + " " + 
-                application.id + " " + 
-                application.stretchingStatus + " " +
-                application.hot + " ";
+
+            var temp = new {
+                lat = application.address.coordinates.lat,
+                lon = application.address.coordinates.lon,
+                id = application.id,
+                stretchingStatus = application.stretchingStatus,
+                hot = application.hot,
+                operatorComment = application.operatorComment,
+                masterComment = application.masterComment
+            };
+
+@* 
+            markersString += "{" +
+            "lat " + application.address.coordinates.lat + " " +
+            application.address.coordinates.lon + " " +
+            application.id + " " +
+            application.stretchingStatus + " " +
+            application.hot + " " +
+            application.operatorComment + " " +
+            application.masterComment + "}"; *@
 
 
-            await Js.InvokeVoidAsync("drawMarker", markersString);
+
+            await Js.InvokeVoidAsync("drawMarker", JsonSerializer.Serialize(temp));
         }
 
     }
 
     public async Task DrawPaths()
     {
-        List<List<Vector2>> routes = await mapRoutesManager.GetRoutesAsync(brigadesDataAccess, applicationsDataAccess);
-        for (int i = 0; i < routes.Count; i++)
+        try
         {
-            await DrawPath(routes[i], i);
-        }
+            List<List<Vector2>> routes = await mapRoutesManager.GetRoutesAsync(brigadesDataAccess, applicationsDataAccess);
+            for (int i = 0; i < routes.Count; i++)
+            {
+                await DrawPath(routes[i], i);
+            }
 
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 
     public async Task DrawPath(List<Vector2> path, int brigadeNumber)

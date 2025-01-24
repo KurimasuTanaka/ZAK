@@ -11,7 +11,8 @@
 
 <div>
   <InputFile OnChange="LoadFile"></InputFile>
-  <Button @ref="LoadWithRemoval" class="p-2" Color="ButtonColor.Info" @onclick="LoadNewApplicationsWithReplacement">Загрузить заявки</Button>
+  <Button @ref="LoadWithRemoval" class="p-2" Color="ButtonColor.Info"
+    @onclick="LoadNewApplicationsWithReplacement">Загрузить заявки</Button>
   <Button @ref="LoadNew" class="p-2" Color="ButtonColor.Info" @onclick="LoadNewApplications">Добавить заявки</Button>
 </div>
 
@@ -60,7 +61,7 @@
     }
     await fileLoader.LoadFile(applicationsFileToLoad);
 
-  
+
     await applicationsLoader.AddNewApplicationsWithRemoval(fileLoader.GetLastLoadedFile());
 
 

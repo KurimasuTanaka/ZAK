@@ -10,13 +10,15 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
     protected override Task<List<Application>> ProceedApplicationsScrapping()
     {
         List<Application> applications = new List<Application>();
-        HtmlNodeCollection applicationNodes = _applicationsDoc.DocumentNode.SelectNodes("/html/body/div[5]/div[2]/table/tbody/tr");
+        HtmlNodeCollection applicationNodes = _applicationsDoc.DocumentNode.SelectNodes("/html/body/div[7]/div[2]/table/tbody/tr");
 
-        foreach (HtmlNode applicationNode in applicationNodes)
+        if (applicationNodes != null)
         {
-            applications.Add(ProceedApplicationNode(applicationNode));
+            foreach (HtmlNode applicationNode in applicationNodes)
+            {
+                applications.Add(ProceedApplicationNode(applicationNode));
+            }
         }
-
         return Task.FromResult(applications);
     }
 
@@ -242,7 +244,7 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
         if (groupLineIndex == -1) return application;
 
         int length = 15;
-        if(groupLineIndex + length > application.operatorComment.Length)
+        if (groupLineIndex + length > application.operatorComment.Length)
         {
             length = application.operatorComment.Length - groupLineIndex;
         }

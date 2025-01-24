@@ -12,7 +12,7 @@ function initMap() {
     }).addTo(map);
 
     polylineGroup = L.layerGroup().addTo(map);
-    markerGroup = L.layerGroup().addTo(map);
+    markerGroup = L.markerClusterGroup();
 }
 
 function drawPath(coordinates, color) {
@@ -37,20 +37,22 @@ function drawPath(coordinates, color) {
 
 function drawMarker(markerString) {
 
-    let markerData = markerString.split(' ');
+    // let markerData = markerString.split(' ');
 
-    let stretched = markerData[3];
-    let important = markerData[4];
+    // let stretched = markerData[3];
+    // let important = markerData[4];
+
+    let markerData = JSON.parse(markerString);
 
     let classToUse = "";
 
-    if (stretched == "Stretched") {
-        if (important == "True")
+    if (markerData.stretchingStatus == "Stretched") {
+        if (markerData.hot == "True")
             classToUse = "div-icon-imp-str";
         else
             classToUse = "div-icon-reg-str";
     } else {
-        if (important == "True")
+        if (markerData.hot == "True")
             classToUse = "div-icon-imp-nstr";
         else
             classToUse = "div-icon-reg-nstr";
@@ -58,7 +60,7 @@ function drawMarker(markerString) {
     }
 
     const marker = L.marker(
-        [parseFloat(markerData[0]), parseFloat(markerData[1])],
+        [markerData.lat, markerData.lon],
         {
             icon: L.divIcon({
                 className: classToUse
@@ -66,9 +68,20 @@ function drawMarker(markerString) {
             )
         }
 
-    ).addTo(map);
-    marker.bindPopup(markerData[2]);
-    //markerGroup.addLayer(marker);
+    );
+
+    const popup = L.popup()
+        .setContent(
+            `
+                <b> ${markerData.id}</b><br>
+                <b>Ком. о. :</b>${markerData.operatorComment}<br>
+                <b>Ком. м. :</b>${markerData.masterComment}<br>
+            `
+        );
+
+    marker.bindPopup(popup);
+    markerGroup.addLayer(marker);
+    map.addLayer(markerGroup);
 }
 
 function clearMap() {
