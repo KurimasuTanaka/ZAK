@@ -10,6 +10,7 @@ using ZAK.MapRoutesManager;
 using ZAK.Db;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Configuration;
 
 namespace ZAK;
 
@@ -19,11 +20,13 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Configuration.AddEnvironmentVariables();
 
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
+
 
         builder.Services.AddBlazorBootstrap();
         builder.Services.AddSyncfusionBlazor();
@@ -62,8 +65,7 @@ public class Program
         builder.Services.AddDbContext<BlazorAppDbContext>(
         options =>
         {
-            options.UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK3\ZAK.Db\DbFiles\testdb2.db");
-            //options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            options.UseSqlite(builder.Configuration.GetValue<string>("ConnectionStrings:SQLite"));
         }
     );
 

@@ -15,7 +15,7 @@ public class MapRoutesManager : IMapRoutesManager
 
     public MapRoutesManager()
     {
-        using (var stream = new FileInfo(@"/C#_Projects\MapTest\kyiv.osm.pbf").OpenRead())
+        using (var stream = new FileInfo(@"/C#_Projects\ZAK\ZAK3\kyiv.osm.pbf").OpenRead())
         {
             _routerDb.LoadOsmData(stream, Itinero.Osm.Vehicles.Vehicle.Car); // create the network for cars only.
         }
