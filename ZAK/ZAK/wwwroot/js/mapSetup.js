@@ -74,10 +74,11 @@ function drawMarker(markerString) {
         .setContent(
             `
                 <b> ${markerData.id}</b><br>
-                <b>Ком. о. :</b>${markerData.operatorComment}<br>
-                <b>Ком. м. :</b>${markerData.masterComment}<br>
+                ${markerData.operatorComment}<br>
+                ${markerData.masterComment}<br>
             `
         );
+    popup.maxHeight = 50;
 
     marker.bindPopup(popup);
     markerGroup.addLayer(marker);

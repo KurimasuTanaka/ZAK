@@ -30,8 +30,8 @@
     }
 
     .div-icon-reg-nstr {
-        border: 3px solid #ff700e;
-        background-color: #878786;
+        border: 3px solid #ff8051;
+        background-color: #5f616d;
         border-radius: 50%;
         text-align: center;
     }
@@ -85,18 +85,6 @@
                 operatorComment = application.operatorComment,
                 masterComment = application.masterComment
             };
-
-@* 
-            markersString += "{" +
-            "lat " + application.address.coordinates.lat + " " +
-            application.address.coordinates.lon + " " +
-            application.id + " " +
-            application.stretchingStatus + " " +
-            application.hot + " " +
-            application.operatorComment + " " +
-            application.masterComment + "}"; *@
-
-
 
             await Js.InvokeVoidAsync("drawMarker", JsonSerializer.Serialize(temp));
         }
