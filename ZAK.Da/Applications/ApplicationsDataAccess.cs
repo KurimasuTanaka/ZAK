@@ -28,7 +28,8 @@ public class ApplicationsDataAccess(BlazorAppDbContext blazorAppDbContext) : IAp
                 {
                     application.address.district = district;
                 }
-            }       
+            }    
+
             await _dbContext.applications.AddAsync(application);
             await _dbContext.SaveChangesAsync();
         }

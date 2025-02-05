@@ -62,12 +62,13 @@ public class Program
         builder.Services.AddSingleton<IMapRoutesManager, MapRoutesManager.MapRoutesManager>();
 
 
-        builder.Services.AddDbContext<BlazorAppDbContext>(
-        options =>
-        {
-            options.UseSqlite(builder.Configuration.GetValue<string>("ConnectionStrings:SQLite"));
-        }
-    );
+        string? connectionString = builder.Configuration["ConnectionStrings:MySQL"];
+        if(String.IsNullOrEmpty(connectionString)) throw new Exception("Connection string is empty");
+
+        var serverVersion = new MySqlServerVersion(new Version(8, 0, 41));
+        builder.Services.AddDbContext<BlazorAppDbContext>(options =>
+        options.UseMySql(connectionString, serverVersion));
+
 
 
         var app = builder.Build();

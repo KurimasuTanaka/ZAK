@@ -5,6 +5,7 @@ using Itinero;
 using Itinero.IO.Osm;
 using Itinero.Osm.Vehicles;
 using Itinero.Profiles;
+using Microsoft.Extensions.Configuration;
 using OsmSharp.API;
 namespace ZAK.MapRoutesManager;
 
@@ -15,7 +16,7 @@ public class MapRoutesManager : IMapRoutesManager
 
     public MapRoutesManager()
     {
-        using (var stream = new FileInfo(@"/C#_Projects\ZAK\ZAK3\kyiv.osm.pbf").OpenRead())
+        using (var stream = new FileInfo(@".\..\..\kyiv.osm.pbf").OpenRead())
         {
             _routerDb.LoadOsmData(stream, Itinero.Osm.Vehicles.Vehicle.Car); // create the network for cars only.
         }
