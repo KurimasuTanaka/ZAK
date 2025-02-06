@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
 using ZAK.Services.UnresolvedAddressesChecker;
+using ZAK.Da.BaseDAO;
+using ZAK.Db.Models;
 
 namespace ZAK;
 
@@ -47,7 +49,11 @@ public class Program
         builder.Services.AddTransient<IApplicationsDataAccess,      ApplicationsDataAccess>();
         builder.Services.AddTransient<IDistrictDataAccess,          DistrictDataAccess>();
         builder.Services.AddTransient<IBrigadesDataAccess,          BrigadesDataAccess>();
+
+        builder.Services.AddTransient<IDaoBase<Address, AddressModel>,       DaoBase<Address, AddressModel>>();
         builder.Services.AddTransient<IAddressesDataAccess,         AddressesDataAccess>();
+        
+        
         builder.Services.AddTransient<IAddressPriorityDataAccess,   AddressPriorityDataAccess>();
         builder.Services.AddTransient<ICoordinatesDataAccess,       CoordinatesDataAccess>();
         builder.Services.AddTransient<IAddressAliasDataAccess,      AddressAliasDataAccess>();
