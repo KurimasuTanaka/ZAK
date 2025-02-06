@@ -69,7 +69,11 @@ public class BrigadesDataAccess : IBrigadesDataAccess
 
     public async Task<List<Brigade>> GetAllBrigades()
     {
-        return await _dbContext.brigades.Select(brigade => new Brigade(brigade)).ToListAsync();
+        List<Brigade> brigades = new();
+
+       //brigades = await _dbContext.brigades.Select(brigade => new Brigade(brigade)).ToListAsync();
+
+        return brigades;
     }
 
 

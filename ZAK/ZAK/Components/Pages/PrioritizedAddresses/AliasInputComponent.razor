@@ -3,7 +3,7 @@
 
 
 @inject IAddressAliasDataAccess addressPriorityDataAccess;
-
+@inject ILogger<AliasInputComponent> _logger;
 
 <InputText TValue="double" Label="Укр. назва" @bind-Value="@alias" @bind-Value:after="UpdateDbData" />
 
@@ -18,6 +18,8 @@
 
     private async Task UpdateDbData()
     {
+        _logger.LogInformation($"Updating alias for address with id {addressId} to {alias}");
+
         if(streetAlias) await addressPriorityDataAccess.UpdateAddressSteetAlias(addressId, alias);
         else await addressPriorityDataAccess.UpdateAddressBuildingAlias(addressId, alias);
     }

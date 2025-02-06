@@ -3,7 +3,7 @@
 
 
 @inject ICoordinatesDataAccess cooridinatesDataAccess;
-
+@inject ILogger<CoordinatesInputComponent> _logger;
 
 <InputNumber TValue="double" @bind-Value="@coordinate" @bind-Value:after="UpdateDbData" />
 
@@ -19,6 +19,8 @@
 
     private async Task UpdateDbData()
     {
+        _logger.LogInformation($"Updating coordinates for address with id {addressId} to {coordinate}");
+
         Coordinates coordinates = await cooridinatesDataAccess.GetCoordinatesByIdAsync(addressId);
         if(coordinates == null)
         {

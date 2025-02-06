@@ -54,5 +54,8 @@ public class BlazorAppDbContext : DbContext
 
             base.OnModelCreating(modelBuilder);
         */
+
+            modelBuilder.Entity<BrigadeModel>().Property(b => b.id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<AddressModel>().Property(a => a.Id).ValueGeneratedOnAdd();
         } 
 }

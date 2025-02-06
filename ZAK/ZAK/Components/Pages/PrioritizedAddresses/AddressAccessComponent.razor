@@ -1,4 +1,5 @@
 ﻿@inject IAddressesDataAccess addressesDataAccess;
+@inject ILogger<AddressAccessComponent> _logger;
 
 <InputSelect @bind-Value="@equipmentAccess"  @bind-Value:after="UpdateEquipmentAccess">
     @foreach (EquipmentAccess access in Enum.GetValues(typeof(EquipmentAccess)))
@@ -13,6 +14,8 @@
 
     void UpdateEquipmentAccess()
     {
+        _logger.LogInformation($"Updating equipment access for address with id {addressId} to {equipmentAccess}");
+
         addressesDataAccess.UpdateEquipmentAccess(addressId, equipmentAccess);
     }
 }

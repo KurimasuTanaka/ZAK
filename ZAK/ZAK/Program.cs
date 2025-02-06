@@ -11,6 +11,7 @@ using ZAK.Db;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
+using ZAK.Services.UnresolvedAddressesChecker;
 
 namespace ZAK;
 
@@ -27,9 +28,10 @@ public class Program
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
 
+        builder.Logging.ClearProviders();
+        builder.Logging.AddConsole();
 
         builder.Services.AddBlazorBootstrap();
-        builder.Services.AddSyncfusionBlazor();
 
         builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(options =>
@@ -41,25 +43,25 @@ public class Program
         builder.Services.AddAuthorization();
         builder.Services.AddCascadingAuthenticationState();
 
-        builder.Services.AddScoped<ICoefficientsDataAccess, CoefficientsDataAccess>();
-        builder.Services.AddScoped<IApplicationsDataAccess, ApplicationsDataAccess>();
-        builder.Services.AddScoped<IDistrictDataAccess, DistrictDataAccess>();
-        builder.Services.AddScoped<IBrigadesDataAccess, BrigadesDataAccess>();
+        builder.Services.AddTransient<ICoefficientsDataAccess,      CoefficientsDataAccess>();
+        builder.Services.AddTransient<IApplicationsDataAccess,      ApplicationsDataAccess>();
+        builder.Services.AddTransient<IDistrictDataAccess,          DistrictDataAccess>();
+        builder.Services.AddTransient<IBrigadesDataAccess,          BrigadesDataAccess>();
+        builder.Services.AddTransient<IAddressesDataAccess,         AddressesDataAccess>();
+        builder.Services.AddTransient<IAddressPriorityDataAccess,   AddressPriorityDataAccess>();
+        builder.Services.AddTransient<ICoordinatesDataAccess,       CoordinatesDataAccess>();
+        builder.Services.AddTransient<IAddressAliasDataAccess,      AddressAliasDataAccess>();
+        builder.Services.AddTransient<IBlackoutScheduleDataAccess,  BlackoutScheduleDataAccess>();
 
 
         builder.Services.AddScoped<IFileLoader, FileLoader>();
         builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
         builder.Services.AddScoped<IApplicationsLoader, ApplicationsLoader>();
-        builder.Services.AddScoped<IAddressesDataAccess, AddressesDataAccess>();
-        builder.Services.AddScoped<IAddressPriorityDataAccess, AddressPriorityDataAccess>();
-        builder.Services.AddScoped<IAddressAliasDataAccess, AddressAliasDataAccess>();
-        builder.Services.AddScoped<ICoordinatesDataAccess, CoordinatesDataAccess>();
-        builder.Services.AddScoped<IBlackoutScheduleDataAccess, BlackoutScheduleDataAccess>();
 
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
-
         builder.Services.AddSingleton<IMapRoutesManager, MapRoutesManager.MapRoutesManager>();
+        builder.Services.AddScoped<IUnresolvedAddressesChecker, UnresolvedAddressesChecker>();
 
 
         string? connectionString = builder.Configuration["ConnectionStrings:MySQL"];
@@ -67,7 +69,7 @@ public class Program
 
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 41));
         builder.Services.AddDbContext<BlazorAppDbContext>(options =>
-        options.UseMySql(connectionString, serverVersion));
+        options.UseMySql(connectionString, serverVersion), ServiceLifetime.Transient);
 
 
 

@@ -1,6 +1,7 @@
 ﻿@using BlazorApp.DA;
 
 @inject IBrigadesDataAccess brigadesDataAccess;
+@inject ILogger<SchedulePart> _logger
 
 <div style="width: 50%">
     <Button Color="ButtonColor.Primary" @onclick="AddNewBrigade">Добавить бригаду</Button>
@@ -15,6 +16,8 @@
 
     private async Task AddNewBrigade()
     {
+        _logger.LogInformation("Adding new brigade");
+
         brigadesDataAccess.AddNewBrigade();
         brigadeList.UpdateList();
     }

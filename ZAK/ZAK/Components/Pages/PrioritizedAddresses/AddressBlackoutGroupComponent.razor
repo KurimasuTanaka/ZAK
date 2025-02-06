@@ -1,5 +1,5 @@
 ﻿@inject IAddressesDataAccess addressesDataAccess;
-
+@inject ILogger<AddressBlackoutGroupComponent> _logger;
 
 <NumberInput TValue="int" Label="Група" @bind-Value="@group" @bind-Value:after="UpdateDbData" />
 
@@ -12,6 +12,8 @@
  
     private async Task UpdateDbData()
     {
+        _logger.LogInformation($"Updating blackout group for address with id {addressId} to {group}");
+
         await addressesDataAccess.SetBlackoutGroup(addressId, group);
     }
 }

@@ -1,13 +1,29 @@
 ﻿@page "/"
 @page "/schedule"
+@using ZAK.Services.UnresolvedAddressesChecker
 @rendermode InteractiveServer
 
-@* @attribute [Authorize] *@
+@inject ILogger<SchedulePage> _logger
+@inject IUnresolvedAddressesChecker _unresolvedAddressesChecker;
+
+@if (unresolvedAddressesInfo is not null)
+{
+    if( !unresolvedAddressesInfo.unresolvedAddressesExist)
+    {
+        <Callout Color="CalloutColor.Danger">
+            <p>В базе есть незарезолвленные адреса!</p>
+        </Callout>
+    }
+}
+
 
 
 <div style="display: flex; flex-direction: row">
-    <SchedulePart RefreshMap="RefreshMap" />
-    <MapPart @ref="mapPart"/>
+    <SchedulePart RefreshMap="RefreshMap" />    
+
+    <CascadingValue Value="unresolvedAddressesInfo">
+        <MapPart @ref="mapPart" />
+    </CascadingValue>
 </div>
 
 @code {
@@ -15,8 +31,20 @@
 
     MapPart mapPart = default!;
 
+
+    UnresolvedAddressesInfo? unresolvedAddressesInfo { get; set; } = null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _logger.LogInformation("Initializing SchedulePage component");
+
+        unresolvedAddressesInfo = await _unresolvedAddressesChecker.GetUnresolvedAddressesInfo();
+    }
+
     private async void RefreshMap()
     {
+        _logger.LogInformation("Refreshing map in SchedulePage component");
+
         await mapPart.RefreshMap();
     }
 

@@ -2,6 +2,7 @@
 @using BlazorApp.DA
 @using System.Text.Json
 @using ZAK.MapRoutesManager
+@using ZAK.Services.UnresolvedAddressesChecker
 
 @rendermode InteractiveAuto
 
@@ -11,7 +12,7 @@
 @inject IApplicationsDataAccess applicationsDataAccess;
 @inject IBrigadesDataAccess brigadesDataAccess;
 
-
+@inject ILogger<MapComponentLeaflet> _logger;
 
 
 <div id="map">placeholder</div>
@@ -53,17 +54,23 @@
     }
 </style>
 @code {
+    [CascadingParameter]
+    UnresolvedAddressesInfo? unresolvedAddressesInfo { get; set; }
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            _logger.LogInformation("MapComponentLeaflet is rendered for the first time");
+
             await Js.InvokeVoidAsync("initMap");
-            await DrawPaths();
-            await DrawMarkers();
 
-
-
+            if (!unresolvedAddressesInfo.unresolvedAddressesExist)
+            {
+                await DrawPaths();
+                await DrawMarkers();
+            }
             StateHasChanged();
         }
 
@@ -71,12 +78,16 @@
 
     public async Task DrawMarkers()
     {
+        _logger.LogInformation("MapComponentLeaflet is drawing markers");
+
+
         List<Application> applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
 
         foreach (var application in applications)
         {
 
-            var temp = new {
+            var temp = new
+            {
                 lat = application.address.coordinates.lat,
                 lon = application.address.coordinates.lon,
                 id = application.id,
@@ -93,6 +104,8 @@
 
     public async Task DrawPaths()
     {
+        _logger.LogInformation("MapComponentLeaflet is drawing paths");
+
         try
         {
             List<List<Vector2>> routes = await mapRoutesManager.GetRoutesAsync(brigadesDataAccess, applicationsDataAccess);
@@ -110,6 +123,9 @@
 
     public async Task DrawPath(List<Vector2> path, int brigadeNumber)
     {
+
+        _logger.LogInformation("MapComponentLeaflet is drawing paths");
+
         string pathString = "";
         foreach (var point in path)
         {
@@ -132,6 +148,8 @@
 
     public async Task RefreshMap()
     {
+        _logger.LogInformation("Refreshing map in MapComponentLeaflet component");
+
         await Js.InvokeVoidAsync("clearMap");
         await DrawPaths();
         StateHasChanged();

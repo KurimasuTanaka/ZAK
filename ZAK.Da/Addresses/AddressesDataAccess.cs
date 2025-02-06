@@ -10,10 +10,10 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
 {
     private  readonly BlazorAppDbContext _dbContext = dbContext;
 
-    public Task AddAddress(Address address)
+    public async Task AddAddress(Address address)
     {
         _dbContext.addresses.Add(address);
-        return _dbContext.SaveChangesAsync();
+        await _dbContext.SaveChangesAsync();
     }
 
     public async Task<List<Address>> GetAddresses()
@@ -64,11 +64,11 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
 
     public async Task UpgdateAddresses(List<Address> addresses)
     {
-        List<AddressModel> addressModels = _dbContext.addresses.ToList();
+        List<AddressModel> addressModels = await _dbContext.addresses.ToListAsync();
 
         foreach (var addressModel in addressModels)
         {
-            Address address = addresses.Where(a => a.Id == addressModel.Id).FirstOrDefault();
+            Address? address = addresses.Where(a => a.Id == addressModel.Id).FirstOrDefault();
         
             if(address is not null)
             {
@@ -85,25 +85,25 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
         return;
     }
 
-    public Task SetBlackoutGroup(int id, int group)
+    public async Task SetBlackoutGroup(int id, int group)
     {
-        AddressModel? address = _dbContext.addresses.Find(id);
+        AddressModel? address = await _dbContext.addresses.FindAsync(id);
         if(address is not null)
         {
             address.blackoutGroup = group;
-            return _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
-        else return Task.CompletedTask;
+        else return;
     }
 
-    public Task UpdateEquipmentAccess(int id, EquipmentAccess access)
+    public async Task UpdateEquipmentAccess(int id, EquipmentAccess access)
     {
-        AddressModel? address = _dbContext.addresses.Find(id);
+        AddressModel? address = await _dbContext.addresses.FindAsync(id);
         if(address is not null)
         {
             address.equipmentAccess = access;
-            return _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync();
         }
-        else return Task.CompletedTask;
+        else return;
     }
 }

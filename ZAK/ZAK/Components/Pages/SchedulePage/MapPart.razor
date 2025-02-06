@@ -8,6 +8,8 @@
 @inject IApplicationsDataAccess applicationsDataAccess;
 @inject IBrigadesDataAccess brigadesDataAccess;
 
+@inject ILogger<MapPart> _logger
+
 <div style="width: 50%">
     <MapComponentLeaflet @ref="mapComponent" />
 </div>
@@ -19,16 +21,8 @@
 
     public async Task RefreshMap()
     {
+        _logger.LogInformation("Refreshing map in MapPart component");
+
         await mapComponent.RefreshMap();
-    }
-
-
-    protected override void OnInitialized()
-    {
-        //Register Syncfusion license key
-        Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NDaF5cWWtCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH5feXRRRWheVEd2V0Q=");
-
-        //Validate the registered license key
-        bool isValid = SyncfusionLicenseProvider.ValidateLicense(Platform.Blazor);
     }
 }

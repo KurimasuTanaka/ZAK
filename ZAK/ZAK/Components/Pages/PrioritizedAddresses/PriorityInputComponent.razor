@@ -3,6 +3,7 @@
 
 
 @inject IAddressPriorityDataAccess addressPriorityDataAccess;
+@inject ILogger<PriorityInputComponent> _logger;
 
 
 <NumberInput TValue="double" Label="Приорітет" @bind-Value="@priority" @bind-Value:after="UpdateDbData" />
@@ -16,6 +17,7 @@
  
     private async Task UpdateDbData()
     {
+        _logger.LogInformation($"Updating priority for address with id {addressId} to {priority}");
         await addressPriorityDataAccess.UpdatePriority(addressId, priority);
     }
 }

@@ -13,6 +13,8 @@
 @inject IApplicationsDataAccess applicationsDataAccess;
 @inject IWebHostEnvironment enviroment;
 
+@inject ILogger<Applications> _logger;
+
 <ApplicationsActivities ApplicationsInformationWasChanged="Redraw" />
 
 <Card class="my-3">
@@ -107,12 +109,16 @@
   List<Application> applications = new List<Application>();
 
   protected override void OnParametersSet()
-  {
+  {    
+    _logger.LogInformation("Drawing applications table");
+
     if (showIgnored) applications = applicationsDataAccess.GetAllApplications();
     else applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
   }
   public void Redraw()
   {
+    _logger.LogInformation("Redrawing applications table");
+
     if (showIgnored) applications = applicationsDataAccess.GetAllApplications();
     else applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
 

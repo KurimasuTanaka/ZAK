@@ -1,13 +1,13 @@
 ﻿@page "/addresses"
+@using ZAK.Services.UnresolvedAddressesChecker
 @rendermode InteractiveServer
-
-@* @attribute [Authorize] *@
 
 
 @inject IAddressesDataAccess addressesDataAccess;
 @inject IGeoDataManager geoDataManager;
+@inject IUnresolvedAddressesChecker unresolvedAddressesChecker;
+@inject ILogger<PrioritizedAdderessesPage> _logger;
 
-@inject IMapRoutesManager mapRoutesManager;
 
 <Button @ref="loadCoordinatesButton" Color="ButtonColor.Primary" @onclick="LoadCoordinatesData"> Подтянуть координаты
 </Button>
@@ -57,7 +57,7 @@
     </GridColumn>
 
     <GridColumn TItem="Address" HeaderText="Доступ">
-        <AddressAccessComponent addressId="context.Id" />
+        <AddressAccessComponent addressId="context.Id" equipmentAccess="@context.equipmentAccess" />
     </GridColumn>
     </GridColumns>
 </Grid>
@@ -68,17 +68,14 @@
     private Button loadCoordinatesButton = default!;
     private Grid<Address> addressGrid = default!;
 
-    int unresolvedAddressesCount = 0;
+    private int unresolvedAddressesCount = 0;
     private async Task<GridDataProviderResult<Address>> AddressesDataProvider(GridDataProviderRequest<Address> request)
     {
+        _logger.LogInformation("Loading addresses data");
+
         List<Address> addresses = await addressesDataAccess.GetAddresses();
 
-        foreach (Address address in addresses)
-        {
-            address.resolved = mapRoutesManager.CheckResolving(address, 150);
-        }
-        List<Address> unres = addresses.Select(a => a).Where(a => a.resolved is false).ToList();
-        unresolvedAddressesCount = unres.Count;
+        unresolvedAddressesCount = unresolvedAddressesChecker.GetNumberOfUnresolvedAddresses(addresses);
         StateHasChanged();
 
         return await Task.FromResult(request.ApplyTo(addresses));
@@ -86,6 +83,8 @@
 
     private async void LoadCoordinatesData()
     {
+        _logger.LogInformation("Loading coordinates data");
+
         loadCoordinatesButton.ShowLoading("Загрузка...");
         await geoDataManager.PopulateApplicationsWithGeoData();
         await addressGrid.RefreshDataAsync();
