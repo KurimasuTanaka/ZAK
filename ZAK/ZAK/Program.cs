@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using ZAK.Services.UnresolvedAddressesChecker;
 using ZAK.Da.BaseDAO;
 using ZAK.Db.Models;
+using ZAK.Components.Pages.BlackoutSchedulePage;
 
 namespace ZAK;
 
@@ -51,14 +52,14 @@ public class Program
         builder.Services.AddTransient<IBrigadesDataAccess,          BrigadesDataAccess>();
 
         builder.Services.AddTransient<IDaoBase<Address, AddressModel>,       DaoBase<Address, AddressModel>>();
-        builder.Services.AddTransient<IAddressesDataAccess,         AddressesDataAccess>();
+        //builder.Services.AddTransient<IAddressesDataAccess,         AddressesDataAccess>();
         
         
         builder.Services.AddTransient<IAddressPriorityDataAccess,   AddressPriorityDataAccess>();
         builder.Services.AddTransient<ICoordinatesDataAccess,       CoordinatesDataAccess>();
         builder.Services.AddTransient<IAddressAliasDataAccess,      AddressAliasDataAccess>();
+        
         builder.Services.AddTransient<IBlackoutScheduleDataAccess,  BlackoutScheduleDataAccess>();
-
 
         builder.Services.AddScoped<IFileLoader, FileLoader>();
         builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();

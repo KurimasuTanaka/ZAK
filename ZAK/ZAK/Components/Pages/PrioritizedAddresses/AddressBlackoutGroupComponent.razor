@@ -1,4 +1,4 @@
-﻿@inject IAddressesDataAccess addressesDataAccess;
+﻿@inject IDaoBase<Address, AddressModel> addressesDataAccess;
 @inject ILogger<AddressBlackoutGroupComponent> _logger;
 
 <NumberInput TValue="int" Label="Група" @bind-Value="@group" @bind-Value:after="UpdateDbData" />
@@ -14,6 +14,8 @@
     {
         _logger.LogInformation($"Updating blackout group for address with id {addressId} to {group}");
 
-        await addressesDataAccess.SetBlackoutGroup(addressId, group);
+        Address address = await addressesDataAccess.GetById(addressId);
+        address.blackoutGroup = group;
+        await addressesDataAccess.Update(address, address.Id);
     }
 }

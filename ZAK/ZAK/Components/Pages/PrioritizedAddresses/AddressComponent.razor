@@ -3,7 +3,7 @@
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
 
-@inject IAddressesDataAccess addressesDataAccess;
+@inject IDaoBase<Address, AddressModel> addressesDataAccess;
 
 
 
@@ -19,7 +19,7 @@
 
     private async void UpdateParameterValue()
     {
-        await addressesDataAccess.UpdatePriority(address.Id, address.priority);
+        await addressesDataAccess.Update(address, address.Id);
     }
 
 }

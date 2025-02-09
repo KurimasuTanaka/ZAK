@@ -1,4 +1,5 @@
-﻿@inject IAddressesDataAccess addressesDataAccess;
+﻿@using ZAK.Da.BaseDAO
+@inject IDaoBase<Address, AddressModel> addressesDataAccess;
 @inject ILogger<AddressAccessComponent> _logger;
 
 <InputSelect @bind-Value="@equipmentAccess"  @bind-Value:after="UpdateEquipmentAccess">
@@ -12,10 +13,15 @@
     [Parameter] public EquipmentAccess equipmentAccess { get; set; }
     [Parameter] public int addressId { get; set; }
 
-    void UpdateEquipmentAccess()
+    async Task UpdateEquipmentAccess()
     {
         _logger.LogInformation($"Updating equipment access for address with id {addressId} to {equipmentAccess}");
 
-        addressesDataAccess.UpdateEquipmentAccess(addressId, equipmentAccess);
+        //addressesDataAccess.UpdateEquipmentAccess(addressId, equipmentAccess);
+        Address address = await addressesDataAccess.GetById(addressId);
+        address.equipmentAccess = equipmentAccess;
+        await addressesDataAccess.Update(address, address.Id);
+
+ 
     }
 }

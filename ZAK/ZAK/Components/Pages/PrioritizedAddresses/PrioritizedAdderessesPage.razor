@@ -3,7 +3,7 @@
 @rendermode InteractiveServer
 
 
-@inject IAddressesDataAccess addressesDataAccess;
+@inject IDaoBase<Address, AddressModel> addressesDataAccess;
 @inject IGeoDataManager geoDataManager;
 @inject IUnresolvedAddressesChecker unresolvedAddressesChecker;
 @inject ILogger<PrioritizedAdderessesPage> _logger;
@@ -73,7 +73,7 @@
     {
         _logger.LogInformation("Loading addresses data");
 
-        List<Address> addresses = await addressesDataAccess.GetAddresses();
+        List<Address> addresses = await addressesDataAccess.GetAll();
 
         unresolvedAddressesCount = unresolvedAddressesChecker.GetNumberOfUnresolvedAddresses(addresses);
         StateHasChanged();
