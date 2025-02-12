@@ -1,0 +1,10 @@
+@inherits Card
+
+<CascadingValue Value="brigade">
+        <BrigadeTitle />
+</CascadingValue>
+
+@code
+{
+    [Parameter] public Brigade brigade { get; set; } = new();
+}
