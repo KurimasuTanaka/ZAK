@@ -1,6 +1,6 @@
 ﻿@using BlazorApp.DA;
 
-@inject IBrigadesDataAccess brigadesDataAccess;
+@inject IDaoBase<Brigade, BrigadeModel> brigadesDataAccess;
 @inject ILogger<SchedulePart> _logger
 
 <div style="width: 50%">
@@ -18,8 +18,8 @@
     {
         _logger.LogInformation("Adding new brigade");
 
-        brigadesDataAccess.AddNewBrigade();
-        brigadeList.UpdateList();
+        await brigadesDataAccess.Insert(new Brigade());
+        await brigadeList.UpdateList();
     }
 
 }

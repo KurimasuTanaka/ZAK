@@ -2,7 +2,7 @@
 @using System.ComponentModel.DataAnnotations;
 @using BlazorApp.DA;
 
-@inject IApplicationsDataAccess applicationsDataAccess;
+@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
 
     <InputSelect @bind-Value="stretchingStatus" @bind-Value:after="UpdateApplicationStretchingStatus">
         @foreach (StretchingStatus Item in Enum.GetValues(typeof( StretchingStatus)))
@@ -56,9 +56,11 @@
         return "";  
     }
 
-    void UpdateApplicationStretchingStatus()
+    async void UpdateApplicationStretchingStatus()
     {
-        applicationsDataAccess.ChangeApplicationStrethcingStatus(applicationId, stretchingStatus);
+        Application application = await applicationsDataAccess.GetById(applicationId);
+        application.stretchingStatus = stretchingStatus;
+        await applicationsDataAccess.Update(application, application.id);
     }
 }
 

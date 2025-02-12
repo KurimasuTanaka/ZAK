@@ -1,13 +1,14 @@
 ﻿@using BlazorApp.DA;
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
+@using Microsoft.EntityFrameworkCore
 
-@inject IApplicationsDataAccess applicationsDataAccess;
 @inject IWebHostEnvironment enviroment;
 
-@inject IAddressesDataAccess addressesDataAccess;
-@inject ICoefficientsDataAccess coefficientsDataAccess;
-@inject IBrigadesDataAccess brigadesDataAccess;
+@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
+@inject IDaoBase<Address, AddressModel> addressesDataAccess;
+@inject IDaoBase<Coefficient, CoefficientModel> coefficientsDataAccess;
+@inject IDaoBase<Brigade, BrigadeModel> brigadesDataAccess;
 
 <Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowDetailView="true"
     AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true" OnRowClick="OnRowClick"
@@ -82,8 +83,9 @@
 
     private async Task<List<Application>> CalculatePriorty(List<Application> applications)
     {
-        Dictionary<string, double> priorities = await coefficientsDataAccess.GetCoefficientsDictionary();
-        List<Address> addresses = await addressesDataAccess.GetAddresses();
+        Dictionary<string, double> priorities = await coefficientsDataAccess.GetAll().ToDictionaryAsync(c => c.parameter, c =>
+        c.coefficient);
+        List<Address> addresses = await addressesDataAccess.GetAll().ToListAsync();
 
         for (int i = 0; i < applications.Count; i++)
         {
@@ -114,16 +116,13 @@
 
     protected override async void OnParametersSet()
     {
-        applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
+        applications = await applicationsDataAccess.GetAll().Where(a => a.ignored == false).ToListAsync();
 
         applications = await CalculatePriorty(applications);
 
     }
-    public async void Redraw()
+    public void Redraw()
     {
-        applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
-        applications = await CalculatePriorty(applications);
-
         StateHasChanged();
     }
 

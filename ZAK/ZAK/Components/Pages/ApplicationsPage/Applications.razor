@@ -10,7 +10,7 @@
 @using ZAK.Components.Pages.ApplicationsPage.ApplicationsActivities;
 @using ZAK.Components.Pages.ApplicationsPage.ApplicationInputComponents;
 
-@inject IApplicationsDataAccess applicationsDataAccess;
+@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
 @inject IWebHostEnvironment enviroment;
 
 @inject ILogger<Applications> _logger;
@@ -23,8 +23,13 @@
   </CardBody>
 </Card>
 
-<Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowFiltering="true"
-  AllowPaging="true" PageSize="100" AllowSorting="true" SelectionMode="GridSelectionMode.Multiple" Responsive="true">
+<Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" 
+  AllowFiltering="true"
+  AllowPaging="true" 
+  PageSize="100" 
+  AllowSorting="true" 
+  SelectionMode="GridSelectionMode.Multiple" 
+  Responsive="true">
 
   @*Id column with set of interactive components*@
   <GridColumn TItem="Application" HeaderText="Id" PropertyName="id" SortKeySelector="item => item.id">
@@ -35,10 +40,8 @@
       </Button>
     </div>
     @*Interactive components in Id section ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-    <CheckBoxInputComponent label="Ігнорувати" applicationId="@context.id" propertyName="ignored"
-      propertyValue="@((bool)context["ignored"])" />
-    <CheckBoxInputComponent label="Важлива заявка" applicationId="@context.id" propertyName="hot"
-      propertyValue="@((bool)context["hot"])" />
+    <CheckBoxInputComponent label="Ігнорувати" applicationId="@context.id" propertyName="ignored" propertyValue="@((bool)context["ignored"])" />
+    <CheckBoxInputComponent label="Важлива заявка" applicationId="@context.id" propertyName="hot" propertyValue="@((bool)context["hot"])" />
 
     <TimeframeApplicationComponent applicationId="@context.id" firstPart="@context.firstPart"
       secondPart="@context.secondPart" timeRangeIsSet="@context.timeRangeIsSet" startHour="@context.startHour"
@@ -108,19 +111,19 @@
   //Make this thing async
   List<Application> applications = new List<Application>();
 
-  protected override void OnParametersSet()
+  protected override async Task OnParametersSetAsync()
   {    
     _logger.LogInformation("Drawing applications table");
 
-    if (showIgnored) applications = applicationsDataAccess.GetAllApplications();
-    else applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
+    if (showIgnored) applications = await applicationsDataAccess.GetAll().ToListAsync();
+    else applications = (await applicationsDataAccess.GetAll().ToListAsync()).Where(a => a.ignored == false).ToList();
   }
-  public void Redraw()
+  public async Task Redraw()
   {
     _logger.LogInformation("Redrawing applications table");
 
-    if (showIgnored) applications = applicationsDataAccess.GetAllApplications();
-    else applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
+    if (showIgnored) applications = await applicationsDataAccess.GetAll().ToListAsync();
+    else applications = (await applicationsDataAccess.GetAll().ToListAsync()).Where(a => a.ignored == false).ToList();
 
     StateHasChanged();
   }

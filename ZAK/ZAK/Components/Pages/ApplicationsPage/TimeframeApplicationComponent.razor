@@ -1,6 +1,6 @@
 ﻿@using BlazorApp.DA;
 
-@inject IApplicationsDataAccess applicationsDataAccess;
+@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
 
 <Card>
     <ul class="list-group list-group-flush">
@@ -42,11 +42,11 @@
 </Card>
 
 @code {
-    private string result = String.Empty; 
+    private string result = String.Empty;
 
     [Parameter] public int applicationId { get; set; }
 
-    [Parameter] public bool timeRangeIsSet {get; set;}
+    [Parameter] public bool timeRangeIsSet { get; set; }
     [Parameter] public int startHour { get; set; }
     [Parameter] public int endHour { get; set; }
 
@@ -55,29 +55,43 @@
 
     protected override void OnParametersSet()
     {
-        if(timeRangeIsSet)
+        if (timeRangeIsSet)
         {
             result = $"С {startHour} до {endHour}";
-        } else result = firstPart ? "В первой половине" : "Во второй половине" ;
-    } 
-
-    private void UpdateStrartHour() {
-        applicationsDataAccess.SetTimeRange(applicationId, startHour, endHour);
-        result = $"С {startHour} до {endHour}";    
         }
-    private void UpdateEndHour() {
-        applicationsDataAccess.SetTimeRange(applicationId, startHour, endHour);
-        result = $"С {startHour} до {endHour}";    
-        }
+        else result = firstPart ? "В первой половине" : "Во второй половине";
+    }
 
-    private void UpdateFirstPartTimeframe()
+    private async Task UpdateStrartHour()
     {
-        applicationsDataAccess.ChoseFirstPartOfDay(applicationId);
+        Application application = await applicationsDataAccess.GetById(applicationId);
+        application.startHour = startHour;
+        await applicationsDataAccess.Update(application, application.id);
+
+        result = $"С {startHour} до {endHour}";
+    }
+
+    private async Task UpdateEndHour()
+    {
+        Application application = await applicationsDataAccess.GetById(applicationId);
+        application.endHour = endHour;
+        await applicationsDataAccess.Update(application, application.id);
+
+        result = $"С {startHour} до {endHour}";
+    }
+
+    private async Task UpdateFirstPartTimeframe()
+    {
+        Application application = await applicationsDataAccess.GetById(applicationId);
+        application.firstPart = true;
+        await applicationsDataAccess.Update(application, application.id);
         result = "В первой половине";
     }
-    private void UpdateSecondPartTimeframe()
+    private async Task UpdateSecondPartTimeframe()
     {
-        applicationsDataAccess.ChoseSecondPartOfDay(applicationId);
+        Application application = await applicationsDataAccess.GetById(applicationId);
+        application.secondPart = true;
+        await applicationsDataAccess.Update(application, application.id);
         result = "Во второй половине";
     }
 }

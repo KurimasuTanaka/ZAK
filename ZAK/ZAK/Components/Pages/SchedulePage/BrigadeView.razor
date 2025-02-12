@@ -2,8 +2,10 @@
 @using BlazorApp.DA;
 @using BlazorApp.Components.Pages.SchedulePage
 @using BlazorBootstrap
-@inject IBrigadesDataAccess brigadesDataAccess;
-@inject IApplicationsDataAccess applicationsDataAccess;
+
+@inject IDaoBase<Brigade, BrigadeModel> brigadesDataAccess;
+@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
+@inject ILogger<BrigadeView> _logger;
 
 @inject IJSRuntime Js
 
@@ -95,33 +97,43 @@
 
     private async Task ToggleApplicationsList() => await collapseApplicationsList.ToggleAsync();
 
-    override protected void OnParametersSet()
+    override protected async Task OnParametersSetAsync()
     {
-        brigade.PopulateApplicationList(applicationsDataAccess);
+        await brigade.PopulateApplicationList(applicationsDataAccess);
     }
 
-    private async void BrigadeNumberChanged(int newBrigadeNumber)
+    private async Task BrigadeNumberChanged(int newBrigadeNumber)
     {
+        _logger.LogInformation($"Brigade number of brigade with id: {brigade.id} changed to {newBrigadeNumber}");
+
         brigade.brigadeNumber = newBrigadeNumber;
-        await brigadesDataAccess.ChangeBrigadeNumber(brigade.id, newBrigadeNumber);
+        await brigadesDataAccess.Update(brigade, brigade.id);
+
     }
 
-    private async void DeleteBrigade()
+    private async Task DeleteBrigade()
     {
-        await brigadesDataAccess.DeleteBrigade(brigade.id);
+        _logger.LogInformation($"Deleting brigade with id: {brigade.id}");
+
+        await brigadesDataAccess.Delete(brigade.id);
         await UpdateBrigadeLists.InvokeAsync();
     }
 
     int chosenId = 0;
-    public async void ApplicationWasChosen(int applicationId)
+    public async Task ApplicationWasChosen(int applicationId)
     {
+        _logger.LogInformation($"Application with id: {applicationId} was chosen");
+
         chosenId = applicationId;
 
         await applicationsRatedList.HideAsync();
 
 
-        await brigadesDataAccess.ChangeBrigadeApplication(brigade.id, chosenTime, chosenId);
-        brigade.applications[chosenTime] = applicationsDataAccess.GetApplication(applicationId).Result;
+        Brigade brigadeNew = await brigadesDataAccess.GetById(brigade.id);
+        brigadeNew.applicationsIds[chosenTime] = chosenId;
+        await brigadesDataAccess.Update(brigadeNew, brigade.id);
+
+        brigade.applications[chosenTime] = applicationsDataAccess.GetById(applicationId).Result;
 
         await RedrawBrigadeTable();
     }
@@ -129,6 +141,8 @@
     int chosenTime = 0;
     public async Task ApplicationButtonIsPressed(int applicationTime)
     {
+        _logger.LogInformation($"Application button was pressed");
+
         chosenTime = applicationTime;
 
         await applicationsRatedList.ShowAsync(brigade.applicationsIds, applicationTime);
@@ -137,16 +151,19 @@
         return;
     }
 
-    public async void AddSwapApplication(ApplicationScheduled application)
+    public async Task AddSwapApplication(ApplicationScheduled application)
     {
+        _logger.LogInformation($"Adding application to swap");
+
         await AddApplicationToSwap.InvokeAsync(application);
     }
 
     private async Task<GridDataProviderResult<ApplicationScheduled>> BrigadeApplicationsProvider(
     GridDataProviderRequest<ApplicationScheduled> request)
-    {
+    {   
+        _logger.LogInformation("Providing applications for brigade");
 
-        brigade.PopulateApplicationList(applicationsDataAccess);
+        await brigade.PopulateApplicationList(applicationsDataAccess);
 
         List<ApplicationScheduled> applications = brigade.applications.Select(application => new
         ApplicationScheduled(application, brigade.id, 0)).ToList();
@@ -175,6 +192,8 @@
 
     private async Task OnRowClick(GridRowEventArgs<ApplicationScheduled> args)
     {
+        _logger.LogInformation("Row was clicked");
+
         if (!wasRowButtonPressed)
         {
             await ApplicationButtonIsPressed(args.Item.applicationScheduledTime);
@@ -183,6 +202,8 @@
 
     public async Task RedrawBrigadeTable()
     {
+        _logger.LogInformation("Redrawing brigade table");
+
         await brigadeApplicationsGrid.RefreshDataAsync();
         await RefreshMap.InvokeAsync();
         StateHasChanged();
@@ -191,6 +212,8 @@
 
     public async Task CopyBrigade()
     {
+        _logger.LogInformation("Copying brigade to clipboard");
+
         string brigadeInChatFormat = String.Empty;
 
         brigadeInChatFormat += "Бригада " + brigade.brigadeNumber + "\n";

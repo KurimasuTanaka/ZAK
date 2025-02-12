@@ -2,8 +2,8 @@
 @using BlazorApp.DA;
 
 
-@inject IApplicationsDataAccess applicationsDataAccess;
-
+@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
+@inject ILogger<CheckBoxInputComponent> _logger;
 
 <Switch Label="@label" @bind-Value="@propertyValue" @bind-Value:after="UpdateDbData" />
 
@@ -11,25 +11,31 @@
 
 @code {
     [Parameter] public string label {get; set;} = "Empty lable";
+
+    int coutnt = 0;
     [Parameter] public string propertyName {get; set;} = String.Empty;
     
     [Parameter] public int applicationId { get; set; }
 
-    bool _value = false; 
-    [Parameter] public bool propertyValue {get
-    {
-        return _value; 
-    } 
-    set 
-    {
-        _value = value;
-    }} 
+    [Parameter] public bool propertyValue {get; set;} = false;
 
+    private bool UpdatingStarted = false;
     private async Task UpdateDbData()
     {
-        Application application = await applicationsDataAccess.GetApplication(applicationId);
+    
+        _logger.LogInformation($"Updating property {propertyName} with value {propertyValue} for application with id: {applicationId}");
+
+        if(UpdatingStarted)
+        {
+            return;
+        } else UpdatingStarted = true;
+
+        Application application = await applicationsDataAccess.GetById(applicationId);
         application[propertyName] = propertyValue;
-        await applicationsDataAccess.UpdateApplication(application);
+        await applicationsDataAccess.Update(application, application.id);
+        
+        UpdatingStarted = false;
+
         return;
     }
 }

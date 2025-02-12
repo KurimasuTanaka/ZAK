@@ -1,7 +1,7 @@
 ﻿
 @using BlazorApp.Components.Pages.SchedulePage
 @using BlazorApp.DA;
-@inject IBrigadesDataAccess brigadesDataAccess;
+@inject IDaoBase<Brigade, BrigadeModel> brigadesDataAccess;
 
 <Button class="btn btn-success" @onclick="AddSwapApplication">Swap</Button>
 

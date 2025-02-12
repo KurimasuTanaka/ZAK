@@ -1,4 +1,4 @@
-﻿@inject ICoordinatesDataAccess cooridinatesDataAccess;
+﻿@inject IDaoBase<AddressCoordinates, AddressCoordinatesModel> cooridinatesDataAccess;
 
 <Button @onclick="DeleteCoordinates">
     <Icon Name="IconName.X" />
@@ -8,10 +8,10 @@
 
     private async void DeleteCoordinates()
     {
-        Coordinates coordinates = await cooridinatesDataAccess.GetCoordinatesByIdAsync(addressId);
+        AddressCoordinates coordinates = await cooridinatesDataAccess.GetById(addressId);
         coordinates.lat = 0.0;
         coordinates.lon = 0.0;
-        await cooridinatesDataAccess.UpdateCoordinatesAsync(coordinates);
+        await cooridinatesDataAccess.Update(coordinates, coordinates.addressId);
     }
 
 }

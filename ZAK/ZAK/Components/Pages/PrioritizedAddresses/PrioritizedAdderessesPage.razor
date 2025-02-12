@@ -1,4 +1,5 @@
 ﻿@page "/addresses"
+@using Microsoft.EntityFrameworkCore
 @using ZAK.Services.UnresolvedAddressesChecker
 @rendermode InteractiveServer
 
@@ -73,7 +74,7 @@
     {
         _logger.LogInformation("Loading addresses data");
 
-        List<Address> addresses = await addressesDataAccess.GetAll();
+        List<Address> addresses = await addressesDataAccess.GetAll().ToListAsync();
 
         unresolvedAddressesCount = unresolvedAddressesChecker.GetNumberOfUnresolvedAddresses(addresses);
         StateHasChanged();
@@ -94,4 +95,4 @@
 
     }
 
-}
+}    using Microsoft.EntityFrameworkCore;

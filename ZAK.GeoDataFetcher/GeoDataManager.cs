@@ -27,7 +27,7 @@ public class GeoDataManager : IGeoDataManager
 
         for (int i = 0; i < addresses.Count; i++)
         {
-            addresses[i].coordinates = new Coordinates();
+            addresses[i].coordinates = new AddressCoordinates();
             await _coordinatesProvider!.GetCoordinatesForAddress(addresses[i]);
         }
 

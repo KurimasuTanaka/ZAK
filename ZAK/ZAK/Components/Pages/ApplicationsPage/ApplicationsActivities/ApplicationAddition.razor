@@ -1,6 +1,6 @@
 ﻿@using BlazorApp.DA;
 
-@inject IApplicationsDataAccess applicationsDataAccess;
+@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
 
 
 <Modal @ref="modal" Title="Новая заявка" Size="ModalSize.Large">
@@ -28,7 +28,7 @@
 
     async void FormSubmitted(Application application)
 	{
-        applicationsDataAccess.AddNewApplication(newApplication);
+        await applicationsDataAccess.Insert(newApplication);
         await ApplicationsInformationWasChanged.InvokeAsync();
 	}
 

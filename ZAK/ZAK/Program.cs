@@ -46,18 +46,28 @@ public class Program
         builder.Services.AddAuthorization();
         builder.Services.AddCascadingAuthenticationState();
 
-        builder.Services.AddTransient<ICoefficientsDataAccess,      CoefficientsDataAccess>();
-        builder.Services.AddTransient<IApplicationsDataAccess,      ApplicationsDataAccess>();
-        builder.Services.AddTransient<IDistrictDataAccess,          DistrictDataAccess>();
-        builder.Services.AddTransient<IBrigadesDataAccess,          BrigadesDataAccess>();
+        builder.Services.AddTransient<IDaoBase<Coefficient, CoefficientModel>,       DaoBase<Coefficient, CoefficientModel>>();
+        //builder.Services.AddTransient<ICoefficientsDataAccess,      CoefficientsDataAccess>();
+        
+        builder.Services.AddTransient<IDaoBase<Application, ApplicationModel>,       DaoBase<Application, ApplicationModel>>();
+        //builder.Services.AddTransient<IApplicationsDataAccess,      ApplicationsDataAccess>();
+        
+        builder.Services.AddTransient<IDaoBase<District, DistrictModel>,       DaoBase<District, DistrictModel>>();
+        //builder.Services.AddTransient<IDistrictDataAccess,          DistrictDataAccess>();
+        
+        builder.Services.AddTransient<IDaoBase<Brigade, BrigadeModel>,       DaoBase<Brigade, BrigadeModel>>();
+        //builder.Services.AddTransient<IBrigadesDataAccess,          BrigadesDataAccess>();
 
-        builder.Services.AddTransient<IDaoBase<Address, AddressModel>,       DaoBase<Address, AddressModel>>();
-        //builder.Services.AddTransient<IAddressesDataAccess,         AddressesDataAccess>();
+        builder.Services.AddTransient<IDaoBase<Address, AddressModel>,       DaoBase<Address, AddressModel>>();        
+
+        builder.Services.AddTransient<IDaoBase<AddressPriority, AddressPriority>,       DaoBase<AddressPriority, AddressPriority>>();        
+        //builder.Services.AddTransient<IAddressPriorityDataAccess,   AddressPriorityDataAccess>();
         
+        builder.Services.AddTransient<IDaoBase<AddressCoordinates, AddressCoordinatesModel>,       DaoBase<AddressCoordinates, AddressCoordinatesModel>>();        
+        //builder.Services.AddTransient<ICoordinatesDataAccess,       CoordinatesDataAccess>();
         
-        builder.Services.AddTransient<IAddressPriorityDataAccess,   AddressPriorityDataAccess>();
-        builder.Services.AddTransient<ICoordinatesDataAccess,       CoordinatesDataAccess>();
-        builder.Services.AddTransient<IAddressAliasDataAccess,      AddressAliasDataAccess>();
+        builder.Services.AddTransient<IDaoBase<AddressAlias, AddressAliasModel>,       DaoBase<AddressAlias, AddressAliasModel>>();
+        //builder.Services.AddTransient<IAddressAliasDataAccess,      AddressAliasDataAccess>();
         
         builder.Services.AddTransient<IBlackoutScheduleDataAccess,  BlackoutScheduleDataAccess>();
 

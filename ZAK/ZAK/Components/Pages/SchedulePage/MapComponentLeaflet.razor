@@ -1,6 +1,7 @@
 ﻿@using System.Numerics
 @using BlazorApp.DA
 @using System.Text.Json
+@using Microsoft.EntityFrameworkCore
 @using ZAK.MapRoutesManager
 @using ZAK.Services.UnresolvedAddressesChecker
 
@@ -9,8 +10,8 @@
 @inject IJSRuntime Js
 
 @inject IMapRoutesManager mapRoutesManager
-@inject IApplicationsDataAccess applicationsDataAccess;
-@inject IBrigadesDataAccess brigadesDataAccess;
+@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
+@inject IDaoBase<Brigade, BrigadeModel> brigadesDataAccess;
 
 @inject ILogger<MapComponentLeaflet> _logger;
 
@@ -81,7 +82,9 @@
         _logger.LogInformation("MapComponentLeaflet is drawing markers");
 
 
-        List<Application> applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
+        List<Application> applications = await applicationsDataAccess.GetAll().
+            Include(a => a.address).ThenInclude(a => a.coordinates).
+            ToListAsync();
 
         foreach (var application in applications)
         {

@@ -37,10 +37,17 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
         }
     }
 
-    public async Task<List<TransObjT>> GetAll()
+    public Task DeleteAll()
+    {
+        _logger.LogInformation($"Deleting all entities of type {typeof(EntityT)}");
+        _dbContext.Set<EntityT>().RemoveRange(_dbContext.Set<EntityT>());
+        return _dbContext.SaveChangesAsync();
+    }
+
+    public IQueryable<TransObjT> GetAll()
     {
         _logger.LogInformation($"Getting all entities of type {typeof(EntityT)}");
-        return await _dbContext.Set<EntityT>().Select(a => GenericFactory.CreateInstance<TransObjT, EntityT>(a)).ToListAsync();
+        return _dbContext.Set<EntityT>().Select(a => GenericFactory.CreateInstance<TransObjT, EntityT>(a));
     }
 
     public async Task<TransObjT> GetById(int id)
@@ -63,6 +70,13 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
     {
         _logger.LogInformation($"Inserting new entity of type {typeof(EntityT)}");
         await _dbContext.Set<EntityT>().AddAsync(entity);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task InsertRange(IEnumerable<TransObjT> entities)
+    {
+        _logger.LogInformation($"Inserting range of entities of type {typeof(EntityT)}");
+        await _dbContext.Set<EntityT>().AddRangeAsync(entities.Cast<EntityT>());
     }
 
     public async Task Update(TransObjT entity, int id)

@@ -1,29 +1,35 @@
 ﻿using BlazorApp.DA;
 using ApplicationsScrappingModule;
+using ZAK.Da.BaseDAO;
+using ZAK.Db.Models;
 
 namespace BlazorApp.ApplicationsLoader;
 
-public class ApplicationsLoader(IApplicationsScrapper applicationScrapper, IApplicationsDataAccess applicationsDataAccess) : IApplicationsLoader
+public class ApplicationsLoader : IApplicationsLoader
 {
-    IApplicationsScrapper _applicationScrapper = applicationScrapper;
-    IApplicationsDataAccess _applicationsDataAccess = applicationsDataAccess;
+    IApplicationsScrapper _applicationScrapper;
+    IDaoBase<Application, ApplicationModel> _applicationsDataAccess;
+
+
+    public ApplicationsLoader(IDaoBase<Application, ApplicationModel> applicationsDataAccess, IApplicationsScrapper applicationScrapper)
+    {
+        _applicationsDataAccess = applicationsDataAccess;
+        _applicationScrapper = applicationScrapper;
+    }
 
     public async Task AddNewApplications(string applicationsFilePath)
     {
-        await _applicationsDataAccess.ClearApplicationsList();
-
         List<Application> newApplications = await _applicationScrapper.ScrapApplicationData(applicationsFilePath);
 
-        await _applicationsDataAccess.AddNewApplications(newApplications);
-
+        await _applicationsDataAccess.InsertRange(newApplications);
     }
 
     public async Task AddNewApplicationsWithRemoval(string applicationsFilePath)
     {
-        await _applicationsDataAccess.ClearApplicationsList();
+        await _applicationsDataAccess.DeleteAll();
 
         List<Application> newApplications = await _applicationScrapper.ScrapApplicationData(applicationsFilePath);
 
-        await _applicationsDataAccess.AddApplications(newApplications);
+        await _applicationsDataAccess.InsertRange(newApplications);
     }
 }

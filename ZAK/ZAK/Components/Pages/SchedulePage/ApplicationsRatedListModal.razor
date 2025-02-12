@@ -1,8 +1,8 @@
 ﻿@using BlazorApp.DA
 
-@inject IApplicationsDataAccess applicationsDataAccess;
-@inject ICoefficientsDataAccess coefficientsDataAccess;
-@inject IAddressesDataAccess addressesDataAccess;
+@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
+@inject IDaoBase<Coefficient, CoefficientModel> coefficientsDataAccess;
+@inject IDaoBase<Address, AddressModel> addressesDataAccess;
 @inject IBlackoutScheduleDataAccess blackoutScheduleDataAccess;
 
 <Modal @ref=applicationsList Title="Выбрать заявку" Size="ModalSize.ExtraLarge">
@@ -105,7 +105,7 @@
 
     public async Task ShowAsync(List<int> applicationIds, int time)
     {
-        applications = applicationsDataAccess.GetAllApplicationsWithIgnoring();
+        applications  = (await applicationsDataAccess.GetAll().ToListAsync()).Where(a => a.ignored == false).ToList();
         this.applicationWasChosen = applicationWasChosen;
 
         //Find near applications
@@ -121,7 +121,7 @@
         applications = applications.Where(x => !applicationIds.Contains(x.id)).ToList();
 
         //Get priorities from db
-        Dictionary<string, double> priorities = await coefficientsDataAccess.GetCoefficientsDictionary();
+        Dictionary<string, double> priorities = await coefficientsDataAccess.GetAll().ToDictionaryAsync(x => x.parameter, x => x.coefficient);
 
         //Calculate priority for all applications
         for (int i = 0; i < applications.Count; i++) applications[i].SetupApplicationPriorityLevel(priorities,

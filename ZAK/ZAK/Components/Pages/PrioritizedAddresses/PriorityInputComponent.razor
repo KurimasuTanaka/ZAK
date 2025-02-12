@@ -2,7 +2,7 @@
 @using BlazorApp.DA;
 
 
-@inject IAddressPriorityDataAccess addressPriorityDataAccess;
+@inject IDaoBase<Address, AddressModel> addressDataAccess;
 @inject ILogger<PriorityInputComponent> _logger;
 
 
@@ -18,6 +18,9 @@
     private async Task UpdateDbData()
     {
         _logger.LogInformation($"Updating priority for address with id {addressId} to {priority}");
-        await addressPriorityDataAccess.UpdatePriority(addressId, priority);
+
+        Address address = await addressDataAccess.GetById(addressId);
+        address.priority = priority;        
+        await addressDataAccess.Update(address, addressId);
     }
 }

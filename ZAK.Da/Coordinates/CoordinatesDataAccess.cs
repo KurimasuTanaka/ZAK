@@ -9,12 +9,12 @@ public class CoordinatesDataAccess(BlazorAppDbContext blazorAppDbContext) : ICoo
 {
     private readonly BlazorAppDbContext _blazorAppDbContext = blazorAppDbContext;
 
-    public async Task<List<Coordinates>> GetCoordinatesAsync()
+    public async Task<List<AddressCoordinates>> GetCoordinatesAsync()
     {
-        return await _blazorAppDbContext.coordinates.Select(c => new Coordinates(c)).ToListAsync();
+        return await _blazorAppDbContext.coordinates.Select(c => new AddressCoordinates(c)).ToListAsync();
     }
 
-    public async Task<Coordinates> GetCoordinatesByIdAsync(int id)
+    public async Task<AddressCoordinates> GetCoordinatesByIdAsync(int id)
     {
         AddressCoordinatesModel addressCoordinatesModel = await _blazorAppDbContext.coordinates.FindAsync(id);
 
@@ -24,18 +24,18 @@ public class CoordinatesDataAccess(BlazorAppDbContext blazorAppDbContext) : ICoo
         }
         else
         {
-            return new Coordinates(addressCoordinatesModel);
+            return new AddressCoordinates(addressCoordinatesModel);
         }
     }
 
-    public async Task<Coordinates> AddCoordinatesAsync(Coordinates coordinates)
+    public async Task<AddressCoordinates> AddCoordinatesAsync(AddressCoordinates coordinates)
     {
         _blazorAppDbContext.coordinates.Add(coordinates);
         await _blazorAppDbContext.SaveChangesAsync();
         return coordinates;
     }
 
-    public async Task UpdateCoordinatesAsync(Coordinates coordinates)
+    public async Task UpdateCoordinatesAsync(AddressCoordinates coordinates)
     {
         if (_blazorAppDbContext.coordinates.Find(coordinates.addressId) == null)
         {

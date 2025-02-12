@@ -1,6 +1,7 @@
 ﻿
 @using BlazorApp.DA;
-@inject IBrigadesDataAccess brigadesDataAccess;
+@inject IDaoBase<Brigade, BrigadeModel> brigadesDataAccess;
+@inject ILogger<ApplicationDeleteButton> _logger;
 
 <Button class="btn btn-danger" @onclick="DeleteApplication">Delete</Button>
 
@@ -23,8 +24,14 @@
 
     private async void DeleteApplication()
     {
+        _logger.LogInformation($"Deleting application with id {applicationId} from brigade with id {brigadeId}");
+
         await DeleteButtonWasPressed.InvokeAsync();
-        await brigadesDataAccess.DeleteApplicationFromSchedule(brigadeId, applicationId);
+
+        Brigade brigade = await brigadesDataAccess.GetById(brigadeId);
+        brigade.applicationsIds.Remove(applicationId);
+        await brigadesDataAccess.Update(brigade, brigade.id);
+
         await UpdateSchedule.InvokeAsync();
     }
 

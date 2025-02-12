@@ -4,7 +4,7 @@
 @using BlazorBootstrap;
 
 
-@inject IApplicationsDataAccess applicationsDataAccess;
+@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
 
 <Switch Label="Ignored"      ValueChanged="PressIgnored" />
 <Switch Label="Hot"          ValueChanged="PressHot"/>
@@ -18,29 +18,39 @@
     [Parameter] public bool inSchedule { get; set; }
     [Parameter] public int maxDays {get;set;}
 
-    private void PressIgnored()
+    private async void PressIgnored()
     {
         ignored = !ignored;
 
-        applicationsDataAccess.SwitchApplicationIgnoredStatus(applicationId);
+        Application application = await applicationsDataAccess.GetById(applicationId);
+        application.ignored = ignored;
+        await applicationsDataAccess.Update(application, application.id);
     }
     
-    private void PressHot()
+    private async void PressHot()
     {
         hot = !hot;
-        applicationsDataAccess.SwitchApplicationHotStatus(applicationId);
+
+        Application application = await applicationsDataAccess.GetById(applicationId);
+        application.hot = hot;
+        await applicationsDataAccess.Update(application, application.id);
 
     }
 
-    private void PressAddToSchedule()
+    private async void PressAddToSchedule()
     {
         inSchedule = !inSchedule;
-        applicationsDataAccess.SwitchApplicationInScheduleStatus(applicationId);
+
+        Application application = await applicationsDataAccess.GetById(applicationId);
+        application.inSchedule = hot;
+        await applicationsDataAccess.Update(application, application.id);
     }
 
-    private void UpdateMaxDays()
+    private async void UpdateMaxDays()
     {
-        applicationsDataAccess.SetMaxDays(applicationId, maxDays);
+        Application application = await applicationsDataAccess.GetById(applicationId);
+        application.maxDaysForConnection = maxDays;
+        await applicationsDataAccess.Update(application, application.id);
     }
 
 }

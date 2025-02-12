@@ -1,5 +1,6 @@
 using System;
 using BlazorApp.DA;
+using Microsoft.EntityFrameworkCore;
 using ZAK.Da.BaseDAO;
 using ZAK.Db.Models;
 using ZAK.MapRoutesManager;
@@ -25,7 +26,7 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
 
     public async Task<int> GetNumberOfUnresolvedAddresses()
     {
-        List<Address> addresses = await _addressesDataAccess.GetAll();
+        List<Address> addresses = await _addressesDataAccess.GetAll().ToListAsync();
 
         foreach (Address address in addresses)
         {
@@ -58,7 +59,7 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
 
     public async Task<bool> UnresolvedAddressesExist()
     {
-        List<Address> addresses = await _addressesDataAccess.GetAll();
+        List<Address> addresses = await _addressesDataAccess.GetAll().ToListAsync();
 
         foreach (Address address in addresses)
         {

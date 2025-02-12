@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using ZAK.Da.BaseDAO;
 using ZAK.Db;
 using ZAK.Db.Models;
 
@@ -8,7 +9,9 @@ public class Brigade : BrigadeModel
 {
     public List<Application> applications = new List<Application>(new Application[9]);
 
-    public Brigade() { }
+    public Brigade() : base() {
+        brigadeNumber = 0;
+    }
     public Brigade(BrigadeModel model) : base(model) {}
 
     public object? this[string propertyName]
@@ -34,7 +37,7 @@ public class Brigade : BrigadeModel
     }
 
 
-    public void PopulateApplicationList(IApplicationsDataAccess applicationsDataAccess)
+    public async Task PopulateApplicationList(IDaoBase<Application, ApplicationModel> applicationsDataAccess)
     {
         for(int i = 0; i < 9; i++)
         {
@@ -43,7 +46,7 @@ public class Brigade : BrigadeModel
                 applications[i] = null;
                 continue;
             }
-            else applications[i] = applicationsDataAccess.GetApplication(applicationsIds[i]).Result;
+            else applications[i] = await applicationsDataAccess.GetById(applicationsIds[i]);
         }
     }
 }

@@ -41,7 +41,7 @@
 
         var newUser = new ClaimsPrincipal(identity);
 
-        await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, newUser);
+        await context!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, newUser);
     }
 
 

@@ -1,14 +1,12 @@
 ﻿@using BlazorApp.Components.Pages.SchedulePage
 @using BlazorApp.DA;
 
-@inject IBrigadesDataAccess brigadesDataAccess;
+@inject IDaoBase<Brigade, BrigadeModel> brigadesDataAccess;
 
-@foreach(Brigade brigade in brigades)
+@foreach (Brigade brigade in brigades)
 {
-    <BrigadeView @ref="@Ref"  brigade="@brigade" 
-        UpdateBrigadeLists="UpdateList" 
-        AddApplicationToSwap="AddSwapApplication" 
-        RefreshMap="async (value) => {await RefreshMap.InvokeAsync();}"/>
+    <BrigadeView @ref="@Ref" brigade="@brigade" UpdateBrigadeLists="UpdateList" AddApplicationToSwap="AddSwapApplication"
+        RefreshMap="async (value) => { await RefreshMap.InvokeAsync(); }" />
 }
 
 
@@ -19,13 +17,13 @@
 
     private List<ApplicationScheduled> applicationsToSwap = new();
 
-    private List<BrigadeView> _brigadeViews  = new();
-    public BrigadeView Ref {set => _brigadeViews.Add(value); }
+    private List<BrigadeView> _brigadeViews = new();
+    public BrigadeView Ref { set => _brigadeViews.Add(value); }
 
 
     public async Task UpdateList()
     {
-        _brigadeViews.ForEach( async brigadeView => await brigadeView.RedrawBrigadeTable());
+        _brigadeViews.ForEach(async brigadeView => await brigadeView.RedrawBrigadeTable());
         StateHasChanged();
 
         return;
@@ -36,18 +34,51 @@
         applicationsToSwap.Add(application);
         if (applicationsToSwap.Count == 2)
         {
-            await brigadesDataAccess.SwapApplications(
-                applicationsToSwap[0].brigadeId,                applicationsToSwap[1].brigadeId,
-                applicationsToSwap[0].applicationScheduledTime, applicationsToSwap[1].applicationScheduledTime);
+
+            int brigade1Id = applicationsToSwap[0].brigadeId;
+            int brigade2Id = applicationsToSwap[1].brigadeId;
+
+            int application1Time = applicationsToSwap[0].applicationScheduledTime;
+            int application2Time = applicationsToSwap[1].applicationScheduledTime;
+
+            if (brigade1Id == brigade2Id)
+            {
+                Brigade brigade = await brigadesDataAccess.GetById(brigade1Id);
+
+                if (brigade is not null)
+                {
+                    int applicationIdBuf = brigade.applicationsIds[application1Time];
+                    brigade.applicationsIds[application1Time] = brigade.applicationsIds[application2Time];
+                    brigade.applicationsIds[application2Time] = applicationIdBuf;
+
+                    await brigadesDataAccess.Update(brigade, brigade.id);
+                }
+            }
+            else
+            {
+                Brigade? brigade1 = await brigadesDataAccess.GetById(brigade1Id);
+                Brigade? brigade2 = await brigadesDataAccess.GetById(brigade2Id);
+
+                if (brigade1 is not null && brigade2 is not null)
+                {
+                    int applicationIdBuf = brigade1.applicationsIds[application1Time];
+                    brigade1.applicationsIds[application1Time] = brigade2.applicationsIds[application2Time];
+                    brigade2.applicationsIds[application2Time] = applicationIdBuf;
+
+                    await brigadesDataAccess.Update(brigade1, brigade1.id);
+                    await brigadesDataAccess.Update(brigade2, brigade2.id);
+                }
+            }
             applicationsToSwap.Clear();
             await UpdateList();
         }
     }
 
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        brigades = brigadesDataAccess.GetAllBrigades().Result.OrderBy(brigade => brigade.brigadeNumber).ToList();
+//        brigades = await brigadesDataAccess.GetAll().OrderBy(brigade => brigade.brigadeNumber).ToListAsync();
+        brigades = await brigadesDataAccess.GetAll().ToListAsync();
     }
 
 
