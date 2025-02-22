@@ -67,7 +67,8 @@
 
             await Js.InvokeVoidAsync("initMap");
 
-            if (!unresolvedAddressesInfo.unresolvedAddressesExist)
+            //TODO: FIX LATER
+            if (/* !unresolvedAddressesInfo.unresolvedAddressesExist */ false)
             {
                 await DrawPaths();
                 await DrawMarkers();
@@ -82,9 +83,7 @@
         _logger.LogInformation("MapComponentLeaflet is drawing markers");
 
 
-        List<Application> applications = await applicationsDataAccess.GetAll().
-            Include(a => a.address).ThenInclude(a => a.coordinates).
-            ToListAsync();
+        List<Application> applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(a => a.coordinates))).ToList();
 
         foreach (var application in applications)
         {

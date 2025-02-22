@@ -85,7 +85,7 @@
             <GridDetailView TItem="Application">
                 <div class="row">
                     <div class="col">
-                        <CommentComponent operatorComment="ffff" masterComment="ccccc" />
+                        <p>@context.operatorComment</p>
                     </div>
                 </div>
 
@@ -99,18 +99,24 @@
 
 
 @code {
-    public EventCallback<int> applicationWasChosen { get; set; }
+    [Parameter] public EventCallback<ApplicationScheduled> ApplicationWasChosen { get; set; }
     private Modal applicationsList = default!;
     List<Application> applications = new List<Application>();
 
-    public async Task ShowAsync(List<int> applicationIds, int time)
+    int scheduledTime = 0;
+    int scheduledBrigadeId = 0;
+    public async Task ShowAsync(List<ApplicationScheduled> scheduledApplications, ApplicationScheduled scheduledApplication)
     {
-        applications  = (await applicationsDataAccess.GetAll().ToListAsync()).Where(a => a.ignored == false).ToList();
-        this.applicationWasChosen = applicationWasChosen;
+        scheduledTime = scheduledApplication.applicationScheduledTime;
+        scheduledBrigadeId = scheduledApplication.brigadeId;
+
+        applications  =  (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad => ad.district))).Where(a => a.ignored == false).ToList();
+        
+        //this.applicationWasChosen = applicationWasChosen;
 
         //Find near applications
-        Application? newApplication1 = applications.FirstOrDefault(x => x.id == FindNearApplication(applicationIds, time, -1));
-        Application? newApplication2 = applications.FirstOrDefault(x => x.id == FindNearApplication(applicationIds, time, 1));
+        Application? newApplication1 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications, scheduledTime, -1));
+        Application? newApplication2 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications, scheduledTime, 1));
 
         List<Application> nearApplications = new List<Application>();
         if (newApplication1 != null) nearApplications.Add(newApplication1);
@@ -118,10 +124,10 @@
 
 
         //Remove applications that are already in the schedule
-        applications = applications.Where(x => !applicationIds.Contains(x.id)).ToList();
+        applications = applications.Where(x => !scheduledApplications.Select(a => a.id).Contains(x.id)).ToList();
 
         //Get priorities from db
-        Dictionary<string, double> priorities = await coefficientsDataAccess.GetAll().ToDictionaryAsync(x => x.parameter, x => x.coefficient);
+        Dictionary<string, double> priorities = (await coefficientsDataAccess.GetAll()).ToDictionary(x => x.parameter, x => x.coefficient);
 
         //Calculate priority for all applications
         for (int i = 0; i < applications.Count; i++) applications[i].SetupApplicationPriorityLevel(priorities,
@@ -160,20 +166,20 @@
 
         foreach (var application in applications)
         {
-            application.SetupBlackoutZones(blackoutZones, day, time);
+            application.SetupBlackoutZones(blackoutZones, day, scheduledTime);
         }
 
         await applicationsList.ShowAsync();
     }
 
-    private int FindNearApplication(List<int> applicationsIds, int time, int direction)
+    private int FindNearApplication(List<ApplicationScheduled> scheduledApplications, int time, int direction)
     {
-        for (int i = time + direction; i < applicationsIds.Count - direction; i += direction)
+        for (int i = time + direction; i < scheduledApplications.Count - direction; i += direction)
         {
-            if (i < 0 || i >= applicationsIds.Count) return 0;
-            if (applicationsIds[i] != 0)
+            if (i < 0 || i >= scheduledApplications.Count) return 0;
+            if (scheduledApplications[i].id != 0)
             {
-                return applicationsIds[i];
+                return scheduledApplications[i].id;
             }
         }
         return 0;
@@ -187,7 +193,14 @@
 
     public void OnRowClick(GridRowEventArgs<Application> application)
     {
-        applicationWasChosen.InvokeAsync(application.Item.id);
+        ApplicationScheduled scheduledApplication = new ApplicationScheduled()
+        {
+            id = application.Item.id,
+            applicationScheduledTime = scheduledTime,
+            brigadeId = scheduledBrigadeId
+        };
+
+        ApplicationWasChosen.InvokeAsync(scheduledApplication);
     }
 
 

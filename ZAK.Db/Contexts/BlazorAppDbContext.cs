@@ -25,7 +25,7 @@ public class BlazorAppDbContext : DbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.EnableSensitiveDataLogging();
+            //optionsBuilder.EnableSensitiveDataLogging();
 
             base.OnConfiguring(optionsBuilder);
         }
@@ -57,5 +57,13 @@ public class BlazorAppDbContext : DbContext
 
             modelBuilder.Entity<BrigadeModel>().Property(b => b.id).ValueGeneratedOnAdd();
             modelBuilder.Entity<AddressModel>().Property(a => a.Id).ValueGeneratedOnAdd();
+       
+            modelBuilder.Entity<ScheduledApplicationModel>().
+                HasOne(sa => sa.brigade).
+                WithMany(b => b.scheduledApplications).
+                HasForeignKey(sa => sa.brigadeId).
+                OnDelete(DeleteBehavior.Cascade);
+
         } 
+
 }

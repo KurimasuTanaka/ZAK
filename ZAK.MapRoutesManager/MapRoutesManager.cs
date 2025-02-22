@@ -38,7 +38,7 @@ public class MapRoutesManager : IMapRoutesManager
 
         _logger.LogInformation("Populationg brigades with applications");
         //Populate brigades with applications
-        List<Brigade> brigades = await brigadesDataAccess.GetAll().ToListAsync();
+        List<Brigade> brigades =  (await brigadesDataAccess.GetAll()).ToList();
         foreach (Brigade brigade in brigades)
         {
             await brigade.PopulateApplicationList(applicationsDataAccess);
@@ -48,17 +48,24 @@ public class MapRoutesManager : IMapRoutesManager
 
         //Remove empty adresses and create lists scheduled addresses
         List<List<Address>> addresses = new List<List<Address>>();
-        foreach (Brigade brigade in brigades)
+
+        foreach(Brigade brigade in brigades)
         {
             addresses.Add(new List<Address>());
-            for (int i = 0; i < brigade.applications.Count; i++)
-            {
-                if (brigade.applications[i] != null)
-                {
-                    addresses.Last().Add(new Address(brigade.applications[i].address));
-                }
-            }
+            addresses.Last().AddRange(brigade.scheduledApplications.Select(a => a.application).Select(a => new Address(a.address)).ToList());
         }
+
+        // foreach (Brigade brigade in brigades)
+        // {
+        //     addresses.Add(new List<Address>());
+        //     for (int i = 0; i < brigade.applications.Count; i++)
+        //     {
+        //         if (brigade.applications[i] != null)
+        //         {
+        //             addresses.Last().Add(new Address(brigade.applications[i].address));
+        //         }
+        //     }
+        // }
 
         _logger.LogInformation("Calculating routes...");
 

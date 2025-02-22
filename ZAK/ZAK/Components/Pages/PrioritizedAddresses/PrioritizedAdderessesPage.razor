@@ -74,7 +74,7 @@
     {
         _logger.LogInformation("Loading addresses data");
 
-        List<Address> addresses = await addressesDataAccess.GetAll().ToListAsync();
+        List<Address> addresses = (await addressesDataAccess.GetAll()).ToList();
 
         unresolvedAddressesCount = unresolvedAddressesChecker.GetNumberOfUnresolvedAddresses(addresses);
         StateHasChanged();

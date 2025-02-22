@@ -1,17 +1,38 @@
-﻿@using BlazorApp.Components.Pages.SchedulePage
-@using BlazorApp.DA;
+﻿@using BlazorApp.DA;
+@using ZAK.Components.Pages.SchedulePage.BrigadeComponents
+@using MudBlazor
+@using ZAK.Services.BrigadesManagerService
 
 @inject IDaoBase<Brigade, BrigadeModel> brigadesDataAccess;
+@inject IBrigadesManager _brigadesManager;
+@inject ILogger<BrigadeList> _logger;
 
-@foreach (Brigade brigade in brigades)
-{
-    <BrigadeView @ref="@Ref" brigade="@brigade" UpdateBrigadeLists="UpdateList" AddApplicationToSwap="AddSwapApplication"
-        RefreshMap="async (value) => { await RefreshMap.InvokeAsync(); }" />
-}
+<ApplicationsRatedListModal @ref="applicationsRatedList" applicationWasChosen="ApplicationWasChosen" />
 
+<MudDropContainer @ref="dropContainer" T="ApplicationScheduled" Items="@applications"
+    ItemsSelector="@((item, dropzone) => item.brigadeId.ToString() == dropzone)" ItemDropped="ItemDroppedHandler">
+    <ChildContent>
+        @foreach (Brigade brigade in brigades)
+        {
+
+            var dropzone = brigade.id.ToString();
+            <MudPaper Class="ma-4 flex-grow-1">
+                <MudList T="ApplicationScheduled" Class="d-flex flex-column mud-height-full">
+                    <MudDropZone T="ApplicationScheduled" AllowReorder="true" Identifier="@dropzone" Class="flex-grow-1" />
+                </MudList>
+            </MudPaper>
+        }
+    </ChildContent>
+    <ItemRenderer>
+        <MudListItem T="ApplicationScheduled" Text="@($"{context.applicationScheduledTime} - {@context.id}")"
+            OnClick="@(async () => { await ShowSortedApplicationsList(context); })" />
+    </ItemRenderer>
+</MudDropContainer>
 
 @code {
     [Parameter] public EventCallback RefreshMap { get; set; }
+
+    MudDropContainer<ApplicationScheduled> dropContainer = default!;
 
     private List<Brigade> brigades = new();
 
@@ -21,16 +42,56 @@
     public BrigadeView Ref { set => _brigadeViews.Add(value); }
 
 
+    //NEW===========================================================================================================
+    private List<ApplicationScheduled> applications = new();
+    ApplicationsRatedListModal applicationsRatedList = default!;
+
+    private async Task ItemDroppedHandler(MudItemDropInfo<ApplicationScheduled> dropItem)
+    {
+        await _brigadesManager.InsertApplication(
+        dropItem.Item!.id,
+        Int32.Parse(dropItem.DropzoneIdentifier),
+        dropItem.IndexInZone,
+        dropItem.Item.brigadeId,
+        dropItem.Item.applicationScheduledTime);
+
+        // applications.Find(a => a.id == dropItem.Item!.id)!.applicationScheduledTime = dropItem.IndexInZone;
+        // applications.Find(a => a.id == dropItem.Item!.id)!.brigadeId = Int32.Parse(dropItem.DropzoneIdentifier);
+
+        applications.Clear();
+        await GetApplications();
+        StateHasChanged();
+    }
+
+    private async Task ApplicationWasChosen(ApplicationScheduled scheduledApplication)
+    {
+        await _brigadesManager.InsertNewApplicationInEmptySlot(
+            scheduledApplication.id, 
+            scheduledApplication.brigadeId, 
+            scheduledApplication.applicationScheduledTime);
+        applications.Clear();
+        await GetApplications();
+        StateHasChanged();   
+    }
     public async Task UpdateList()
     {
-        _brigadeViews.ForEach(async brigadeView => await brigadeView.RedrawBrigadeTable());
+        //_brigadeViews.ForEach(async brigadeView => await brigadeView.RedrawBrigadeTable());
         StateHasChanged();
 
         return;
     }
 
+    private async Task ShowSortedApplicationsList(ApplicationScheduled scheduledApplication)
+    {
+        _logger.LogInformation("Button on application was pressed. Opening modal window with applications list...");
+
+        await applicationsRatedList.ShowAsync(applications.Where(a => a.brigadeId == scheduledApplication.brigadeId).ToList(), scheduledApplication);
+    }
+
     public async void AddSwapApplication(ApplicationScheduled application)
     {
+
+
         applicationsToSwap.Add(application);
         if (applicationsToSwap.Count == 2)
         {
@@ -47,9 +108,9 @@
 
                 if (brigade is not null)
                 {
-                    int applicationIdBuf = brigade.applicationsIds[application1Time];
+                    @* int applicationIdBuf = brigade.applicationsIds[application1Time];
                     brigade.applicationsIds[application1Time] = brigade.applicationsIds[application2Time];
-                    brigade.applicationsIds[application2Time] = applicationIdBuf;
+                    brigade.applicationsIds[application2Time] = applicationIdBuf; *@
 
                     await brigadesDataAccess.Update(brigade, brigade.id);
                 }
@@ -61,9 +122,9 @@
 
                 if (brigade1 is not null && brigade2 is not null)
                 {
-                    int applicationIdBuf = brigade1.applicationsIds[application1Time];
+                    @* int applicationIdBuf = brigade1.applicationsIds[application1Time];
                     brigade1.applicationsIds[application1Time] = brigade2.applicationsIds[application2Time];
-                    brigade2.applicationsIds[application2Time] = applicationIdBuf;
+                    brigade2.applicationsIds[application2Time] = applicationIdBuf; *@
 
                     await brigadesDataAccess.Update(brigade1, brigade1.id);
                     await brigadesDataAccess.Update(brigade2, brigade2.id);
@@ -75,10 +136,27 @@
     }
 
 
+    private async Task GetApplications()
+    {
+        _logger.LogInformation("Getting all brigades...");
+
+        brigades = (await brigadesDataAccess.GetAll(query => query.Include(b => b.scheduledApplications).ThenInclude(sa =>
+        sa.application))).ToList();
+
+        if (applications.Count == 0)
+        {
+            foreach (var brigade in brigades)
+            {
+                applications.AddRange(brigade.GetApplications());
+            }
+            dropContainer.Refresh();
+        }
+    }
+
     protected override async Task OnParametersSetAsync()
     {
-//        brigades = await brigadesDataAccess.GetAll().OrderBy(brigade => brigade.brigadeNumber).ToListAsync();
-        brigades = await brigadesDataAccess.GetAll().ToListAsync();
+
+        await GetApplications();
     }
 
 

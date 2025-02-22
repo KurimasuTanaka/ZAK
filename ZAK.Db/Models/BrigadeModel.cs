@@ -8,9 +8,10 @@ public class BrigadeModel
     [Key]
     public int id { get; set; }
 
-    public int brigadeNumber {get; set;}    
+    public int brigadeNumber {get; set;} 
+    public int brigadeSlotsCount { get; set; }  = 9;
 
-    public List<int> applicationsIds { get; set; } = new List<int>(new int[9]);
+    public List<ScheduledApplicationModel> scheduledApplications { get; set; } = new List<ScheduledApplicationModel>();
 
     public BrigadeModel() { }
     public BrigadeModel(BrigadeModel applicationModel)

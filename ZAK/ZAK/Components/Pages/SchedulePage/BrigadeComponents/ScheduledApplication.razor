@@ -1,0 +1,20 @@
+﻿<Button @onclick="ApplicationButtonPressed">
+    @if (application.id == 0)
+    {
+        <p>@application.applicationScheduledTime  ---РЕЗЕРВ--- </p>
+        }
+    else
+    {
+        <p> @application.id@application.address.streetName@application.address.building </p>
+    }
+</Button>
+@code {
+    [Parameter] public ApplicationScheduled application { get; set; } = new();
+    [Parameter] public EventCallback<int> ApplicationButtonWasPressed { get; set; }
+    [CascadingParameter] public Brigade brigade { get; set; } = new();
+
+    private async Task ApplicationButtonPressed()
+    {
+        await ApplicationButtonWasPressed.InvokeAsync(application.applicationScheduledTime);
+    }
+}

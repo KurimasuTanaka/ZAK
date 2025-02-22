@@ -21,7 +21,7 @@ public class GeoDataManagerTests
             building = "54"
         };
 
-        address.coordinates = new Coordinates();
+       // address.coordinates = new Coordinates();
 
         // Act
 

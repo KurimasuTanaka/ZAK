@@ -29,7 +29,7 @@
         await DeleteButtonWasPressed.InvokeAsync();
 
         Brigade brigade = await brigadesDataAccess.GetById(brigadeId);
-        brigade.applicationsIds.Remove(applicationId);
+        //brigade.applicationsIds.Remove(applicationId);
         await brigadesDataAccess.Update(brigade, brigade.id);
 
         await UpdateSchedule.InvokeAsync();

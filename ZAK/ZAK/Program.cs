@@ -15,7 +15,8 @@ using ZAK.Services.UnresolvedAddressesChecker;
 using ZAK.Da.BaseDAO;
 using ZAK.Db.Models;
 using ZAK.Components.Pages.BlackoutSchedulePage;
-
+using MudBlazor.Services;
+using ZAK.Services.BrigadesManagerService;
 namespace ZAK;
 
 public class Program
@@ -46,30 +47,33 @@ public class Program
         builder.Services.AddAuthorization();
         builder.Services.AddCascadingAuthenticationState();
 
-        builder.Services.AddTransient<IDaoBase<Coefficient, CoefficientModel>,       DaoBase<Coefficient, CoefficientModel>>();
+        builder.Services.AddMudServices();
+
+        builder.Services.AddTransient<IDaoBase<Coefficient, CoefficientModel>, DaoBase<Coefficient, CoefficientModel>>();
         //builder.Services.AddTransient<ICoefficientsDataAccess,      CoefficientsDataAccess>();
-        
-        builder.Services.AddTransient<IDaoBase<Application, ApplicationModel>,       DaoBase<Application, ApplicationModel>>();
+
+        builder.Services.AddTransient<IDaoBase<Application, ApplicationModel>, DaoBase<Application, ApplicationModel>>();
         //builder.Services.AddTransient<IApplicationsDataAccess,      ApplicationsDataAccess>();
-        
-        builder.Services.AddTransient<IDaoBase<District, DistrictModel>,       DaoBase<District, DistrictModel>>();
+
+        builder.Services.AddTransient<IDaoBase<District, DistrictModel>, DaoBase<District, DistrictModel>>();
         //builder.Services.AddTransient<IDistrictDataAccess,          DistrictDataAccess>();
-        
-        builder.Services.AddTransient<IDaoBase<Brigade, BrigadeModel>,       DaoBase<Brigade, BrigadeModel>>();
+
+        builder.Services.AddTransient<IDaoBase<Brigade, BrigadeModel>, DaoBase<Brigade, BrigadeModel>>();
+        builder.Services.AddTransient<IBrigadesManager, BrigadesManager>();
         //builder.Services.AddTransient<IBrigadesDataAccess,          BrigadesDataAccess>();
 
-        builder.Services.AddTransient<IDaoBase<Address, AddressModel>,       DaoBase<Address, AddressModel>>();        
+        builder.Services.AddTransient<IDaoBase<Address, AddressModel>, DaoBase<Address, AddressModel>>();
 
-        builder.Services.AddTransient<IDaoBase<AddressPriority, AddressPriority>,       DaoBase<AddressPriority, AddressPriority>>();        
+        builder.Services.AddTransient<IDaoBase<AddressPriority, AddressPriority>, DaoBase<AddressPriority, AddressPriority>>();
         //builder.Services.AddTransient<IAddressPriorityDataAccess,   AddressPriorityDataAccess>();
-        
-        builder.Services.AddTransient<IDaoBase<AddressCoordinates, AddressCoordinatesModel>,       DaoBase<AddressCoordinates, AddressCoordinatesModel>>();        
+
+        builder.Services.AddTransient<IDaoBase<AddressCoordinates, AddressCoordinatesModel>, DaoBase<AddressCoordinates, AddressCoordinatesModel>>();
         //builder.Services.AddTransient<ICoordinatesDataAccess,       CoordinatesDataAccess>();
-        
-        builder.Services.AddTransient<IDaoBase<AddressAlias, AddressAliasModel>,       DaoBase<AddressAlias, AddressAliasModel>>();
+
+        builder.Services.AddTransient<IDaoBase<AddressAlias, AddressAliasModel>, DaoBase<AddressAlias, AddressAliasModel>>();
         //builder.Services.AddTransient<IAddressAliasDataAccess,      AddressAliasDataAccess>();
-        
-        builder.Services.AddTransient<IBlackoutScheduleDataAccess,  BlackoutScheduleDataAccess>();
+
+        builder.Services.AddTransient<IBlackoutScheduleDataAccess, BlackoutScheduleDataAccess>();
 
         builder.Services.AddScoped<IFileLoader, FileLoader>();
         builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();
@@ -82,11 +86,11 @@ public class Program
 
 
         string? connectionString = builder.Configuration["ConnectionStrings:MySQL"];
-        if(String.IsNullOrEmpty(connectionString)) throw new Exception("Connection string is empty");
+        if (String.IsNullOrEmpty(connectionString)) throw new Exception("Connection string is empty");
 
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 41));
-        builder.Services.AddDbContext<BlazorAppDbContext>(options =>
-        options.UseMySql(connectionString, serverVersion), ServiceLifetime.Transient);
+        builder.Services.AddDbContextFactory<BlazorAppDbContext>(options =>
+        options.UseMySql(connectionString, serverVersion));
 
 
 

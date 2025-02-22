@@ -23,13 +23,8 @@
   </CardBody>
 </Card>
 
-<Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" 
-  AllowFiltering="true"
-  AllowPaging="true" 
-  PageSize="100" 
-  AllowSorting="true" 
-  SelectionMode="GridSelectionMode.Multiple" 
-  Responsive="true">
+<Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowFiltering="true"
+  AllowPaging="true" PageSize="100" AllowSorting="true" SelectionMode="GridSelectionMode.Multiple" Responsive="true">
 
   @*Id column with set of interactive components*@
   <GridColumn TItem="Application" HeaderText="Id" PropertyName="id" SortKeySelector="item => item.id">
@@ -40,8 +35,10 @@
       </Button>
     </div>
     @*Interactive components in Id section ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-    <CheckBoxInputComponent label="Ігнорувати" applicationId="@context.id" propertyName="ignored" propertyValue="@((bool)context["ignored"])" />
-    <CheckBoxInputComponent label="Важлива заявка" applicationId="@context.id" propertyName="hot" propertyValue="@((bool)context["hot"])" />
+    <CheckBoxInputComponent label="Ігнорувати" applicationId="@context.id" propertyName="ignored"
+      propertyValue="@((bool)context["ignored"])" />
+    <CheckBoxInputComponent label="Важлива заявка" applicationId="@context.id" propertyName="hot"
+      propertyValue="@((bool)context["hot"])" />
 
     <TimeframeApplicationComponent applicationId="@context.id" firstPart="@context.firstPart"
       secondPart="@context.secondPart" timeRangeIsSet="@context.timeRangeIsSet" startHour="@context.startHour"
@@ -84,7 +81,7 @@
   @*Column with stretching status ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
   <GridColumn style="width: 10%;" TItem="Application" HeaderText="Stretching" PropertyName="stretchingStatus"
     SortKeySelector="item => item.stretchingStatus"
-    ColumnClass="@(x =>  StretchingStatusComponent.GetStrechingStatusClass(x.stretchingStatus) )">
+    ColumnClass="@(x => StretchingStatusComponent.GetStrechingStatusClass(x.stretchingStatus))">
 
     <StretchingStatusComponent applicationId="@context.id" stretchingStatus="@context.stretchingStatus" />
   </GridColumn>
@@ -112,18 +109,18 @@
   List<Application> applications = new List<Application>();
 
   protected override async Task OnParametersSetAsync()
-  {    
+  {
     _logger.LogInformation("Drawing applications table");
 
-    if (showIgnored) applications = await applicationsDataAccess.GetAll().ToListAsync();
-    else applications = (await applicationsDataAccess.GetAll().ToListAsync()).Where(a => a.ignored == false).ToList();
+    if (showIgnored) applications = (await applicationsDataAccess.GetAll()).ToList();
+    else applications = (await applicationsDataAccess.GetAll()).Where(a => a.ignored == false).ToList();
   }
   public async Task Redraw()
   {
     _logger.LogInformation("Redrawing applications table");
 
-    if (showIgnored) applications = await applicationsDataAccess.GetAll().ToListAsync();
-    else applications = (await applicationsDataAccess.GetAll().ToListAsync()).Where(a => a.ignored == false).ToList();
+    if (showIgnored) applications = (await applicationsDataAccess.GetAll()).ToList();
+    else applications = (await applicationsDataAccess.GetAll()).ToList().Where(a => a.ignored == false).ToList();
 
     StateHasChanged();
   }

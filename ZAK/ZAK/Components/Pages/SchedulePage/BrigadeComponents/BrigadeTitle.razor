@@ -1,24 +1,25 @@
-@inherits CardTitle
-
 @inject IJSRuntime Js
 
 @inject IDaoBase<Brigade, BrigadeModel> _brigadesDataAccess;
 @inject ILogger<BrigadeTitle> _logger;
 
 
-<div style="display: flex; flex-direction: row; align-items:center;">
-    <Button @onclick="DeleteBrigade"> <Icon Name="IconName.XCircleFill" /> </Button>
+<CardTitle>
+    <div style="display: flex; flex-direction: row; align-items:center;">
+        <Button @onclick="DeleteBrigade">
+            <Icon Name="IconName.XCircleFill" />
+        </Button>
 
-    Бригада
-    
-    <NumberInput style="width: 10%" TValue="int" Value="brigade.brigadeNumber"
-        ValueExpression="() => brigade.brigadeNumber" ValueChanged="(value) => BrigadeNumberChanged(value)" />
-    
-    <Button @onclick="CopyBrigade">
-        Скопировать бригаду
-    </Button>
-</div>
+        Бригада
 
+        <NumberInput style="width: 10%" TValue="int" Value="brigade.brigadeNumber"
+            ValueExpression="() => brigade.brigadeNumber" ValueChanged="(value) => BrigadeNumberChanged(value)" />
+
+        <Button @onclick="CopyBrigade">
+            Скопировать бригаду
+        </Button>
+    </div>
+</CardTitle>
 @code
 {
     [CascadingParameter] public Brigade brigade { get; set; } = new();
@@ -40,8 +41,8 @@
 
         string brigadeInChatFormat = String.Empty;
 
-        brigadeInChatFormat += "Бригада " + brigade.brigadeNumber + "\n";
-        for (int i = 0; i < brigade.applications.Count; i++)
+        @* brigadeInChatFormat += "Бригада " + brigade.brigadeNumber + "\n";
+        for (int i = 0; i < brigade.scheduledApplications.Count; i++)
         {
             if(brigade.applications[i] is null)
             {
@@ -54,9 +55,9 @@
                     (i + 10).ToString() + " - " + (i + 11).ToString() + " " + 
                     brigade.applications[i].id + " " + brigade.applications[i].streetName + " " + brigade.applications[i].building + "\n";
             }
-        }
-        
-        _logger.LogInformation("Brigade string generated successfully. \nInvoking clipboard function... " );
+        } *@
+
+        _logger.LogInformation("Brigade string generated successfully. \nInvoking clipboard function... ");
 
         await Js.InvokeVoidAsync("CopyToClipboard", brigadeInChatFormat);
 
@@ -72,7 +73,7 @@
         Brigade newBrigadeInstance = await _brigadesDataAccess.GetById(brigade.id);
         newBrigadeInstance.brigadeNumber = value;
         await _brigadesDataAccess.Update(newBrigadeInstance, newBrigadeInstance.id);
-    
+
         _logger.LogInformation($"Brigade with id {brigade.id} changed number successfully to {value}");
     }
 

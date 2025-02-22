@@ -26,7 +26,7 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
 
     public async Task<int> GetNumberOfUnresolvedAddresses()
     {
-        List<Address> addresses = await _addressesDataAccess.GetAll().ToListAsync();
+        List<Address> addresses = (await _addressesDataAccess.GetAll()).ToList();
 
         foreach (Address address in addresses)
         {
@@ -59,7 +59,7 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
 
     public async Task<bool> UnresolvedAddressesExist()
     {
-        List<Address> addresses = await _addressesDataAccess.GetAll().ToListAsync();
+        List<Address> addresses = (await _addressesDataAccess.GetAll()).ToList();
 
         foreach (Address address in addresses)
         {

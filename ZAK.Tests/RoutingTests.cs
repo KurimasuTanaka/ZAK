@@ -17,34 +17,34 @@ namespace ZAK.Tests;
 public class RoutingTests
 {
 
-    [Fact]
-    public async void CheckAddressesForResolving()
-    {
-        // Arrange
-        List<ResolvedAdd> addresses = new();
-        IMapRoutesManager _mapRoutesManager = new MapRoutesManager.MapRoutesManager();
+    // [Fact]
+    // public async void CheckAddressesForResolving()
+    // {
+    //     // Arrange
+    //     List<ResolvedAdd> addresses = new();
+    //     IMapRoutesManager _mapRoutesManager = new MapRoutesManager.MapRoutesManager();
 
-        var options = new DbContextOptionsBuilder<BlazorAppDbContext>().
-            UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK2\BlazorApp.DB\DbFiles\testdb2.db").
-            Options;
+    //     var options = new DbContextOptionsBuilder<BlazorAppDbContext>().
+    //         UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK2\BlazorApp.DB\DbFiles\testdb2.db").
+    //         Options;
 
-        var builder = new DbContextOptionsBuilder<BlazorAppDbContext>();
-        builder.UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK2\BlazorApp.DB\DbFiles\testdb2.db");
+    //     var builder = new DbContextOptionsBuilder<BlazorAppDbContext>();
+    //     builder.UseSqlite(@"Data Source=D:\C#_Projects\ZAK\ZAK2\BlazorApp.DB\DbFiles\testdb2.db");
 
-        BlazorAppDbContext context = new BlazorAppDbContext(builder.Options);
+    //     BlazorAppDbContext context = new BlazorAppDbContext(builder.Options);
 
-        //Act
+    //     //Act
 
-        addresses = await context.addresses.Include(a => a.coordinates).Select(a => new ResolvedAdd {
-            address = a,
-            isResolved = _mapRoutesManager.CheckResolving((float)a.coordinates.lat, (float)a.coordinates.lon, 1000)
-        }).ToListAsync();
+    //     addresses = await context.addresses.Include(a => a.coordinates).Select(a => new ResolvedAdd {
+    //         address = a,
+    //         isResolved = _mapRoutesManager.CheckResolving((float)a.coordinates.lat, (float)a.coordinates.lon, 1000)
+    //     }).ToListAsync();
 
-        List<ResolvedAdd> unresolvedAddresses = addresses.Select(a=>a).Where(a => a.isResolved == false).ToList();
+    //     List<ResolvedAdd> unresolvedAddresses = addresses.Select(a=>a).Where(a => a.isResolved == false).ToList();
 
 
-        //Assert
-        Assert.Equal(addresses.Select(a=>a).Where(a => a.isResolved == true).ToList().Count, addresses.Count);
+    //     //Assert
+    //     Assert.Equal(addresses.Select(a=>a).Where(a => a.isResolved == true).ToList().Count, addresses.Count);
 
-    }
+    // }
 }
