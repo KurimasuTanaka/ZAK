@@ -53,18 +53,30 @@ public class BrigadesManager : IBrigadesManager
 
 
         //Stupid solution
-        foreach (ScheduledApplicationModel scheduledApplication in prevBrigade.scheduledApplications)
-        {
-            scheduledApplication.application = null;
-        }
+        // foreach (ScheduledApplicationModel scheduledApplication in prevBrigade.scheduledApplications)
+        // {
+        //     scheduledApplication.application = null;
+        // }
 
 
         //Update previous brigade
         await _brigadeDataAccess.Update(
         prevBrigade,
         prevBrigade.id,
-        query: b => b.Include(b => b.scheduledApplications),
-        findPredicate: b => b.id == prevBrigade.id);
+        includeQuery: b => b.Include(b => b.scheduledApplications),
+        findPredicate: b => b.id == prevBrigade.id,
+        inputDataProccessingQuery: (b, context) =>
+        {
+            foreach (var schedule in prevBrigade.scheduledApplications)
+            {
+                if (schedule.application != null)
+                {
+                    context.Entry(schedule.application).State = EntityState.Unchanged;
+                }
+            }
+            return b;
+        });
+
 
         _logger.LogInformation($"Getting new brigade {brigadeId}...");
         //Get new brigade
@@ -113,18 +125,29 @@ public class BrigadesManager : IBrigadesManager
         _logger.LogInformation($"Updating new brigade {brigadeId}...");
 
         //Stupid solution
-        foreach (ScheduledApplicationModel scheduledApplication in newBrigade.scheduledApplications)
-        {
-            scheduledApplication.application = null;
-        }
+        // foreach (ScheduledApplicationModel scheduledApplication in newBrigade.scheduledApplications)
+        // {
+        //     scheduledApplication.application = null;
+        // }
 
 
         //Update new brigade
         await _brigadeDataAccess.Update(
         newBrigade,
         newBrigade.id,
-        query: b => b.Include(b => b.scheduledApplications),
-        findPredicate: b => b.id == newBrigade.id);
+        includeQuery: b => b.Include(b => b.scheduledApplications),
+        findPredicate: b => b.id == newBrigade.id,
+        inputDataProccessingQuery: (b, context) =>
+        {
+            foreach (var schedule in newBrigade.scheduledApplications)
+            {
+                if (schedule.application != null)
+                {
+                    context.Entry(schedule.application).State = EntityState.Unchanged;
+                }
+            }
+            return b;
+        });
     }
     public async Task InsertNewApplicationInEmptySlot(int applicationId, int brigadeId, int time)
     {
@@ -146,16 +169,27 @@ public class BrigadesManager : IBrigadesManager
 
         _logger.LogInformation($"Updating new brigade {brigadeId}...");
 
-        foreach (ScheduledApplicationModel scheduledApplication in newBrigade.scheduledApplications)
-        {
-            scheduledApplication.application = null;
-        }
+        // foreach (ScheduledApplicationModel scheduledApplication in newBrigade.scheduledApplications)
+        // {
+        //     scheduledApplication.application = null;
+        // }
 
         //Update new brigade
         await _brigadeDataAccess.Update(
         newBrigade,
         newBrigade.id,
-        query: b => b.Include(b => b.scheduledApplications),
-        findPredicate: b => b.id == newBrigade.id);
+        includeQuery: b => b.Include(b => b.scheduledApplications),
+        findPredicate: b => b.id == newBrigade.id,
+        inputDataProccessingQuery: (b, context) =>
+        {
+            foreach (var schedule in newBrigade.scheduledApplications)
+            {
+                if (schedule.application != null)
+                {
+                    context.Entry(schedule.application).State = EntityState.Unchanged;
+                }
+            }
+            return b;
+        });
     }
 }

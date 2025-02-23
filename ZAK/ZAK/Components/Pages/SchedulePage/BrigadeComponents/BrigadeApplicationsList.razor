@@ -5,17 +5,21 @@
 @inject IDaoBase<Brigade, BrigadeModel> _brigadeDataAccess;
 @inject ILogger<BrigadeApplicationsList> _logger;
 
-<MudDropContainer T="ApplicationScheduled" Items="@applications" ItemsSelector="@((item, dropzone) => true)" ItemDropped="ItemUpdated"
-    Class="d-flex flex-wrap flex-grow-1">
-    <ChildContent>
-        <MudDropZone T="ApplicationScheduled" Identifier="@brigade.id.ToString()" AllowReorder="true"
-            Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1">
-        </MudDropZone>
-    </ChildContent>
-    <ItemRenderer>
-        <ScheduledApplication application="@context" ApplicationButtonWasPressed="ShowSortedApplicationsList" />
-    </ItemRenderer>
-</MudDropContainer>
+<MudExpansionPanels MultiExpansion="true">
+    <MudExpansionPanel Text="@brigade.id.ToString()">
+        <MudDropContainer T="ApplicationScheduled" Items="@applications" ItemsSelector="@((item, dropzone) => true)"
+            ItemDropped="ItemUpdated" Class="d-flex flex-wrap flex-grow-1">
+            <ChildContent>
+                <MudDropZone T="ApplicationScheduled" Identifier="@brigade.id.ToString()" AllowReorder="true"
+                    Class="rounded mud-background-gray pa-6 ma-8 flex-grow-1">
+                </MudDropZone>
+            </ChildContent>
+            <ItemRenderer>
+                <ScheduledApplication application="@context" ApplicationButtonWasPressed="ShowSortedApplicationsList" />
+            </ItemRenderer>
+        </MudDropContainer>
+    </MudExpansionPanel>
+</MudExpansionPanels>
 
 @code
 {
@@ -65,7 +69,7 @@
         await _brigadeDataAccess.Update(
         brigadeToUpdate,
         brigadeToUpdate.id,
-        query: b => b.Include(b => b.scheduledApplications),
+        includeQuery: b => b.Include(b => b.scheduledApplications),
         findPredicate: b => b.id == brigade.id);
 
         //Update view
@@ -99,7 +103,7 @@
         await _brigadeDataAccess.Update(
         newBrigadeInstance,
         brigade.id,
-        query: b => b.Include(b => b.scheduledApplications),
+        includeQuery: b => b.Include(b => b.scheduledApplications),
         findPredicate: b => b.id == brigade.id);
     }
 }

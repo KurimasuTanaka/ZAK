@@ -54,7 +54,7 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
         }
     }
 
-    public async Task<IEnumerable<TransObjT>>   GetAll(Func<IQueryable<EntityT>, IQueryable<EntityT>>? query = null)
+    public async Task<IEnumerable<TransObjT>> GetAll(Func<IQueryable<EntityT>, IQueryable<EntityT>>? query = null)
     {
         _logger.LogInformation($"Getting all entities of type {typeof(EntityT)}");
 
@@ -108,7 +108,7 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
     public async Task Update(
         TransObjT entity, int id,
         Func<EntityT, bool>? findPredicate,
-        Func<IQueryable<EntityT>, IQueryable<EntityT>>? query = null
+        Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null
         )
     {
 
@@ -118,7 +118,7 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
 
             IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>();
 
-            if (query is not null) baseQuery = query(baseQuery);
+            if (includeQuery is not null) baseQuery = includeQuery(baseQuery);
 
             EntityT? oldEntity = baseQuery.FirstOrDefault(findPredicate);
 
@@ -163,6 +163,41 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
                 {
                     property.SetValue(oldEntity, property.GetValue(entity, null), null);
                 }
+                await dbContext.SaveChangesAsync();
+            }
+
+        }
+    }
+
+    public async Task Update(TransObjT entity, int id, 
+        Func<EntityT, bool>? findPredicate, 
+        Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null, 
+        Func<TransObjT, DbContext, TransObjT>? inputDataProccessingQuery = null)
+    {
+        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        {
+            IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>();
+
+            entity = inputDataProccessingQuery is not null ? inputDataProccessingQuery(entity, dbContext) : entity;
+
+            if (includeQuery is not null) baseQuery = includeQuery(baseQuery);
+
+            EntityT? oldEntity = baseQuery.FirstOrDefault(findPredicate);
+
+            if (oldEntity is null)
+            {
+                _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {id} not found. Adding new entity...");
+                await dbContext.Set<EntityT>().AddAsync(entity);
+            }
+            else
+            {
+                _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {id} found. Updating...");
+
+                foreach (PropertyInfo property in typeof(EntityT).GetProperties().Where(p => p.CanWrite))
+                {
+                    property.SetValue(oldEntity, property.GetValue(entity, null), null);
+                }
+
                 await dbContext.SaveChangesAsync();
             }
 

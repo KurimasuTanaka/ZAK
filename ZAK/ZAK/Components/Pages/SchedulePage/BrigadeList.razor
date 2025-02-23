@@ -9,28 +9,33 @@
 
 <ApplicationsRatedListModal @ref="applicationsRatedList" applicationWasChosen="ApplicationWasChosen" />
 
-<MudDropContainer @ref="dropContainer" T="ApplicationScheduled" Items="@applications"
-    ItemsSelector="@((item, dropzone) => item.brigadeId.ToString() == dropzone)" ItemDropped="ItemDroppedHandler">
-    <ChildContent>
-        @foreach (Brigade brigade in brigades)
-        {
 
-            var dropzone = brigade.id.ToString();
-            <MudPaper Class="ma-4 flex-grow-1">
-                <MudList T="ApplicationScheduled" Class="d-flex flex-column mud-height-full">
-                    <MudDropZone T="ApplicationScheduled" AllowReorder="true" Identifier="@dropzone" Class="flex-grow-1" />
-                </MudList>
-            </MudPaper>
-        }
-    </ChildContent>
-    <ItemRenderer>
-        <MudListItem T="ApplicationScheduled" Text="@($"{context.applicationScheduledTime} - {@context.id}")"
-            OnClick="@(async () => { await ShowSortedApplicationsList(context); })" />
-    </ItemRenderer>
-</MudDropContainer>
-
+<MudExpansionPanels MultiExpansion="true">
+    <MudDropContainer @ref="dropContainer" T="ApplicationScheduled" Items="@applications"
+        ItemsSelector="@((item, dropzone) => item.brigadeId.ToString() == dropzone)" ItemDropped="ItemDroppedHandler">
+        <ChildContent>
+            @foreach (Brigade brigade in brigades)
+            {
+                var brigadeNumber = ++brigadeCounter;
+                var dropzone = brigade.id.ToString();
+                <MudExpansionPanel Text="@($"Бригада {brigadeNumber}")">
+                    <MudList T="ApplicationScheduled" Class="d-flex flex-column mud-height-full">
+                        <MudDropZone T="ApplicationScheduled" AllowReorder="true" Identifier="@dropzone"
+                            Class="flex-grow-1" />
+                    </MudList>
+                </MudExpansionPanel>
+            }
+        </ChildContent>
+        <ItemRenderer>
+            <MudListItem T="ApplicationScheduled" Text="@($"{context.applicationScheduledTime} - {@context.id}")"
+                OnClick="@(async () => { await ShowSortedApplicationsList(context); })" />
+        </ItemRenderer>
+    </MudDropContainer>
+</MudExpansionPanels>
 @code {
     [Parameter] public EventCallback RefreshMap { get; set; }
+
+    private int brigadeCounter = 0;
 
     MudDropContainer<ApplicationScheduled> dropContainer = default!;
 
@@ -66,73 +71,22 @@
     private async Task ApplicationWasChosen(ApplicationScheduled scheduledApplication)
     {
         await _brigadesManager.InsertNewApplicationInEmptySlot(
-            scheduledApplication.id, 
-            scheduledApplication.brigadeId, 
-            scheduledApplication.applicationScheduledTime);
+        scheduledApplication.id,
+        scheduledApplication.brigadeId,
+        scheduledApplication.applicationScheduledTime);
+
         applications.Clear();
         await GetApplications();
-        StateHasChanged();   
-    }
-    public async Task UpdateList()
-    {
-        //_brigadeViews.ForEach(async brigadeView => await brigadeView.RedrawBrigadeTable());
+
+        await applicationsRatedList.HideAsync();
         StateHasChanged();
-
-        return;
     }
-
     private async Task ShowSortedApplicationsList(ApplicationScheduled scheduledApplication)
     {
         _logger.LogInformation("Button on application was pressed. Opening modal window with applications list...");
 
-        await applicationsRatedList.ShowAsync(applications.Where(a => a.brigadeId == scheduledApplication.brigadeId).ToList(), scheduledApplication);
-    }
-
-    public async void AddSwapApplication(ApplicationScheduled application)
-    {
-
-
-        applicationsToSwap.Add(application);
-        if (applicationsToSwap.Count == 2)
-        {
-
-            int brigade1Id = applicationsToSwap[0].brigadeId;
-            int brigade2Id = applicationsToSwap[1].brigadeId;
-
-            int application1Time = applicationsToSwap[0].applicationScheduledTime;
-            int application2Time = applicationsToSwap[1].applicationScheduledTime;
-
-            if (brigade1Id == brigade2Id)
-            {
-                Brigade brigade = await brigadesDataAccess.GetById(brigade1Id);
-
-                if (brigade is not null)
-                {
-                    @* int applicationIdBuf = brigade.applicationsIds[application1Time];
-                    brigade.applicationsIds[application1Time] = brigade.applicationsIds[application2Time];
-                    brigade.applicationsIds[application2Time] = applicationIdBuf; *@
-
-                    await brigadesDataAccess.Update(brigade, brigade.id);
-                }
-            }
-            else
-            {
-                Brigade? brigade1 = await brigadesDataAccess.GetById(brigade1Id);
-                Brigade? brigade2 = await brigadesDataAccess.GetById(brigade2Id);
-
-                if (brigade1 is not null && brigade2 is not null)
-                {
-                    @* int applicationIdBuf = brigade1.applicationsIds[application1Time];
-                    brigade1.applicationsIds[application1Time] = brigade2.applicationsIds[application2Time];
-                    brigade2.applicationsIds[application2Time] = applicationIdBuf; *@
-
-                    await brigadesDataAccess.Update(brigade1, brigade1.id);
-                    await brigadesDataAccess.Update(brigade2, brigade2.id);
-                }
-            }
-            applicationsToSwap.Clear();
-            await UpdateList();
-        }
+        await applicationsRatedList.ShowAsync(applications.Where(a => a.brigadeId == scheduledApplication.brigadeId).ToList(),
+        scheduledApplication);
     }
 
 
@@ -151,13 +105,17 @@
             }
             dropContainer.Refresh();
         }
+
+        brigadeCounter = 0;
     }
 
     protected override async Task OnParametersSetAsync()
     {
-
         await GetApplications();
     }
 
+    protected override void  OnAfterRender(bool firstRender)
+    {
+    }
 
 }

@@ -1,10 +1,11 @@
 ﻿@using BlazorApp.DA;
+@using MudBlazor;
 
 @inject IDaoBase<Brigade, BrigadeModel> brigadesDataAccess;
 @inject ILogger<SchedulePart> _logger
 
 <div style="width: 50%">
-    <Button Color="ButtonColor.Primary" @onclick="AddNewBrigade">Добавить бригаду</Button>
+    <MudButton  Variant="Variant.Filled" Style="@($"background:{Colors.Gray.Darken3}; color:{Colors.Orange.Lighten2};")"  @onclick="AddNewBrigade"> Добавить бригаду</MudButton >
 
     <BrigadeList @ref=@brigadeList  RefreshMap="async (value) => {await RefreshMap.InvokeAsync();}"/>
 </div>
@@ -19,7 +20,6 @@
         _logger.LogInformation("Adding new brigade");
 
         await brigadesDataAccess.Insert(new Brigade());
-        await brigadeList.UpdateList();
     }
 
 }
