@@ -36,9 +36,9 @@
     </div>
     @*Interactive components in Id section ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
     <CheckBoxInputComponent label="Ігнорувати" applicationId="@context.id" propertyName="ignored"
-      propertyValue="@((bool)context["ignored"])" />
+      propertyValue="@(context.ignored)" />
     <CheckBoxInputComponent label="Важлива заявка" applicationId="@context.id" propertyName="hot"
-      propertyValue="@((bool)context["hot"])" />
+      propertyValue="@(context.hot)" />
 
     <TimeframeApplicationComponent applicationId="@context.id" firstPart="@context.firstPart"
       secondPart="@context.secondPart" timeRangeIsSet="@context.timeRangeIsSet" startHour="@context.startHour"
@@ -112,15 +112,14 @@
   {
     _logger.LogInformation("Drawing applications table");
 
-    if (showIgnored) applications = (await applicationsDataAccess.GetAll()).ToList();
-    else applications = (await applicationsDataAccess.GetAll()).Where(a => a.ignored == false).ToList();
+    await Redraw();  
   }
   public async Task Redraw()
   {
     _logger.LogInformation("Redrawing applications table");
 
-    if (showIgnored) applications = (await applicationsDataAccess.GetAll()).ToList();
-    else applications = (await applicationsDataAccess.GetAll()).ToList().Where(a => a.ignored == false).ToList();
+    if (showIgnored) applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad => ad.district))).ToList();
+    else applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad => ad.district))).Where(a => a.ignored == false).ToList();
 
     StateHasChanged();
   }
