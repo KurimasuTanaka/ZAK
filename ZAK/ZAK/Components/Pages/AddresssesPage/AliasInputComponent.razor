@@ -5,7 +5,7 @@
 @inject IDaoBase<AddressAlias, AddressAliasModel> addressAliasDataAccess;
 @inject ILogger<AliasInputComponent> _logger;
 
-<InputText TValue="double" Label="Укр. назва" @bind-Value="@alias" @bind-Value:after="UpdateDbData" />
+<InputText TValue="double" Label="Укр. назва" @bind-Value="@alias" @bind-Value:event="UpdateDbData" />
 
 
 

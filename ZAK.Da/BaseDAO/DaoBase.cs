@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -169,20 +170,28 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
         }
     }
 
-    public async Task Update(TransObjT entity, int id, 
-        Func<EntityT, bool>? findPredicate, 
-        Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null, 
+    public async Task Update(
+        TransObjT entity,
+        int id,
+        Func<EntityT, bool>? findPredicate = null,
+        Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null,
         Func<TransObjT, DbContext, TransObjT>? inputDataProccessingQuery = null)
     {
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
-            IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>();
-
             entity = inputDataProccessingQuery is not null ? inputDataProccessingQuery(entity, dbContext) : entity;
 
-            if (includeQuery is not null) baseQuery = includeQuery(baseQuery);
+            IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>();
 
-            EntityT? oldEntity = baseQuery.FirstOrDefault(findPredicate);
+
+            EntityT? oldEntity = null;
+            if (includeQuery is not null)
+            {
+                baseQuery = includeQuery(baseQuery);
+                oldEntity = baseQuery.FirstOrDefault(findPredicate);
+            }
+            else oldEntity = await dbContext.Set<EntityT>().FindAsync(id);
+
 
             if (oldEntity is null)
             {
@@ -203,4 +212,56 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
 
         }
     }
+
+    // public async Task Update(
+    //     TransObjT entity,
+    //     int id,
+    //     Expression<Func<EntityT, bool>>? findPredicate = null,
+    //     Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null,
+    //     Func<TransObjT, DbContext, TransObjT>? inputDataProccessingQuery = null)
+    // {
+    //     using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+    //     {
+    //         entity = inputDataProccessingQuery is not null ? inputDataProccessingQuery(entity, dbContext) : entity;
+
+    //         IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>();
+
+    //         EntityT? oldEntity = null;
+
+    //         if (includeQuery is not null)
+    //         {
+    //             baseQuery = includeQuery(baseQuery) ?? throw new InvalidOperationException("includeQuery returned null.");
+
+    //             if (findPredicate is not null)
+    //             {
+    //                 oldEntity = await baseQuery.FirstOrDefaultAsync(findPredicate);
+    //             }
+    //             else
+    //             {
+    //                 throw new ArgumentNullException(nameof(findPredicate), "Find predicate cannot be null when includeQuery is used.");
+    //             }
+    //         }
+    //         else
+    //         {
+    //             oldEntity = await dbContext.Set<EntityT>().FindAsync(id);
+    //         }
+
+    //         if (oldEntity is null)
+    //         {
+    //             _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {id} not found. Adding new entity...");
+    //             await dbContext.Set<EntityT>().AddAsync(entity);
+    //         }
+    //         else
+    //         {
+    //             _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {id} found. Updating...");
+
+    //             foreach (PropertyInfo property in typeof(EntityT).GetProperties().Where(p => p.CanWrite))
+    //             {
+    //                 property.SetValue(oldEntity, property.GetValue(entity, null), null);
+    //             }
+
+    //             await dbContext.SaveChangesAsync();
+    //         }
+    //     }
+    // }
 }

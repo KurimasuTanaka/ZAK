@@ -24,21 +24,22 @@
   private Button LoadWithRemoval = default!;
   private Button LoadNew = default!;
 
-  string pathToApplicationsFile = String.Empty;
-  IBrowserFile applicationsFileToLoad;
+  string? pathToApplicationsFile = null;
+  IBrowserFile? applicationsFileToLoad;
 
-  Alert noFileAlert = default!;
+  @* Alert noFileAlert = default!;  *@
 
   private async void LoadNewApplications()
   {
     LoadNew.ShowLoading("Загрузка заявок...");
 
-    if (applicationsFileToLoad is null)
-    {
+    if (applicationsFileToLoad is not null) await fileLoader.LoadFile(applicationsFileToLoad);
+    else {
+      ///Code for alert
       return;
     }
 
-    await fileLoader.LoadFile(applicationsFileToLoad);
+    
 
     await applicationsLoader.AddNewApplications(fileLoader.GetLastLoadedFile());
 

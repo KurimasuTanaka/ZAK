@@ -10,7 +10,7 @@
 
 <td><span> @address.streetName @address.building</span></td>
 <td>
-    <NumberInput TValue="double" Label="Приоритетность дома" @bind-Value="@address.priority"  @bind-Value:after="UpdateParameterValue" />
+    <NumberInput TValue="double" Label="Приоритетность дома" @bind-Value="@address.priority"  @bind-Value:event="UpdateParameterValue" />
 </td>
 
 

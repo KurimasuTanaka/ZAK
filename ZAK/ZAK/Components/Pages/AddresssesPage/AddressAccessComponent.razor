@@ -1,0 +1,39 @@
+﻿@using ZAK.Da.BaseDAO
+@inject IDaoBase<Address, AddressModel> _addressesDataAccess;
+@inject ILogger<AddressAccessComponent> _logger;
+
+<InputSelect @bind-Value="@equipmentAccess" @bind-Value:after="UpdateEquipmentAccess">
+    @foreach (EquipmentAccess access in Enum.GetValues(typeof(EquipmentAccess)))
+    {
+        <option value="@access">@access.GetDisplayName()</option>
+    }
+</InputSelect>
+
+@code {
+    [Parameter] public EquipmentAccess equipmentAccess { get; set; }
+    [Parameter] public int addressId { get; set; }
+
+    async Task UpdateEquipmentAccess()
+    {
+        _logger.LogInformation($"Updating equipment access for address with id {addressId} to {equipmentAccess}");
+
+        Address address = await _addressesDataAccess.GetById(addressId);
+        address.equipmentAccess = equipmentAccess;
+
+        await _addressesDataAccess.Update(
+        address,
+        address.Id,
+        includeQuery: null,
+        findPredicate: a => a.Id == address.Id,
+        inputDataProccessingQuery: (a, context) =>
+        {
+            if(a.applications == null) return a;
+            foreach(Application application in a.applications) context.Entry(application).State = EntityState.Unchanged;
+            context.Entry(a.district).State = EntityState.Unchanged;
+            return a;
+        });
+
+
+
+    }
+}

@@ -50,15 +50,6 @@ public class BrigadesManager : IBrigadesManager
         }
 
         _logger.LogInformation($"Updating previous brigade {prevBrigadeId}...");
-
-
-        //Stupid solution
-        // foreach (ScheduledApplicationModel scheduledApplication in prevBrigade.scheduledApplications)
-        // {
-        //     scheduledApplication.application = null;
-        // }
-
-
         //Update previous brigade
         await _brigadeDataAccess.Update(
         prevBrigade,
@@ -124,13 +115,6 @@ public class BrigadesManager : IBrigadesManager
         }
         _logger.LogInformation($"Updating new brigade {brigadeId}...");
 
-        //Stupid solution
-        // foreach (ScheduledApplicationModel scheduledApplication in newBrigade.scheduledApplications)
-        // {
-        //     scheduledApplication.application = null;
-        // }
-
-
         //Update new brigade
         await _brigadeDataAccess.Update(
         newBrigade,
@@ -169,10 +153,6 @@ public class BrigadesManager : IBrigadesManager
 
         _logger.LogInformation($"Updating new brigade {brigadeId}...");
 
-        // foreach (ScheduledApplicationModel scheduledApplication in newBrigade.scheduledApplications)
-        // {
-        //     scheduledApplication.application = null;
-        // }
 
         //Update new brigade
         await _brigadeDataAccess.Update(

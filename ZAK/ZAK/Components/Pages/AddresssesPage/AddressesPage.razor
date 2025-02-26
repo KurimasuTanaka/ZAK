@@ -7,7 +7,7 @@
 @inject IDaoBase<Address, AddressModel> addressesDataAccess;
 @inject IGeoDataManager geoDataManager;
 @inject IUnresolvedAddressesChecker unresolvedAddressesChecker;
-@inject ILogger<PrioritizedAdderessesPage> _logger;
+@inject ILogger<AddressesPage> _logger;
 
 
 <Button @ref="loadCoordinatesButton" Color="ButtonColor.Primary" @onclick="LoadCoordinatesData"> Подтянуть координаты
@@ -76,7 +76,7 @@
 
         List<Address> addresses = (await addressesDataAccess.GetAll()).ToList();
 
-        unresolvedAddressesCount = unresolvedAddressesChecker.GetNumberOfUnresolvedAddresses(addresses);
+        //unresolvedAddressesCount = unresolvedAddressesChecker.GetNumberOfUnresolvedAddresses(addresses);
         StateHasChanged();
 
         return await Task.FromResult(request.ApplyTo(addresses));
@@ -95,4 +95,4 @@
 
     }
 
-}    using Microsoft.EntityFrameworkCore;
+}    

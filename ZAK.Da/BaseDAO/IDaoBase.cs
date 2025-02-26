@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using ZAK.Db;
 
@@ -14,7 +15,7 @@ public interface IDaoBase<TransObjT, EntityT> where TransObjT : class, new() whe
         Func<EntityT, bool>? findPredicate,
         Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null);
     Task Update(TransObjT entity, int id,
-    Func<EntityT, bool>? findPredicate,
+    Func<EntityT, bool>? findPredicate = null,
     Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null,
     Func<TransObjT, DbContext, TransObjT>? inputDataProccessingQuery = null
     );

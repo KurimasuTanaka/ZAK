@@ -2,7 +2,7 @@
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
 
-@inject ICoefficientsDataAccess coefficientsDataAccess;
+@inject IDaoBase<Coefficient, CoefficientModel> _coefficientsDataAccess; 
 
 
 <td><span>@coefficient.parameterAlias</span></td>
@@ -15,16 +15,20 @@
 
 
 @code {
-    [Parameter] public Coefficient coefficient { get; set; }
+    [Parameter] public Coefficient coefficient { get; set; } = new Coefficient();
 
     private async void UpdateParameterValue()
     {
-        await coefficientsDataAccess.UpdateCoefficient(coefficient.id, coefficient.coefficient);
+        Coefficient oldCoefficient = await _coefficientsDataAccess.GetById(coefficient.id);
+        oldCoefficient.coefficient = coefficient.coefficient; 
+        await _coefficientsDataAccess.Update(oldCoefficient, coefficient.id);
     }
 
     private async void UpdateInfinityStatus()
     {
-        await coefficientsDataAccess.MakeParameterInfinite(coefficient.id);
+        Coefficient oldCoefficient = await _coefficientsDataAccess.GetById(coefficient.id);
+        oldCoefficient.infinite = coefficient.infinite; 
+        await _coefficientsDataAccess.Update(oldCoefficient, coefficient.id);
     }
 
 

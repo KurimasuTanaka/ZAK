@@ -5,7 +5,7 @@
 @inject IDaoBase<AddressCoordinates, AddressCoordinatesModel> cooridinatesDataAccess;
 @inject ILogger<CoordinatesInputComponent> _logger;
 
-<InputNumber TValue="double" @bind-Value="@coordinate" @bind-Value:after="UpdateDbData" />
+<InputNumber TValue="double" @bind-Value="@coordinate" @bind-Value:event="UpdateDbData" />
 
 
 

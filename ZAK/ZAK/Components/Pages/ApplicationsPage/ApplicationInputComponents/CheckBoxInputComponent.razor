@@ -5,7 +5,7 @@
 @inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
 @inject ILogger<CheckBoxInputComponent> _logger;
 
-<Switch Label="@label" @bind-Value="@propertyValue" @bind-Value:after="UpdateDbData" />
+<Switch Label="@label" @bind-Value="@propertyValue" @bind-Value:event="UpdateDbData" />
 
 
 
