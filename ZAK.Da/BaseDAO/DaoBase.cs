@@ -44,15 +44,29 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
         }
     }
 
-    public Task DeleteAll()
+    public async Task DeleteAll()
     {
         _logger.LogInformation($"Deleting all entities of type {typeof(EntityT)}");
 
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             dbContext.Set<EntityT>().RemoveRange(dbContext.Set<EntityT>());
-            return dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
         }
+
+        _logger.LogInformation("All entities deleted successfully!");
+    }
+
+    public async Task DeleteRange(IEnumerable<TransObjT> entities)
+    {
+        _logger.LogInformation($"Deleting range of entities of type {typeof(EntityT)}");
+
+        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        {
+            dbContext.Set<EntityT>().RemoveRange(entities.Cast<EntityT>());
+            await dbContext.SaveChangesAsync();
+        }
+        _logger.LogInformation($"Entities deleted successfully");
     }
 
     public async Task<IEnumerable<TransObjT>> GetAll(Func<IQueryable<EntityT>, IQueryable<EntityT>>? query = null)
@@ -213,55 +227,36 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
         }
     }
 
-    // public async Task Update(
-    //     TransObjT entity,
-    //     int id,
-    //     Expression<Func<EntityT, bool>>? findPredicate = null,
-    //     Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null,
-    //     Func<TransObjT, DbContext, TransObjT>? inputDataProccessingQuery = null)
-    // {
-    //     using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
-    //     {
-    //         entity = inputDataProccessingQuery is not null ? inputDataProccessingQuery(entity, dbContext) : entity;
+    public async Task UpdateRange(
+        IEnumerable<TransObjT> entities, 
+        Func<EntityT, bool> findPredicate)
+    {  
+        _logger.LogInformation($"Updating range of entities of type {typeof(EntityT)}");
 
-    //         IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>();
+        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        {
+            List<EntityT> oldEntities = new();
+            
+            foreach (EntityT entity in entities)
+            {
+                EntityT? oldEntity = dbContext.Set<EntityT>().FirstOrDefault(findPredicate);
+                if(oldEntity is not null)
+                {
+                    foreach (PropertyInfo property in typeof(EntityT).GetProperties().Where(p => p.CanWrite))
+                    {
+                        property.SetValue(oldEntity, property.GetValue(entity, null), null);
+                    }
+                    oldEntities.Append(oldEntity);
+                }
+            }
 
-    //         EntityT? oldEntity = null;
 
-    //         if (includeQuery is not null)
-    //         {
-    //             baseQuery = includeQuery(baseQuery) ?? throw new InvalidOperationException("includeQuery returned null.");
+            dbContext.UpdateRange(oldEntities.Cast<EntityT>());
+            await dbContext.SaveChangesAsync();
+        }
 
-    //             if (findPredicate is not null)
-    //             {
-    //                 oldEntity = await baseQuery.FirstOrDefaultAsync(findPredicate);
-    //             }
-    //             else
-    //             {
-    //                 throw new ArgumentNullException(nameof(findPredicate), "Find predicate cannot be null when includeQuery is used.");
-    //             }
-    //         }
-    //         else
-    //         {
-    //             oldEntity = await dbContext.Set<EntityT>().FindAsync(id);
-    //         }
 
-    //         if (oldEntity is null)
-    //         {
-    //             _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {id} not found. Adding new entity...");
-    //             await dbContext.Set<EntityT>().AddAsync(entity);
-    //         }
-    //         else
-    //         {
-    //             _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {id} found. Updating...");
-
-    //             foreach (PropertyInfo property in typeof(EntityT).GetProperties().Where(p => p.CanWrite))
-    //             {
-    //                 property.SetValue(oldEntity, property.GetValue(entity, null), null);
-    //             }
-
-    //             await dbContext.SaveChangesAsync();
-    //         }
-    //     }
-    // }
+        _logger.LogInformation($"Entities updated successfully");
+    }
 }
+

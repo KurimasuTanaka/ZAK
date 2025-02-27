@@ -17,6 +17,7 @@ using ZAK.Db.Models;
 using ZAK.Components.Pages.BlackoutSchedulePage;
 using MudBlazor.Services;
 using ZAK.Services.BrigadesManagerService;
+using ZAK.Services.ApplicationsManagerSerivce;
 namespace ZAK;
 
 public class Program
@@ -79,6 +80,7 @@ public class Program
         builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
         builder.Services.AddScoped<IApplicationsLoader, ApplicationsLoader>();
+        builder.Services.AddScoped<IApplicationsManagerService, ApplicationsManagerService>();
 
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
         builder.Services.AddSingleton<IMapRoutesManager, MapRoutesManager.MapRoutesManager>();

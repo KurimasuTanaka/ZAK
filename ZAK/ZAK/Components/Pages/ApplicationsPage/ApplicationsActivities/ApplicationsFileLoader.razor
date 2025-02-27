@@ -4,16 +4,18 @@
 @using BlazorBootstrap;
 @using Microsoft.AspNetCore.Components.Forms
 @using BlazorApp.ApplicationsLoader;
+@using ZAK.Services.ApplicationsManagerSerivce
 
 @inject IFileLoader fileLoader;
 @inject IApplicationsLoader applicationsLoader;
 
+@inject IApplicationsManagerService _applicationsManagerSerivce
 
 <div>
-  <InputFile OnChange="LoadFile"></InputFile>
-  <Button @ref="LoadWithRemoval" class="p-2" Color="ButtonColor.Info"
-    @onclick="LoadNewApplicationsWithReplacement">Загрузить заявки</Button>
-  <Button @ref="LoadNew" class="p-2" Color="ButtonColor.Info" @onclick="LoadNewApplications">Добавить заявки</Button>
+  <InputFile OnChange="@((InputFileChangeEventArgs e) => applicationsFileToLoad = e.File)"></InputFile>
+
+  <Button @ref="updateApplicationButton" class="p-2" Color="ButtonColor.Info"
+    @onclick="UpdateApplications">Обновить заявки</Button>
 </div>
 
 @code
@@ -21,37 +23,35 @@
   [Parameter]
   public EventCallback ApplicationsInformationWasChanged { get; set; }
 
-  private Button LoadWithRemoval = default!;
-  private Button LoadNew = default!;
-
-  string? pathToApplicationsFile = null;
+  private Button updateApplicationButton = default!;
   IBrowserFile? applicationsFileToLoad;
 
   @* Alert noFileAlert = default!;  *@
 
-  private async void LoadNewApplications()
+  private async Task UpdateApplications()
   {
-    LoadNew.ShowLoading("Загрузка заявок...");
+    updateApplicationButton.ShowLoading("Загрузка заявок...");
 
-    if (applicationsFileToLoad is not null) await fileLoader.LoadFile(applicationsFileToLoad);
+    if (applicationsFileToLoad is not null) await _applicationsManagerSerivce.UpdateApplications(applicationsFileToLoad);
     else {
       ///Code for alert
       return;
     }
+    updateApplicationButton.HideLoading();
+}
 
     
-
+@* 
     await applicationsLoader.AddNewApplications(fileLoader.GetLastLoadedFile());
 
     //applicationScrapper.ProcessFileWithAddition(fileLoader.GetLastLoadedFile());
 
     await ApplicationsInformationWasChanged.InvokeAsync();
 
-    fileLoader.DeleteTempFiles();
+    fileLoader.DeleteTempFiles(); *@
 
-    LoadNew.HideLoading();
   }
-
+@* 
   private async void LoadNewApplicationsWithReplacement()
   {
     LoadWithRemoval.ShowLoading("Загрузка заявок...");
@@ -78,4 +78,4 @@
     //fileLoader.LoadFile(e.File, "C:/Users/Kurimasu Tanaka/Documents/Coding projects/C#/ZAK/file.html");
     applicationsFileToLoad = e.File;
   }
-}
+  *@

@@ -20,6 +20,7 @@
     <ProjectReference Include="..\ZAK.Db\ZAK.Db.csproj" />
     <ProjectReference Include="..\ZAK.GeoDataFetcher\ZAK.GeoDataFetcher.csproj" />
     <ProjectReference Include="..\ZAK.MapRoutesManager\ZAK.MapRoutesManager.csproj" />
+    <ProjectReference Include="..\ZAK\ZAK\ZAK.csproj" />
   </ItemGroup>
 
 </Project>

@@ -22,7 +22,9 @@ public interface IDaoBase<TransObjT, EntityT> where TransObjT : class, new() whe
 
     Task Update(TransObjT entity, int id);
 
+    Task UpdateRange(IEnumerable<TransObjT> entities, Func<EntityT, bool> findPredicate);
 
     Task Delete(int id);
     Task DeleteAll();
+    Task DeleteRange(IEnumerable<TransObjT> entities);
 }

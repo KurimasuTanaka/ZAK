@@ -4,11 +4,16 @@ namespace BlazorApp;
 
 public class FileLoader : IFileLoader
 {
-    List<string> tempFiles = new List<string>();
+
+    ILogger<FileLoader> _logger;
     public readonly IWebHostEnvironment _enviroment;
-    public FileLoader(IWebHostEnvironment enviroment)
+
+    List<string> tempFiles = new List<string>();
+    
+    public FileLoader(IWebHostEnvironment enviroment, ILogger<FileLoader> logger)
     {
         _enviroment = enviroment;
+        _logger = logger;
     }
 
     public FileLoader()
@@ -25,18 +30,20 @@ public class FileLoader : IFileLoader
 
     public async Task LoadFile(IBrowserFile file)
     {
-        //TODO: Add a string builder
+        _logger.LogInformation($"Loading file {file.Name}...");
 
         if(file != null)
         {
-            tempFiles.Add(_enviroment.ContentRootPath + "/" + file.Name + "TEMP" + ".html");
+            tempFiles.Add($"{_enviroment.ContentRootPath}/{file.Name}TEMP.html");
             
             using (FileStream fs = new FileStream(tempFiles.Last(), FileMode.Create))
             {
                 await file.OpenReadStream(file.Size).CopyToAsync(fs);
                 fs.Close();
             }
-        }
+        } else throw new ArgumentNullException("File in file loader is null!!!");
+    
+        _logger.LogInformation("File loaded successfully!");
     }
 
     public string GetLastLoadedFile()
