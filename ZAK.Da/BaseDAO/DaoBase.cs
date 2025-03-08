@@ -178,8 +178,8 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
                 {
                     property.SetValue(oldEntity, property.GetValue(entity, null), null);
                 }
-                await dbContext.SaveChangesAsync();
             }
+            await dbContext.SaveChangesAsync();
 
         }
     }

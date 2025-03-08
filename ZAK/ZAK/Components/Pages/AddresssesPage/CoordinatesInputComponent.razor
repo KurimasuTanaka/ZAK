@@ -2,10 +2,10 @@
 @using BlazorApp.DA;
 
 
-@inject IDaoBase<AddressCoordinates, AddressCoordinatesModel> cooridinatesDataAccess;
+@inject IDaoBase<Address, AddressModel> addressDataAccess;
 @inject ILogger<CoordinatesInputComponent> _logger;
 
-<InputNumber TValue="double" @bind-Value="@coordinate" @bind-Value:event="UpdateDbData" />
+<InputNumber TValue="double" @bind-Value="@coordinate" @bind-Value:after="UpdateDbData" />
 
 
 
@@ -21,22 +21,27 @@
     {
         _logger.LogInformation($"Updating coordinates for address with id {addressId} to {coordinate}");
 
-        AddressCoordinates coordinates = await cooridinatesDataAccess.GetById(addressId);
-        if(coordinates == null)
+        Address address = (await addressDataAccess.GetAll(query => query.Include(x =>  x.coordinates).Where(x => x.Id == addressId))).FirstOrDefault()!;
+
+        if(address.coordinates is null)
         {
-            coordinates = new AddressCoordinates();
-            coordinates.addressId = addressId;
+            address.coordinates = new AddressCoordinates();
         }
 
         if (Lat)
         {
-            coordinates.lat = coordinate;
+            address.coordinates.lat = coordinate;
         }
         else if (Lon)
         {
-            coordinates.lon = coordinate;
+            address.coordinates.lon = coordinate;
         }
 
-        await cooridinatesDataAccess.Update(coordinates, coordinates.addressId);
+        await addressDataAccess.Update(
+            address, 
+            addressId, 
+            findPredicate: a => a.Id == addressId,
+            includeQuery: a => a.Include(x => x.coordinates)
+            );
     }
 }  

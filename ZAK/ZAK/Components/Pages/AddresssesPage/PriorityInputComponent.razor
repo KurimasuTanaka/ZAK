@@ -6,7 +6,7 @@
 @inject ILogger<PriorityInputComponent> _logger;
 
 
-<NumberInput TValue="double" Label="Приорітет" @bind-Value="@priority" @bind-Value:event="UpdateDbData" />
+<InputNumber TValue="double" Label="Приорітет" @bind-Value="@priority" @bind-Value:after="UpdateDbData" />
 
 
 
@@ -18,20 +18,15 @@
     {
         _logger.LogInformation($"Updating priority for address with id {addressId} to {priority}");
 
-        Address address = await _addressesDataAccess.GetById(addressId);
+        Address address = (await _addressesDataAccess.GetAll(query => query.Include(x =>  x.addressPriority).Where(x => x.Id == addressId))).FirstOrDefault()!;
+
         address.priority = priority;    
 
         await _addressesDataAccess.Update(
-        address,
-        address.Id,
-        includeQuery: null,
-        findPredicate: a => a.Id == address.Id,
-        inputDataProccessingQuery: (a, context) =>
-        {
-            if(a.applications == null) return a;
-            foreach(Application application in a.applications) context.Entry(application).State = EntityState.Unchanged;
-            context.Entry(a.district).State = EntityState.Unchanged;
-            return a;
-        });
+            address, 
+            addressId, 
+            findPredicate: a => a.Id == addressId,
+            includeQuery: a => a.Include(x => x.addressPriority)
+            );
     }
 }

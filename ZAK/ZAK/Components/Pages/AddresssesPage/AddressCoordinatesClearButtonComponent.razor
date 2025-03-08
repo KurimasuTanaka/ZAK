@@ -1,4 +1,4 @@
-﻿@inject IDaoBase<AddressCoordinates, AddressCoordinatesModel> cooridinatesDataAccess;
+﻿@inject IDaoBase<Address, AddressModel> _addressesDataAccess;
 
 <Button @onclick="DeleteCoordinates">
     <Icon Name="IconName.X" />
@@ -8,10 +8,23 @@
 
     private async void DeleteCoordinates()
     {
-        AddressCoordinates coordinates = await cooridinatesDataAccess.GetById(addressId);
-        coordinates.lat = 0.0;
-        coordinates.lon = 0.0;
-        await cooridinatesDataAccess.Update(coordinates, coordinates.addressId);
-    }
+        Address address = (await _addressesDataAccess.GetAll(query => query.Include(x =>  x.coordinates).Where(x => x.Id == addressId))).FirstOrDefault()!;
+
+        if(address.coordinates is null)
+        {
+            address.coordinates = new AddressCoordinates();
+        }
+        else 
+        {
+            address.coordinates.lat = 0;
+            address.coordinates.lon = 0;
+        }
+
+        await _addressesDataAccess.Update(
+            address, 
+            addressId, 
+            findPredicate: a => a.Id == addressId,
+            includeQuery: a => a.Include(x => x.coordinates)
+            );    }
 
 }

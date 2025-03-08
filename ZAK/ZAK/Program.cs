@@ -50,29 +50,22 @@ public class Program
 
         builder.Services.AddMudServices();
 
-        builder.Services.AddTransient<IDaoBase<Coefficient, CoefficientModel>, DaoBase<Coefficient, CoefficientModel>>();
-        //builder.Services.AddTransient<ICoefficientsDataAccess,      CoefficientsDataAccess>();
+        string? connectionString = builder.Configuration["ConnectionStrings:MySQL"];
+        if (String.IsNullOrEmpty(connectionString)) throw new Exception("Connection string is empty");
 
-        builder.Services.AddTransient<IDaoBase<Application, ApplicationModel>, DaoBase<Application, ApplicationModel>>();
-        //builder.Services.AddTransient<IApplicationsDataAccess,      ApplicationsDataAccess>();
-
-        builder.Services.AddTransient<IDaoBase<District, DistrictModel>, DaoBase<District, DistrictModel>>();
-        //builder.Services.AddTransient<IDistrictDataAccess,          DistrictDataAccess>();
+        var serverVersion = new MySqlServerVersion(new Version(8, 0, 41));
+        builder.Services.AddDbContextFactory<BlazorAppDbContext>(options =>
+        options.UseMySql(connectionString, serverVersion));
 
         builder.Services.AddTransient<IDaoBase<Brigade, BrigadeModel>, DaoBase<Brigade, BrigadeModel>>();
-        builder.Services.AddTransient<IBrigadesManager, BrigadesManager>();
-        //builder.Services.AddTransient<IBrigadesDataAccess,          BrigadesDataAccess>();
 
+        builder.Services.AddTransient<IDaoBase<Coefficient, CoefficientModel>, DaoBase<Coefficient, CoefficientModel>>();
+        builder.Services.AddTransient<IDaoBase<Application, ApplicationModel>, DaoBase<Application, ApplicationModel>>();
+        builder.Services.AddTransient<IDaoBase<District, DistrictModel>, DaoBase<District, DistrictModel>>();
         builder.Services.AddTransient<IDaoBase<Address, AddressModel>, DaoBase<Address, AddressModel>>();
-
         builder.Services.AddTransient<IDaoBase<AddressPriority, AddressPriority>, DaoBase<AddressPriority, AddressPriority>>();
-        //builder.Services.AddTransient<IAddressPriorityDataAccess,   AddressPriorityDataAccess>();
-
         builder.Services.AddTransient<IDaoBase<AddressCoordinates, AddressCoordinatesModel>, DaoBase<AddressCoordinates, AddressCoordinatesModel>>();
-        //builder.Services.AddTransient<ICoordinatesDataAccess,       CoordinatesDataAccess>();
-
         builder.Services.AddTransient<IDaoBase<AddressAlias, AddressAliasModel>, DaoBase<AddressAlias, AddressAliasModel>>();
-        //builder.Services.AddTransient<IAddressAliasDataAccess,      AddressAliasDataAccess>();
 
         builder.Services.AddTransient<IBlackoutScheduleDataAccess, BlackoutScheduleDataAccess>();
 
@@ -80,19 +73,16 @@ public class Program
         builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
         builder.Services.AddScoped<IApplicationsLoader, ApplicationsLoader>();
-        builder.Services.AddScoped<IApplicationsManagerService, ApplicationsManagerService>();
+        
+        builder.Services.AddTransient<IApplicationsManagerService, ApplicationsManagerService>();
+        builder.Services.AddTransient<IBrigadesManager, BrigadesManager>();
 
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
         builder.Services.AddSingleton<IMapRoutesManager, MapRoutesManager.MapRoutesManager>();
         builder.Services.AddScoped<IUnresolvedAddressesChecker, UnresolvedAddressesChecker>();
 
 
-        string? connectionString = builder.Configuration["ConnectionStrings:MySQL"];
-        if (String.IsNullOrEmpty(connectionString)) throw new Exception("Connection string is empty");
 
-        var serverVersion = new MySqlServerVersion(new Version(8, 0, 41));
-        builder.Services.AddDbContextFactory<BlazorAppDbContext>(options =>
-        options.UseMySql(connectionString, serverVersion));
 
 
 

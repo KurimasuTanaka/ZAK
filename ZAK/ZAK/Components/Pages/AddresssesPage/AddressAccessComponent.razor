@@ -22,18 +22,6 @@
 
         await _addressesDataAccess.Update(
         address,
-        address.Id,
-        includeQuery: null,
-        findPredicate: a => a.Id == address.Id,
-        inputDataProccessingQuery: (a, context) =>
-        {
-            if(a.applications == null) return a;
-            foreach(Application application in a.applications) context.Entry(application).State = EntityState.Unchanged;
-            context.Entry(a.district).State = EntityState.Unchanged;
-            return a;
-        });
-
-
-
+        address.Id);
     }
 }

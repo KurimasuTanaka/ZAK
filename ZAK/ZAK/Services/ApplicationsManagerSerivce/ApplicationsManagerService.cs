@@ -15,10 +15,10 @@ public class ApplicationsManagerService : IApplicationsManagerService
     private readonly IFileLoader _fileLoader;
     private readonly IApplicationsScrapper _applicationScrapper;
 
-    private readonly IDaoBase<Application, ApplicationModel> _applicationsDataAccess;
+    private readonly IDaoBase<Application, ZAK.Db.Models.ApplicationModel> _applicationsDataAccess;
 
     public ApplicationsManagerService(
-        IDaoBase<Application, ApplicationModel> applicationsDataAccess, 
+        IDaoBase<Application, ZAK.Db.Models.ApplicationModel> applicationsDataAccess, 
         IApplicationsScrapper applicationsScrapper, 
         IFileLoader fileLoader, 
         ILogger<ApplicationsManagerService> logger)
@@ -29,6 +29,7 @@ public class ApplicationsManagerService : IApplicationsManagerService
         _applicationsDataAccess = applicationsDataAccess;
 
     }
+
 
     public Task AddApplication()
     {

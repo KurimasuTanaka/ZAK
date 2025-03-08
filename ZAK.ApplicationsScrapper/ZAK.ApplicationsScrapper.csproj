@@ -8,9 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ZAK.Da\ZAK.Da.csproj" />
   </ItemGroup>
 

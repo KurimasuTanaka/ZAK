@@ -10,7 +10,7 @@
     <Switch @bind-Value="coefficient.infinite" Label="Максимальный приоритет"   @bind-Value:after="UpdateInfinityStatus" />
 </td>
 <td>
-    <NumberInput TValue="double" @bind-Value="@coefficient.coefficient"  @bind-Value:after="UpdateParameterValue" />
+    <InputNumber TValue="double" @bind-Value="@coefficient.coefficient"  @bind-Value:after="UpdateParameterValue" />
 </td>
 
 

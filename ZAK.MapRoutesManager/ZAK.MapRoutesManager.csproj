@@ -8,9 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ZAK.Da\ZAK.Da.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
       <PackageReference Include="itinero" Version="1.5.1" />
       <PackageReference Include="Itinero.IO.Osm" Version="1.5.1" />
   </ItemGroup>

@@ -2,10 +2,10 @@
 @using BlazorApp.DA;
 
 
-@inject IDaoBase<AddressAlias, AddressAliasModel> addressAliasDataAccess;
+@inject IDaoBase<Address, AddressModel> addressDataAccess;
 @inject ILogger<AliasInputComponent> _logger;
 
-<InputText TValue="double" Label="Укр. назва" @bind-Value="@alias" @bind-Value:event="UpdateDbData" />
+<InputText TValue="double" Label="Укр. назва" @bind-Value="@alias" @bind-Value:after="UpdateDbData" />
 
 
 
@@ -20,11 +20,27 @@
     {
         _logger.LogInformation($"Updating alias for address with id {addressId} to {alias}");
 
-        AddressAlias addressAlias = await addressAliasDataAccess.GetById(addressId);
+        Address address = (await addressDataAccess.GetAll(query => query.Include(x =>  x.addressAlias).Where(x => x.Id == addressId))).FirstOrDefault()!;
 
-        if(streetAlias) addressAlias.streetAlias = alias;
-        else addressAlias.buildingAlias = alias;
-        
-        await addressAliasDataAccess.Update(addressAlias, addressId);
+        if(address.addressAlias is null)
+        {
+            address.addressAlias = new AddressAlias();
+        }
+
+        if (streetAlias)
+        {
+            address.addressAlias.streetAlias = alias;
+        }
+        else 
+        {
+            address.addressAlias.buildingAlias = alias;
+        }
+
+        await addressDataAccess.Update(
+            address, 
+            addressId, 
+            findPredicate: a => a.Id == addressId,
+            includeQuery: a => a.Include(x => x.addressAlias)
+            );
     }
 }  

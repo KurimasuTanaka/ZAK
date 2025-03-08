@@ -1,7 +1,7 @@
 ﻿@inject IDaoBase<Address, AddressModel> _addressesDataAccess;
 @inject ILogger<AddressBlackoutGroupComponent> _logger;
 
-<NumberInput TValue="int" Label="Група" @bind-Value="@group" @bind-Value:event="UpdateDbData" />
+<InputNumber TValue="int" Label="Група" @bind-Value="@group" @bind-Value:after="UpdateDbData" />
 
 
 
@@ -12,21 +12,14 @@
  
     private async Task UpdateDbData()
     {
-        _logger.LogInformation($"Updating blackout group for address with id {addressId} to {group}");
+        _logger.LogInformation($"Updating blackout group for address with id {addressId} to {group}...");
 
         Address address = await _addressesDataAccess.GetById(addressId);
         address.blackoutGroup = group;
         await _addressesDataAccess.Update(
         address,
-        address.Id,
-        includeQuery: null,
-        findPredicate: a => a.Id == address.Id,
-        inputDataProccessingQuery: (a, context) =>
-        {
-            if(a.applications == null) return a;
-            foreach(Application application in a.applications) context.Entry(application).State = EntityState.Unchanged;
-            context.Entry(a.district).State = EntityState.Unchanged;
-            return a;
-        });
+        address.Id);
+
+        _logger.LogInformation($"Blackout group for address with id {addressId} updated to {group} successfully!");
     }
 }
