@@ -12,7 +12,7 @@ namespace ZAK.Db.Models;
         public int id {get; set;}
 
 //        [ForeignKey ("addressId")]
-        public AddressModel address { get; set; } = new AddressModel();
+        public AddressModel? address { get; set; }
         //public int addressId { get; set; }
         //Date    
         public int year {get; set;} = 0;

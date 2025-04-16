@@ -21,7 +21,6 @@ public class AddressModel
 
     //District
     public DistrictModel? district {get; set;} = null;
-    public string districtName { get; set; }  = String.Empty;
 
     //Address alias
     public AddressAliasModel? addressAlias { get; set; } = null;

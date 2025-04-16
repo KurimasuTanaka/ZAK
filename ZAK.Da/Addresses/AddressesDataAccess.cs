@@ -77,7 +77,7 @@ public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataA
                 if(address.coordinates is not null) addressModel.coordinates = address.coordinates;
                 addressModel.building = addressModel.building;
                 addressModel.streetName = addressModel.streetName;
-                addressModel.districtName = addressModel.districtName;
+                //addressModel.districtName = addressModel.districtName;
             }        
         }
 
