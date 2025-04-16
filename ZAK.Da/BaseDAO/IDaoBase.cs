@@ -9,8 +9,8 @@ public interface IDaoBase<TransObjT, EntityT> where TransObjT : class, new() whe
 {
     Task<IEnumerable<TransObjT>> GetAll(Func<IQueryable<EntityT>, IQueryable<EntityT>>? query = null);
     Task<TransObjT> GetById(int id);
-    Task Insert(TransObjT entity);
-    Task InsertRange(IEnumerable<TransObjT> entities);
+    Task Insert(TransObjT entity,  Func<IQueryable<EntityT>, TransObjT, DbContext, EntityT>? inputProcessQuery = null);
+    Task InsertRange(IEnumerable<TransObjT> entities, Func<IQueryable<EntityT>, DbContext, IQueryable<EntityT>>? inputProcessQuery = null);
     Task Update(TransObjT entity, int id,
         Func<EntityT, bool>? findPredicate,
         Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null);

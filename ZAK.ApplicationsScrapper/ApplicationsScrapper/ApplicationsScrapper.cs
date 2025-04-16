@@ -3,6 +3,7 @@
 using BlazorApp.DA;
 using BlazorApp.Enums;
 using ApplicationsScrappingModule;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationsScrappingModule;
 
@@ -11,7 +12,7 @@ public class ApplicationsScrapper : ApplicationsScrapperBase
     IApplicationsDataAccess _databaseModule;
     IDistrictDataAccess _districtDataAccess;
 
-    public ApplicationsScrapper(IApplicationsDataAccess databaseModule, IDistrictDataAccess districtDataAccess)
+    public ApplicationsScrapper(ILogger<ApplicationsScrapper> logger, IApplicationsDataAccess databaseModule, IDistrictDataAccess districtDataAccess) : base(logger)
     {
         _databaseModule = databaseModule;
         _districtDataAccess = districtDataAccess;

@@ -98,25 +98,30 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
         }
     }
 
-    public async Task Insert(TransObjT entity)
+    public async Task Insert(TransObjT entity, Func<IQueryable<EntityT>, TransObjT, DbContext, EntityT>? inputProcessQuery = null)
     {
         _logger.LogInformation($"Inserting new entity of type {typeof(EntityT)}");
 
+
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
-
+            EntityT insertedEntity = null;
+            if(inputProcessQuery is not null) insertedEntity = inputProcessQuery(dbContext.Set<EntityT>(), entity, dbContext);
+            else insertedEntity = entity;
+            
             await dbContext.Set<EntityT>().AddAsync(entity);
             await dbContext.SaveChangesAsync();
         }
     }
 
-    public async Task InsertRange(IEnumerable<TransObjT> entities)
+    public async Task InsertRange(IEnumerable<TransObjT> entities, Func<IQueryable<EntityT>, DbContext, IQueryable<EntityT>>? inputProcessQuery = null)
     {
         _logger.LogInformation($"Inserting range of entities of type {typeof(EntityT)}");
 
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             await dbContext.Set<EntityT>().AddRangeAsync(entities.Cast<EntityT>());
+            await dbContext.SaveChangesAsync();
         }
     }
 

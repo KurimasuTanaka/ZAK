@@ -32,7 +32,7 @@ public class FileLoader : IFileLoader
     {
         _logger.LogInformation($"Loading file {file.Name}...");
 
-        if(file != null)
+        if(file is not null)
         {
             tempFiles.Add($"{_enviroment.ContentRootPath}/{file.Name}TEMP.html");
             

@@ -55,7 +55,7 @@ public class Program
 
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 41));
         builder.Services.AddDbContextFactory<BlazorAppDbContext>(options =>
-        options.UseMySql(connectionString, serverVersion));
+        options.UseMySql(connectionString, serverVersion).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
         builder.Services.AddTransient<IDaoBase<Brigade, BrigadeModel>, DaoBase<Brigade, BrigadeModel>>();
 

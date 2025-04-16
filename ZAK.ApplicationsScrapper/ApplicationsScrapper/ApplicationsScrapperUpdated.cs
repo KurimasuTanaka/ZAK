@@ -2,13 +2,21 @@ using System;
 using BlazorApp.DA;
 using BlazorApp.Enums;
 using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 
 namespace ApplicationsScrappingModule;
 
 public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
 {
+    public ApplicationsScrapperUpdated(ILogger<ApplicationsScrapperBase> logger) : base(logger)
+    {
+    }
+
     protected override Task<List<Application>> ProceedApplicationsScrapping()
     {
+        _logger.LogInformation("Proceeding applications scrapping...");
+
+
         List<Application> applications = new List<Application>();
         HtmlNodeCollection applicationNodes = _applicationsDoc.DocumentNode.SelectNodes("/html/body/div[7]/div[2]/table/tbody/tr");
 
@@ -19,6 +27,9 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
                 applications.Add(ProceedApplicationNode(applicationNode));
             }
         }
+
+        _logger.LogInformation("Applications scrapping was successful!");
+
         return Task.FromResult(applications);
     }
 
@@ -26,6 +37,8 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
     private Application ProceedApplicationNode(HtmlNode applicationNode)
     {
         Application application = new Application();
+        application.address = new Address();
+        application.address.district = new District();
 
         application = ScrapApplicationId(application, applicationNode);
 

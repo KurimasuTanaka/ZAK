@@ -1,8 +1,6 @@
 ﻿@using BlazorApp.DA;
 @using BlazorApp.Enums;
 
-@inject IDistrictDataAccess districts;
-
 <EditForm Model=@application>
 
 
@@ -29,7 +27,7 @@
 
 
 @*District part ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-        <div class="py-2 col-2" style="display: flex; flex-direction: column"> 
+        @* <div class="py-2 col-2" style="display: flex; flex-direction: column"> 
 
             <label class="form-label">Район:</label>
             <InputSelect @bind-Value="application.districtName">
@@ -38,7 +36,7 @@
                     <option value="@district.name">@district.name</option>
                 }
             </InputSelect>
-        </div>
+        </div> *@
 @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
 

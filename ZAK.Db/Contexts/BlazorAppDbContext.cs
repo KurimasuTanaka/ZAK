@@ -25,7 +25,7 @@ public class BlazorAppDbContext : DbContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.EnableSensitiveDataLogging();
+            optionsBuilder.EnableSensitiveDataLogging();
 
             base.OnConfiguring(optionsBuilder);
         }
