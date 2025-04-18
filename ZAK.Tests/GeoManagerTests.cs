@@ -3,7 +3,7 @@ using ZAK.Db.Models;
 using BlazorApp.GeoDataManager;
 using Xunit;
 
-namespace BlazorApp.Tests;
+namespace ZAK.Tests;
 
 public class GeoDataManagerTests
 {

@@ -53,9 +53,7 @@ public class ApplicationsManagerService : IApplicationsManagerService
         List<Application> newApplications = await _applicationScrapper.ScrapApplicationData(_fileLoader.GetLastLoadedFile());
 
         //Updating application list in DB
-        await DeleteOldApplication(newApplications);
-
-        //await FindApplicationAddresses(newApplications);
+        await DeleteOldApplications(newApplications);
 
         await UpdateOldApplications(newApplications);
         await AddNewApplcations(newApplications);
@@ -63,23 +61,7 @@ public class ApplicationsManagerService : IApplicationsManagerService
         _logger.LogInformation("Applications updated successfully!");
     }
 
-
-    private async Task FindApplicationAddresses(List<Application> newApplications)
-    {
-        _logger.LogInformation("Finding application addresses...");
-
-        List<Address> addresses = (await _addressesDataAccess.GetAll()).ToList();
-
-        for (int i = 0; i < newApplications.Count; i++)
-        {
-            Address? address = addresses.FirstOrDefault(a => a.streetName == newApplications[i].streetName && a.building == newApplications[i].building);
-            if (address is not null) newApplications[i].address = address;
-        }
-
-        _logger.LogInformation("Application addresses found successfully!");
-    }
-
-    private async Task DeleteOldApplication(List<Application> newApplications)
+    private async Task DeleteOldApplications(List<Application> newApplications)
     {
         _logger.LogInformation("Deleting old applications...");
 
@@ -112,41 +94,18 @@ public class ApplicationsManagerService : IApplicationsManagerService
 
         newApplications.Except(oldApplications).ToList().ForEach(async (newApplication) =>
         {
-
-
             await _applicationsDataAccess.Insert(newApplication, inputProcessQuery: (query, newApplication, dbContext) =>
             {
 
-                Address? possibleAddress = new Address( dbContext.
+                AddressModel? possibleAddress = dbContext.
                     Set<AddressModel>().AsNoTracking().
-                    FirstOrDefault(ad => ad.streetName == newApplication.address.streetName && ad.building == newApplication.address.building));
+                    FirstOrDefault(ad => ad.streetName == newApplication.address!.streetName && ad.building == newApplication.address.building);
 
-                if (possibleAddress is not null) newApplication.address = possibleAddress;
-                else {
-                    District? possibleDistrict = dbContext.Set<District>().FirstOrDefault(d => d.name == newApplication.address.district!.name);
-                
-                    newApplication.address.district = possibleDistrict;
-                }
+                if (possibleAddress is not null) dbContext.Attach(newApplication.address);
 
                 return newApplication;
             });
         });
-
-        // await _applicationsDataAccess.InsertRange(newApplications.Except(oldApplications), inputProcessQuery: (query, dbContext) =>
-        // {
-        //     List<Address> addresses = dbContext.
-        //         Set<AddressModel>().
-        //         Select(x => new Address(x)).ToList();
-
-        //     query.ForEachAsync(a =>
-        //     {
-        //         Address? possibleAddress = addresses.FirstOrDefault(ad => ad.streetName == a.address.streetName && ad.building == a.address.building);
-        //         if(possibleAddress is not null) dbContext.Entry(possibleAddress).State = EntityState.Unchanged;
-
-        //     });
-
-        //     return query.Include(a => a.address);
-        // });
 
         _logger.LogInformation("New applications added successfully!");
     }

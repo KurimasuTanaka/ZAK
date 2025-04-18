@@ -13,7 +13,7 @@
 @code {
     [Parameter] public EventCallback RefreshMap { get; set; }
 
-    BrigadeList brigadeList;
+    BrigadeList brigadeList = default!;
 
     private async Task AddNewBrigade()
     {
