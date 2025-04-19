@@ -14,9 +14,10 @@
     <MudDropContainer @ref="dropContainer" T="ApplicationScheduled" Items="@applications"
         ItemsSelector="@((item, dropzone) => item.brigadeId.ToString() == dropzone)" ItemDropped="ItemDroppedHandler">
         <ChildContent>
+            @{int brigadeNumber = 0;}
             @foreach (Brigade brigade in brigades)
             {
-                var brigadeNumber = ++brigadeCounter;
+                ++brigadeNumber;
                 var dropzone = brigade.id.ToString();
                 <MudExpansionPanel Text="@($"Бригада {brigadeNumber}")">
                     <MudList T="ApplicationScheduled" Class="d-flex flex-column mud-height-full">
@@ -34,13 +35,8 @@
 </MudExpansionPanels>
 @code {
     [Parameter] public EventCallback RefreshMap { get; set; }
-
-    private int brigadeCounter = 0;
-
     MudDropContainer<ApplicationScheduled> dropContainer = default!;
-
     private List<Brigade> brigades = new();
-
     private List<ApplicationScheduled> applicationsToSwap = new();
 
 
@@ -91,8 +87,11 @@
     {
         _logger.LogInformation("Getting all brigades...");
 
-        brigades = (await brigadesDataAccess.GetAll(query => query.Include(b => b.scheduledApplications).ThenInclude(sa =>
-        sa.application))).ToList();
+        brigades = (
+            await brigadesDataAccess.GetAll(
+                query => query.
+                    Include(b => b.scheduledApplications).
+                    ThenInclude(sa => sa.application))).ToList();
 
         if (applications.Count == 0)
         {
@@ -102,8 +101,6 @@
             }
             dropContainer.Refresh();
         }
-
-        brigadeCounter = 0;
     }
 
     protected override async Task OnParametersSetAsync()

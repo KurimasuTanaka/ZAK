@@ -12,10 +12,11 @@ class TestDbContextFactory : IDbContextFactory<BlazorAppDbContext>
     public TestDbContextFactory()
     {
         builder.UseSqlite(_connection);
+        builder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
         BlazorAppDbContext blazorAppDbContext = new(builder.Options);
-        blazorAppDbContext.Database.EnsureDeleted();
-        blazorAppDbContext.Database.EnsureCreated();
+        blazorAppDbContext.Database.EnsureDeletedAsync();
+        blazorAppDbContext.Database.EnsureCreatedAsync();
 
     }
     public BlazorAppDbContext CreateDbContext()

@@ -200,12 +200,14 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
         {
             entity = inputDataProccessingQuery is not null ? inputDataProccessingQuery(entity, dbContext) : entity;
 
-            IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>();
+            IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>().AsTracking();
 
 
             EntityT? oldEntity = null;
             if (includeQuery is not null)
             {
+                if(findPredicate is null) throw new Exception("Find predicate should not be null if inlcude query is used!");
+
                 baseQuery = includeQuery(baseQuery);
                 oldEntity = baseQuery.FirstOrDefault(findPredicate);
             }
@@ -226,6 +228,7 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
                     property.SetValue(oldEntity, property.GetValue(entity, null), null);
                 }
 
+                dbContext.Update(oldEntity);
                 await dbContext.SaveChangesAsync();
             }
 

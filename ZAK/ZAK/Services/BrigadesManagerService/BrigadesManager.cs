@@ -3,7 +3,6 @@ using BlazorApp.DA;
 using Microsoft.EntityFrameworkCore;
 using ZAK.Da.BaseDAO;
 using ZAK.Db.Models;
-using ZstdSharp.Unsafe;
 
 namespace ZAK.Services.BrigadesManagerService;
 
@@ -158,7 +157,7 @@ public class BrigadesManager : IBrigadesManager
         await _brigadeDataAccess.Update(
         newBrigade,
         newBrigade.id,
-        includeQuery: b => b.Include(b => b.scheduledApplications),
+        includeQuery: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application),
         findPredicate: b => b.id == newBrigade.id,
         inputDataProccessingQuery: (b, context) =>
         {
@@ -166,7 +165,7 @@ public class BrigadesManager : IBrigadesManager
             {
                 if (schedule.application != null)
                 {
-                    context.Entry(schedule.application).State = EntityState.Unchanged;
+                    context.Attach(schedule.application);
                 }
             }
             return b;

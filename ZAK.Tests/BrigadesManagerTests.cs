@@ -64,10 +64,11 @@ public class BrigadesManagerTests
         //Assert
 
         Brigade editedBrigade = (await brigadesDao.GetAll(
-            query: b => b.Include(b => b.scheduledApplications)
+            query: b => b.Include(b => b.scheduledApplications).ThenInclude(b => b.application)
         )).First();
 
         Assert.Equal<int>(timeToScheduleApplication, editedBrigade.GetApplicationScheduledOn(3).applicationScheduledTime);
+        Assert.Equal<int>(applicationToAddToSchedule.id, editedBrigade.GetApplications().ElementAt(timeToScheduleApplication).id);
 
     }
 
