@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
@@ -106,9 +107,9 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             EntityT insertedEntity = null;
-            if(inputProcessQuery is not null) insertedEntity = inputProcessQuery(dbContext.Set<EntityT>(), entity, dbContext);
+            if (inputProcessQuery is not null) insertedEntity = inputProcessQuery(dbContext.Set<EntityT>(), entity, dbContext);
             else insertedEntity = entity;
-            
+
             await dbContext.Set<EntityT>().AddAsync(entity);
             await dbContext.SaveChangesAsync();
         }
@@ -206,7 +207,7 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
             EntityT? oldEntity = null;
             if (includeQuery is not null)
             {
-                if(findPredicate is null) throw new Exception("Find predicate should not be null if inlcude query is used!");
+                if (findPredicate is null) throw new Exception("Find predicate should not be null if inlcude query is used!");
 
                 baseQuery = includeQuery(baseQuery);
                 oldEntity = baseQuery.FirstOrDefault(findPredicate);
@@ -236,30 +237,39 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
     }
 
     public async Task UpdateRange(
-        IEnumerable<TransObjT> entities, 
-        Func<EntityT, bool> findPredicate)
-    {  
+        IEnumerable<TransObjT> entities,
+        Func<EntityT, bool> findPredicate,
+        Func<IEnumerable<EntityT>, EntityT, EntityT> entitySeach,
+        Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null,
+        Func<DbContext, EntityT, EntityT>? attachFunction = null,
+        Func<EntityT, EntityT, EntityT>? updatingFunction = null)
+    {
         _logger.LogInformation($"Updating range of entities of type {typeof(EntityT)}");
 
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
-            List<EntityT> oldEntities = new();
-            
-            foreach (EntityT entity in entities)
+            IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>();
+            AddressModel a= new();
+            List<EntityT> oldEntities = baseQuery.AsEnumerable().Where(a => findPredicate(a)).ToList();
+
+            if(includeQuery is not null) baseQuery = includeQuery(baseQuery);
+
+
+            oldEntities.ForEach((oldEntity) =>
             {
-                EntityT? oldEntity = dbContext.Set<EntityT>().FirstOrDefault(findPredicate);
-                if(oldEntity is not null)
+                if (updatingFunction is null)
                 {
                     foreach (PropertyInfo property in typeof(EntityT).GetProperties().Where(p => p.CanWrite))
                     {
-                        property.SetValue(oldEntity, property.GetValue(entity, null), null);
+                        property.SetValue(oldEntity, property.GetValue(entitySeach(entities, oldEntity), null), null);
                     }
-                    oldEntities.Append(oldEntity);
                 }
-            }
-
-
-            dbContext.UpdateRange(oldEntities.Cast<EntityT>());
+                else
+                {
+                    oldEntity = updatingFunction(oldEntity, entitySeach(entities, oldEntity));
+                }
+                if (attachFunction is not null) oldEntity = attachFunction(dbContext, oldEntity);
+            });
             await dbContext.SaveChangesAsync();
         }
 

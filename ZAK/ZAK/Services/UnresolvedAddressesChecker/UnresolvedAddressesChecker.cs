@@ -37,7 +37,7 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
         return unres.Count;
     }
 
-    public int GetNumberOfUnresolvedAddresses(List<Address> addresses)
+    public int ResolveAddresses(List<Address> addresses)
     {
         foreach (Address address in addresses)
         {

@@ -51,7 +51,7 @@
                     <span>@context.year.@context.month.@context.day</span>
                 </GridColumn>
 
-                <GridColumn TItem="Application" HeaderText="Приоритет" SortKeySelector="item=> item.priority">
+                <GridColumn TItem="Application" HeaderText="Приоритет" SortKeySelector="item=> item.priority" IsDefaultSortColumn="true" SortDirection="SortDirection.Descending">
                     <span>@context.priority</span>
                 </GridColumn>
 

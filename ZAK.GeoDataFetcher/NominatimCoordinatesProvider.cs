@@ -11,25 +11,22 @@ public class NominatimCoordinatesProvider : ICoordinatesProvider
     {
         string addressString = "Київ+";
 
-        if (address.addressAlias is not null )
+        if (address.addressAlias is not null)
         {
-            if(address.addressAlias.streetAlias != "" && address.addressAlias.streetAlias != null)
+            if (address.addressAlias.streetAlias != "" && address.addressAlias.streetAlias != null)
             {
-
-                if(address.addressAlias.streetAlias == "провулок Балтійський")
-                {
-                    int i =0;
-                }
-
                 addressString += address.addressAlias.streetAlias.Replace(' ', '+') + "+";
-            } else addressString += address.streetName.Replace(' ', '+') + "+"; 
+            }
+            else addressString += address.streetName.Replace(' ', '+') + "+";
 
-            if(address.addressAlias.buildingAlias != "" && address.addressAlias.buildingAlias != null)
+            if (address.addressAlias.buildingAlias != "" && address.addressAlias.buildingAlias != null)
             {
                 addressString += address.addressAlias.buildingAlias.Replace(' ', '+') + "+";
-            } else addressString += address.building.Replace(' ', '+') + "+"; 
+            }
+            else addressString += address.building.Replace(' ', '+') + "+";
 
-        } else addressString +=
+        }
+        else addressString +=
             address.streetName.Replace(' ', '+') + "+" +
             address.building;
 
@@ -50,16 +47,18 @@ public class NominatimCoordinatesProvider : ICoordinatesProvider
             string responseString = await response.Content.ReadAsStringAsync();
 
             JsonNode? jsonNode = JsonNode.Parse(responseString!);
-            if(jsonNode is null) return;
-            
-            if(jsonNode.AsArray().Count > 1)
+            if (jsonNode is null) return;
+
+            if (jsonNode.AsArray().Count > 1)
             {
-                if(jsonNode[0]!.AsObject().TryGetPropertyValue("addresstype", out var addresstype));
-                if(addresstype is not null) {
+                if (jsonNode[0]!.AsObject().TryGetPropertyValue("addresstype", out var addresstype)) ;
+                if (addresstype is not null)
+                {
                     string addresstypeString = addresstype.ToString();
-                    if(!addresstypeString.Equals("building")) return;
-                } 
-            } else if(jsonNode.AsArray().Count == 0) return;
+                    if (!addresstypeString.Equals("building")) return;
+                }
+            }
+            else if (jsonNode.AsArray().Count == 0) return;
 
             string lat = jsonNode[0]!.AsObject().TryGetPropertyValue("lat", out var latValue) ? latValue!.ToString() : "0.0";
             string lon = jsonNode[0]!.AsObject().TryGetPropertyValue("lon", out var lonValue) ? lonValue!.ToString() : "0.0";

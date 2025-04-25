@@ -4,34 +4,67 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using BlazorApp.DA;
+using Microsoft.EntityFrameworkCore;
+using ZAK.Da.BaseDAO;
 using ZAK.Db.Models;
 
 namespace BlazorApp.GeoDataManager;
+
+
 public class GeoDataManager : IGeoDataManager
 {
-    IAddressesDataAccess? _addressesDataAccess = null;
+    IDaoBase<Address, AddressModel> _addressesDataAccess;
     ICoordinatesProvider? _coordinatesProvider = new NominatimCoordinatesProvider();
 
-    public GeoDataManager()
-    {
-    }
 
-    public GeoDataManager(IAddressesDataAccess addressesDataAccess)
+    public GeoDataManager(IDaoBase<Address, AddressModel> addressesDataAccess)
     {
         _addressesDataAccess = addressesDataAccess;
     }
 
     public async Task PopulateApplicationsWithGeoData()
     {
-        List<Address> addresses = await _addressesDataAccess.GetAddressesWithoutLocation();
+        List<Address> addresses = (await _addressesDataAccess.GetAll(
+            query: a => a.Include(ad => ad.coordinates).Include(ad => ad.addressAlias)
+        )).Where(a => a.coordinates is null || (a.coordinates.lat == 0 || a.coordinates.lon == 0)).ToList();
 
-        for (int i = 0; i < addresses.Count; i++)
+        foreach (Address address in addresses)
         {
-            addresses[i].coordinates = new AddressCoordinates();
-            await _coordinatesProvider!.GetCoordinatesForAddress(addresses[i]);
+            if(address.coordinates is null) address.coordinates = new AddressCoordinates();
+            await _coordinatesProvider!.GetCoordinatesForAddress(address);
         }
 
-        await _addressesDataAccess.UpgdateAddresses(addresses);
+        await _addressesDataAccess.UpdateRange(
+            addresses, 
+            findPredicate: a => {
+                foreach(Address ad in addresses) if(a.Id == ad.Id) return true;
+                return false;
+            },
+            includeQuery: (baseQuery) => 
+            {
+                baseQuery.Include(a => a.coordinates);
+                return baseQuery;
+            },
+            updatingFunction: (oldAddress, newAddress) => 
+            {
+                if(oldAddress.coordinates is null) oldAddress.coordinates = newAddress.coordinates;
+                else 
+                {
+                    oldAddress.coordinates.lat = newAddress.coordinates!.lat;
+                    oldAddress.coordinates.lat = newAddress.coordinates!.lon;
+                }
+                return oldAddress;
+            },
+            enitySeach: (entityArray, oldEntity) =>
+            {
+                return entityArray.FirstOrDefault(e => e.Id == oldEntity.Id)!;
+            },
+            attachFunction: (context, entity) =>
+            {
+                if(entity.coordinates is not null) context.Entry(entity).State = EntityState.Modified;
+                return entity;
+            }
+        );
     }
 
 }

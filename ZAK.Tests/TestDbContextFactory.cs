@@ -8,20 +8,24 @@ namespace ZAK.Tests;
 class TestDbContextFactory : IDbContextFactory<BlazorAppDbContext>
 {
     DbContextOptionsBuilder<BlazorAppDbContext> builder = new DbContextOptionsBuilder<BlazorAppDbContext>();
-    SqliteConnection _connection = new SqliteConnection("Data Source=testdb.db");
     public TestDbContextFactory()
     {
-        builder.UseSqlite(_connection);
+        builder.UseSqlite("Data Source=./testdb.db");
         builder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
         BlazorAppDbContext blazorAppDbContext = new(builder.Options);
-        blazorAppDbContext.Database.EnsureDeletedAsync();
-        blazorAppDbContext.Database.EnsureCreatedAsync();
-
+        blazorAppDbContext.Database.EnsureDeleted();
+        blazorAppDbContext.Database.EnsureCreated();
     }
-    public BlazorAppDbContext CreateDbContext()
+
+    public void DeleteTestDb()
     {
         BlazorAppDbContext blazorAppDbContext = new(builder.Options);
+        blazorAppDbContext.Database.EnsureDeleted();
+    }
+
+    public BlazorAppDbContext CreateDbContext()
+    {
 
         return new BlazorAppDbContext(builder.Options);
     }

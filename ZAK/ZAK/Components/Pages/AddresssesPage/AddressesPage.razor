@@ -79,7 +79,7 @@
             Include(a => a.addressPriority).
             Include(a => a.addressAlias))).ToList();
 
-        //unresolvedAddressesCount = unresolvedAddressesChecker.GetNumberOfUnresolvedAddresses(addresses);
+        unresolvedAddressesCount = unresolvedAddressesChecker.ResolveAddresses(addresses);
         StateHasChanged();
 
         return await Task.FromResult(request.ApplyTo(addresses));

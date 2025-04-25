@@ -105,10 +105,10 @@ public class Application : ApplicationModel
         double distance = 0.0;
         foreach (Application application in nearApplications)
         {
-            // distance += 
-            //     (Math.Sqrt(
-            //         Math.Pow(application.address.coordinates.lat - this.address.coordinates.lat, 2) + 
-            //         Math.Pow(application.address.coordinates.lon - this.address.coordinates.lon, 2)));
+             distance += 
+                 (Math.Sqrt(
+                     Math.Pow(application.address.coordinates.lat - this.address.coordinates.lat, 2) + 
+                     Math.Pow(application.address.coordinates.lon - this.address.coordinates.lon, 2)));
         }
 
         if(distance == 0) distance = 1;

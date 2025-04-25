@@ -9,14 +9,15 @@ using ZAK.Db.Models;
 using ZAK.Services.BrigadesManagerService;
 
 namespace ZAK.Tests;
-
+[Collection("Non-Parallel Collection")]
 public class BrigadesManagerTests
 {
-    TestDbContextFactory dbContextFactory = new();
 
     [Fact]
     public async void InsertNewApplicationToEmptySchedule()
     {
+        TestDbContextFactory dbContextFactory = new();
+
         //Arrange
         ILogger<BrigadesManager> brigadeManagerLogger = new NullLogger<BrigadesManager>();
         ILogger<DaoBase<Brigade, BrigadeModel>> brigadeDaoLogger = new NullLogger<DaoBase<Brigade, BrigadeModel>>();
@@ -70,11 +71,14 @@ public class BrigadesManagerTests
         Assert.Equal<int>(timeToScheduleApplication, editedBrigade.GetApplicationScheduledOn(3).applicationScheduledTime);
         Assert.Equal<int>(applicationToAddToSchedule.id, editedBrigade.GetApplications().ElementAt(timeToScheduleApplication).id);
 
+        dbContextFactory.DeleteTestDb();
     }
 
     [Fact]
     public async void InsertNewApplicationToScheduleBeforePreviouslyScheduledApplication()
     {
+        TestDbContextFactory dbContextFactory = new();
+
         //Arrange
         ILogger<BrigadesManager> brigadeManagerLogger = new NullLogger<BrigadesManager>();
         ILogger<DaoBase<Brigade, BrigadeModel>> brigadeDaoLogger = new NullLogger<DaoBase<Brigade, BrigadeModel>>();
@@ -138,7 +142,7 @@ public class BrigadesManagerTests
 
         Assert.Equal<int>(timeToScheduleFirstApplication, editedBrigade.GetApplicationScheduledOn(3).applicationScheduledTime);
         Assert.Equal<int>(timeToScheduleSecondApplication, editedBrigade.GetApplicationScheduledOn(4).applicationScheduledTime);
-
+        dbContextFactory.DeleteTestDb();
     }
 
 }
