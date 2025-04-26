@@ -157,8 +157,9 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
                     property.SetValue(oldEntity, property.GetValue(entity, null), null);
                 }
 
-                await dbContext.SaveChangesAsync();
+                dbContext.Update(oldEntity);
             }
+            await dbContext.SaveChangesAsync();
 
         }
     }
@@ -184,9 +185,9 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
                 {
                     property.SetValue(oldEntity, property.GetValue(entity, null), null);
                 }
+                dbContext.Update(oldEntity);
             }
             await dbContext.SaveChangesAsync();
-
         }
     }
 
@@ -248,28 +249,26 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
 
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
-            IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>();
-            AddressModel a= new();
+            IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>().AsTracking();
+            if (includeQuery is not null) baseQuery = includeQuery(baseQuery);
             List<EntityT> oldEntities = baseQuery.AsEnumerable().Where(a => findPredicate(a)).ToList();
 
-            if(includeQuery is not null) baseQuery = includeQuery(baseQuery);
-
-
-            oldEntities.ForEach((oldEntity) =>
+            for (int i = 0; i < oldEntities.Count(); i++)
             {
                 if (updatingFunction is null)
                 {
                     foreach (PropertyInfo property in typeof(EntityT).GetProperties().Where(p => p.CanWrite))
                     {
-                        property.SetValue(oldEntity, property.GetValue(entitySeach(entities, oldEntity), null), null);
+                        property.SetValue(oldEntities[i], property.GetValue(entitySeach(entities, oldEntities[i]), null), null);
                     }
                 }
                 else
                 {
-                    oldEntity = updatingFunction(oldEntity, entitySeach(entities, oldEntity));
+                    oldEntities[i] = updatingFunction(oldEntities[i], entitySeach(entities, oldEntities[i]));
                 }
-                if (attachFunction is not null) oldEntity = attachFunction(dbContext, oldEntity);
-            });
+                if (attachFunction is not null) oldEntities[i] = attachFunction(dbContext, oldEntities[i]);
+
+            }
             await dbContext.SaveChangesAsync();
         }
 

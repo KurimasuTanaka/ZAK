@@ -26,32 +26,33 @@ public class GeoDataManager : IGeoDataManager
     {
         List<Address> addresses = (await _addressesDataAccess.GetAll(
             query: a => a.Include(ad => ad.coordinates).Include(ad => ad.addressAlias)
-        )).Where(a => a.coordinates is null || (a.coordinates.lat == 0 || a.coordinates.lon == 0)).ToList();
+        )).Where(a => a.coordinates is null || (a.coordinates.lat == 0 || a.coordinates.lon == 0)).Take(10).ToList();
 
         foreach (Address address in addresses)
         {
-            if(address.coordinates is null) address.coordinates = new AddressCoordinates();
+            if (address.coordinates is null) address.coordinates = new AddressCoordinates();
             await _coordinatesProvider!.GetCoordinatesForAddress(address);
         }
 
         await _addressesDataAccess.UpdateRange(
-            addresses, 
-            findPredicate: a => {
-                foreach(Address ad in addresses) if(a.Id == ad.Id) return true;
+            addresses,
+            findPredicate: a =>
+            {
+                foreach (Address ad in addresses) if (a.Id == ad.Id) return true;
                 return false;
             },
-            includeQuery: (baseQuery) => 
+            includeQuery: (baseQuery) =>
             {
-                baseQuery.Include(a => a.coordinates);
-                return baseQuery;
+                return baseQuery.Include(a => a.coordinates);
+
             },
-            updatingFunction: (oldAddress, newAddress) => 
+            updatingFunction: (oldAddress, newAddress) =>
             {
-                if(oldAddress.coordinates is null) oldAddress.coordinates = newAddress.coordinates;
-                else 
+                if (oldAddress.coordinates is null) oldAddress.coordinates = newAddress.coordinates;
+                else
                 {
                     oldAddress.coordinates.lat = newAddress.coordinates!.lat;
-                    oldAddress.coordinates.lat = newAddress.coordinates!.lon;
+                    oldAddress.coordinates.lon = newAddress.coordinates!.lon;
                 }
                 return oldAddress;
             },
@@ -61,7 +62,7 @@ public class GeoDataManager : IGeoDataManager
             },
             attachFunction: (context, entity) =>
             {
-                if(entity.coordinates is not null) context.Entry(entity).State = EntityState.Modified;
+                if (entity.coordinates is not null) context.Entry(entity).State = EntityState.Modified;
                 return entity;
             }
         );

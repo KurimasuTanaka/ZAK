@@ -68,17 +68,23 @@ public class GeoDataManagerTests
         ILogger<DaoBase<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<DaoBase<Application, ApplicationModel>>();
         IDaoBase<Application, ApplicationModel> applicationsDAO = new DaoBase<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
 
-        Address address1 = new();
-        address1.streetName = "проспект Володимира Івасюка";
-        address1.building = "54";
+        Address address = new();
+        address.streetName = "вулиця Володимира Івасюка";
+        address.building = "54";
 
-        await addressDao.Insert(address1);
+        await addressDao.Insert(address);
 
         GeoDataManager geoDataManager = new(addressDao);
 
+        //Act 
         await geoDataManager.PopulateApplicationsWithGeoData();
 
-        //Act 
+        Address addressToUpdate = (await addressDao.GetAll()).FirstOrDefault()!;
+        addressToUpdate.streetName = "проспект Володимира Івасюка";
+        await addressDao.Update(addressToUpdate, addressToUpdate.Id);
+
+        Address addressToUpdate2 = (await addressDao.GetAll()).FirstOrDefault()!;
+
 
         await geoDataManager.PopulateApplicationsWithGeoData();
 

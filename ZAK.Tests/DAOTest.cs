@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
+using Xunit.Abstractions;
 using ZAK.Da.BaseDAO;
 using ZAK.Db;
 using ZAK.Db.Models;
@@ -17,7 +18,12 @@ namespace ZAK.Tests;
 [Collection("Non-Parallel Collection")]
 public class DAOTests
 {
-    //Applications test
+    private readonly ITestOutputHelper _output;
+
+    public DAOTests(ITestOutputHelper output)
+    {
+        _output = output;
+    }
 
     [Fact]
     public async void InsertNewApplicationToTheEmptyDb()
@@ -47,6 +53,80 @@ public class DAOTests
         Assert.Single(await applicationsDAO.GetAll());
 
         dbContextFactory.DeleteTestDb();
+    }
+
+    [Fact]
+    public async void InsertNewAddressAndUpdateItWithoutTracking()
+    {
+        TestDbContextFactory dbContextFactory = new();
+
+        //Arrange
+        ILogger<DaoBase<Address, AddressModel>> addressLogger = new NullLogger<DaoBase<Address, AddressModel>>();
+        IDaoBase<Address, AddressModel> addressDao = new DaoBase<Address, AddressModel>(dbContextFactory, addressLogger);
+
+        //Act 
+        Address address = new();
+        address.streetName = "вулиця Володимира Івасюка";
+        address.building = "54";
+
+        await addressDao.Insert(address);
+
+        Address addressToUpdate = (await addressDao.GetAll()).FirstOrDefault()!;
+        addressToUpdate.streetName = "проспект Володимира Івасюка";
+        await addressDao.Update(addressToUpdate, addressToUpdate.Id);
+
+        Address updatedAddress = (await addressDao.GetAll()).FirstOrDefault()!;
+
+        //Assert
+        Assert.NotNull(updatedAddress);
+        Assert.Equal("проспект Володимира Івасюка", updatedAddress.streetName);
+    }
+
+    [Fact]
+    public async void InsertNewAddressAndUpdateRelatedEntityUsingInclueQuery()
+    {
+        TestDbContextFactory dbContextFactory = new();
+
+        //Arrange
+        ILogger<DaoBase<Address, AddressModel>> addressLogger = new NullLogger<DaoBase<Address, AddressModel>>();
+        IDaoBase<Address, AddressModel> addressDao = new DaoBase<Address, AddressModel>(dbContextFactory, addressLogger);
+
+        //Act 
+        Address address = new();
+        address.streetName = "проспект Володимира Івасюка";
+        address.building = "54";
+
+        await addressDao.Insert(address);
+
+        Address addressToUpdate = (await addressDao.GetAll()).FirstOrDefault()!;
+        addressToUpdate.coordinates = new AddressCoordinates();
+        addressToUpdate.coordinates.lat = 5000;
+        addressToUpdate.coordinates.lon = 5000;
+
+        await addressDao.Update(
+            addressToUpdate,
+            addressToUpdate.Id, 
+            includeQuery: q => 
+            {
+                return q.Include(e => e.coordinates);
+            },
+            findPredicate: q =>
+            {
+                return q.Id == addressToUpdate.Id;
+            }
+        );
+
+        Address updatedAddress = (await addressDao.GetAll(
+            query: q => {
+                return q.Include(e => e.coordinates);
+            }
+        )).FirstOrDefault()!;
+
+        //Assert
+        Assert.NotNull(updatedAddress);
+        Assert.NotNull(updatedAddress.coordinates);
+        Assert.Equal(5000, updatedAddress.coordinates.lat);
+        Assert.Equal(5000, updatedAddress.coordinates.lon);
     }
 
     [Fact]
@@ -148,6 +228,11 @@ public class DAOTests
         applicationsFromDb = (await applicationsDAO.GetAll()).ToList();
 
         //Assert
+
+        _output.WriteLine(applicationsFromDb.ElementAt(0).operatorComment);
+        _output.WriteLine(applicationsFromDb.ElementAt(1).operatorComment);
+        _output.WriteLine(applicationsFromDb.ElementAt(2).operatorComment);
+
         Assert.Equal(3, applicationsFromDb.Count());
         Assert.Equal("Comment 1 Edited", applicationsFromDb.ElementAt(0).operatorComment);
         Assert.Equal("Comment 2 Unedited", applicationsFromDb.ElementAt(1).operatorComment);
