@@ -29,7 +29,7 @@ public class GeoDataManagerTests
 
         Address address2 = new();
         address2.streetName = "вулиця Володимира Івасюка";
-        address2.building = "54";
+        address2.building = "55";
 
         Address address3 = new();
         address3.streetName = "вулиця Богатирська";

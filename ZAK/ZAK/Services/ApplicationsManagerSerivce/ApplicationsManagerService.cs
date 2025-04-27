@@ -61,7 +61,7 @@ public class ApplicationsManagerService : IApplicationsManagerService
         _logger.LogInformation("Applications updated successfully!");
     }
 
-    private async Task DeleteOldApplications(List<Application> newApplications)
+    public async Task DeleteOldApplications(List<Application> newApplications)
     {
         _logger.LogInformation("Deleting old applications...");
 
@@ -71,7 +71,7 @@ public class ApplicationsManagerService : IApplicationsManagerService
         _logger.LogInformation("Old applications deleted successfully!");
     }
 
-    private async Task UpdateOldApplications(List<Application> newApplications)
+    public async Task UpdateOldApplications(List<Application> newApplications)
     {
         _logger.LogInformation("Updating old applications...");
 
@@ -86,7 +86,7 @@ public class ApplicationsManagerService : IApplicationsManagerService
         _logger.LogInformation("Old applications updated successfully!");
     }
 
-    private async Task AddNewApplcations(List<Application> newApplications)
+    public async Task AddNewApplcations(List<Application> newApplications)
     {
         _logger.LogInformation("Adding new applications...");
 
@@ -94,15 +94,22 @@ public class ApplicationsManagerService : IApplicationsManagerService
 
         newApplications.Except(oldApplications).ToList().ForEach(async (newApplication) =>
         {
-            await _applicationsDataAccess.Insert(newApplication, inputProcessQuery: (query, newApplication, dbContext) =>
+            _applicationsDataAccess.Insert(newApplication, inputProcessQuery: (query, newApplication, dbContext) =>
             {
 
+
+
                 AddressModel? possibleAddress = dbContext.
-                    Set<AddressModel>().AsNoTracking().
+                    Set<AddressModel>().AsTracking().
                     FirstOrDefault(ad => ad.streetName == newApplication.address!.streetName && ad.building == newApplication.address.building);
 
-                if (possibleAddress is not null) dbContext.Attach(newApplication.address);
+                if (possibleAddress is not null)
+                {
+                    newApplication.address = possibleAddress;
+                    newApplication.address.district = null;
+                    dbContext.Attach(newApplication.address);
 
+                }
                 return newApplication;
             });
         });

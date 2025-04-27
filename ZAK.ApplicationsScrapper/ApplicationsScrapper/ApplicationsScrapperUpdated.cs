@@ -191,7 +191,9 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
         string timerangeLine = "";
         try
         {
-            timerangeLine = application.operatorComment.Substring(application.operatorComment.IndexOf("Терміни"), 15);
+            int index = application.operatorComment.IndexOf("Терміни");
+            if(index == -1) return application;
+            timerangeLine = application.operatorComment.Substring(index);
         }
         catch (Exception e)
         {

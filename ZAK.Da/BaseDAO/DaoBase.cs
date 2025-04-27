@@ -100,14 +100,14 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
     }
 
     public async Task Insert(TransObjT entity, Func<IQueryable<EntityT>, TransObjT, DbContext, EntityT>? inputProcessQuery = null)
-    {
+    {    
         _logger.LogInformation($"Inserting new entity of type {typeof(EntityT)}");
 
 
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             EntityT insertedEntity = null;
-            if (inputProcessQuery is not null) insertedEntity = inputProcessQuery(dbContext.Set<EntityT>(), entity, dbContext);
+            if (inputProcessQuery is not null) insertedEntity = inputProcessQuery(dbContext.Set<EntityT>().AsTracking(), entity, dbContext);
             else insertedEntity = entity;
 
             await dbContext.Set<EntityT>().AddAsync(entity);

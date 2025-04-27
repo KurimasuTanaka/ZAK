@@ -31,29 +31,9 @@ public class BlazorAppDbContext : DbContext
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        { /*
-            modelBuilder.Entity<ApplicationModel>().
-                HasOne(a => a.address).WithMany(a => a.applications).HasForeignKey(a => a.address).
-                OnDelete(DeleteBehavior.NoAction);
-                
-            modelBuilder.Entity<AddressModel>().
-                HasOne(a => a.district).WithMany(d => d.addresses).HasForeignKey(a => a.districtName).
-                OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<AddressModel>().
-                HasOne(a => a.addressAlias).WithOne().HasForeignKey<AddressAliasModel>(a => a.address).
-                OnDelete(DeleteBehavior.Cascade);
-
-
-            modelBuilder.Entity<AddressModel>().
-                HasOne(a => a.addressPriority).WithOne().HasForeignKey<AddressPriorityModel>(a => a.address).
-                OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<AddressModel>().HasOne(a => a.coordinates).WithOne().HasForeignKey<AddressesCoordinates>(a => a.address).
-                OnDelete(DeleteBehavior.Cascade);
-
-            base.OnModelCreating(modelBuilder);
-        */
+        { 
+            modelBuilder.Entity<AddressModel>(). 
+                HasIndex(ad => new {ad.building, ad.streetName}).IsUnique();
 
             modelBuilder.Entity<BrigadeModel>().Property(b => b.id).ValueGeneratedOnAdd();
             modelBuilder.Entity<AddressModel>().Property(a => a.Id).ValueGeneratedOnAdd();
@@ -64,6 +44,15 @@ public class BlazorAppDbContext : DbContext
                 HasForeignKey(sa => sa.brigadeId).
                 OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<CoefficientModel>().HasData([
+                new CoefficientModel() { id = 1, parameter = "housePriority", coefficient = 1},
+                new CoefficientModel() { id = 2, parameter = "distance", coefficient = 1},
+                new CoefficientModel() { id = 3, parameter = "urgency", coefficient = 1},
+                new CoefficientModel() { id = 4, parameter = "statusCheck", coefficient = 1},
+                new CoefficientModel() { id = 5, parameter = "freeCable", coefficient = 1},
+                new CoefficientModel() { id = 6, parameter = "tarrifeChangeApplication", coefficient = 1},
+                new CoefficientModel() { id = 7, parameter = "deadline", coefficient = 1}
+            ]);
         } 
 
 }
