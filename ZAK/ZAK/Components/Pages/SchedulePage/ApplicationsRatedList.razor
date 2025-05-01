@@ -5,10 +5,10 @@
 
 @inject IWebHostEnvironment enviroment;
 
-@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
-@inject IDaoBase<Address, AddressModel> addressesDataAccess;
-@inject IDaoBase<Coefficient, CoefficientModel> coefficientsDataAccess;
-@inject IDaoBase<Brigade, BrigadeModel> brigadesDataAccess;
+@inject IDao<Application, ApplicationModel> applicationsDataAccess;
+@inject IDao<Address, AddressModel> addressesDataAccess;
+@inject IDao<Coefficient, CoefficientModel> coefficientsDataAccess;
+@inject IDao<Brigade, BrigadeModel> brigadesDataAccess;
 
 <Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowDetailView="true"
     AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true" OnRowClick="OnRowClick"

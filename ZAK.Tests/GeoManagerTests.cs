@@ -3,7 +3,7 @@ using ZAK.Db.Models;
 using BlazorApp.GeoDataManager;
 using Xunit;
 using Microsoft.Extensions.Logging;
-using ZAK.Da.BaseDAO;
+using ZAK.DAO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,11 +17,11 @@ public class GeoDataManagerTests
         TestDbContextFactory dbContextFactory = new();
 
         //Arrange
-        ILogger<DaoBase<Address, AddressModel>> addressLogger = new NullLogger<DaoBase<Address, AddressModel>>();
-        IDaoBase<Address, AddressModel> addressDao = new DaoBase<Address, AddressModel>(dbContextFactory, addressLogger);
+        ILogger<Dao<Address, AddressModel>> addressLogger = new NullLogger<Dao<Address, AddressModel>>();
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressLogger);
 
-        ILogger<DaoBase<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<DaoBase<Application, ApplicationModel>>();
-        IDaoBase<Application, ApplicationModel> applicationsDAO = new DaoBase<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
+        ILogger<Dao<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
 
         Address address1 = new();
         address1.streetName = "вулиця Володимира Івасюка";
@@ -62,11 +62,11 @@ public class GeoDataManagerTests
         TestDbContextFactory dbContextFactory = new();
 
         //Arrange
-        ILogger<DaoBase<Address, AddressModel>> addressLogger = new NullLogger<DaoBase<Address, AddressModel>>();
-        IDaoBase<Address, AddressModel> addressDao = new DaoBase<Address, AddressModel>(dbContextFactory, addressLogger);
+        ILogger<Dao<Address, AddressModel>> addressLogger = new NullLogger<Dao<Address, AddressModel>>();
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressLogger);
 
-        ILogger<DaoBase<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<DaoBase<Application, ApplicationModel>>();
-        IDaoBase<Application, ApplicationModel> applicationsDAO = new DaoBase<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
+        ILogger<Dao<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
 
         Address address = new();
         address.streetName = "вулиця Володимира Івасюка";

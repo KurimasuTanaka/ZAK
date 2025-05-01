@@ -2,7 +2,7 @@
 @using BlazorApp.DA;
 
 
-@inject IDaoBase<Address, AddressModel> addressDataAccess;
+@inject IDao<Address, AddressModel> addressDataAccess;
 @inject ILogger<AliasInputComponent> _logger;
 
 <InputText TValue="double" Label="Укр. назва" @bind-Value="@alias" @bind-Value:after="UpdateDbData" />

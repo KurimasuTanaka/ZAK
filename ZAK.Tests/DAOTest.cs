@@ -1,17 +1,11 @@
-using System;
 using BlazorApp.DA;
-using Microsoft.Data.SqlClient;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 using Xunit.Abstractions;
-using ZAK.Da.BaseDAO;
-using ZAK.Db;
+using ZAK.DAO;
 using ZAK.Db.Models;
-using ZAK.Services.BrigadesManagerService;
 
 namespace ZAK.Tests;
 
@@ -31,11 +25,11 @@ public class DAOTests
         TestDbContextFactory dbContextFactory = new();
 
         //Arrange
-        ILogger<DaoBase<Application, ApplicationModel>> daoLogger1 = new NullLogger<DaoBase<Application, ApplicationModel>>();
-        IDaoBase<Application, ApplicationModel> applicationsDAO = new DaoBase<Application, ApplicationModel>(dbContextFactory, daoLogger1);
+        ILogger<Dao<Application, ApplicationModel>> daoLogger1 = new NullLogger<Dao<Application, ApplicationModel>>();
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, daoLogger1);
 
-        ILogger<DaoBase<Address, AddressModel>> daoLogger2 = new NullLogger<DaoBase<Address, AddressModel>>();
-        IDaoBase<Address, AddressModel> addressesDAO = new DaoBase<Address, AddressModel>(dbContextFactory, daoLogger2);
+        ILogger<Dao<Address, AddressModel>> daoLogger2 = new NullLogger<Dao<Address, AddressModel>>();
+        IDao<Address, AddressModel> addressesDAO = new Dao<Address, AddressModel>(dbContextFactory, daoLogger2);
 
         //Act
 
@@ -61,8 +55,8 @@ public class DAOTests
         TestDbContextFactory dbContextFactory = new();
 
         //Arrange
-        ILogger<DaoBase<Address, AddressModel>> addressLogger = new NullLogger<DaoBase<Address, AddressModel>>();
-        IDaoBase<Address, AddressModel> addressDao = new DaoBase<Address, AddressModel>(dbContextFactory, addressLogger);
+        ILogger<Dao<Address, AddressModel>> addressLogger = new NullLogger<Dao<Address, AddressModel>>();
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressLogger);
 
         //Act 
         Address address = new();
@@ -88,8 +82,8 @@ public class DAOTests
         TestDbContextFactory dbContextFactory = new();
 
         //Arrange
-        ILogger<DaoBase<Address, AddressModel>> addressLogger = new NullLogger<DaoBase<Address, AddressModel>>();
-        IDaoBase<Address, AddressModel> addressDao = new DaoBase<Address, AddressModel>(dbContextFactory, addressLogger);
+        ILogger<Dao<Address, AddressModel>> addressLogger = new NullLogger<Dao<Address, AddressModel>>();
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressLogger);
 
         //Act 
         Address address = new();
@@ -135,11 +129,11 @@ public class DAOTests
         TestDbContextFactory dbContextFactory = new();
 
         //Arrange
-        ILogger<DaoBase<Application, ApplicationModel>> daoLogger1 = new NullLogger<DaoBase<Application, ApplicationModel>>();
-        IDaoBase<Application, ApplicationModel> applicationsDAO = new DaoBase<Application, ApplicationModel>(dbContextFactory, daoLogger1);
+        ILogger<Dao<Application, ApplicationModel>> daoLogger1 = new NullLogger<Dao<Application, ApplicationModel>>();
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, daoLogger1);
 
-        ILogger<DaoBase<Address, AddressModel>> daoLogger2 = new NullLogger<DaoBase<Address, AddressModel>>();
-        IDaoBase<Address, AddressModel> addressesDAO = new DaoBase<Address, AddressModel>(dbContextFactory, daoLogger2);
+        ILogger<Dao<Address, AddressModel>> daoLogger2 = new NullLogger<Dao<Address, AddressModel>>();
+        IDao<Address, AddressModel> addressesDAO = new Dao<Address, AddressModel>(dbContextFactory, daoLogger2);
 
 
         Address sharedAddress = new();
@@ -183,8 +177,8 @@ public class DAOTests
         TestDbContextFactory dbContextFactory = new();
 
         //Arrange
-        ILogger<DaoBase<Application, ApplicationModel>> daoLogger1 = new NullLogger<DaoBase<Application, ApplicationModel>>();
-        IDaoBase<Application, ApplicationModel> applicationsDAO = new DaoBase<Application, ApplicationModel>(dbContextFactory, daoLogger1);
+        ILogger<Dao<Application, ApplicationModel>> daoLogger1 = new NullLogger<Dao<Application, ApplicationModel>>();
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, daoLogger1);
 
         Application application1 = new Application();
         application1.operatorComment = "Comment 1 Unedited";
@@ -241,5 +235,51 @@ public class DAOTests
         dbContextFactory.DeleteTestDb();
     }
 
+    [Fact]
+    public async void InsertNewAddressesWithInsertRange()
+    {
+        TestDbContextFactory dbContextFactory = new();
+
+        //Arrange
+        ILogger<Dao<Address, AddressModel>> addressLogger = new NullLogger<Dao<Address, AddressModel>>();
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressLogger);
+
+        ILogger<Dao<District, DistrictModel>> districtsLogger = new NullLogger<Dao<District, DistrictModel>>();
+        IDao<District, DistrictModel> districtsDao = new Dao<District, DistrictModel>(dbContextFactory, districtsLogger);
+
+        //Act 
+        District district1 = new();
+        district1.name = "DIST1";
+
+        District district2 = new();
+        district2.name = "DIST2";
+
+        Address address1 = new();
+        address1.streetName = "проспект Володимира Івасюка";
+        address1.building = "54";
+        address1.district = district1;
+
+        Address address2 = new();
+        address2.streetName = "вулиця Богатирська";
+        address2.building = "6-1";
+        address2.district = district2;
+
+        Address address3 = new();
+        address3.streetName = "вулиця Прирічна";
+        address3.building = "25";
+        address3.district = district1;
+
+        List<Address> addresses = new () {address1, address2, address3};
+
+        await addressDao.InsertRange(addresses);
+
+        //Assert
+
+        List<Address> addressesFromDb = (await addressDao.GetAll()).ToList();
+        List<District> districtsFromDb = (await districtsDao.GetAll()).ToList();
+
+        Assert.Equal(3, addressesFromDb.Count);
+        Assert.Equal(2, districtsFromDb.Count);
+    }
 
 }

@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ZAK.DAO\ZAK.DAO.csproj" />
-    <ProjectReference Include="..\ZAK.Da\ZAK.Da.csproj" />
+    <ProjectReference Include="..\ZAK.Db\ZAK.Db.csproj" />
   </ItemGroup>
+
 
 </Project>

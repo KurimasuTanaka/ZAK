@@ -2,7 +2,7 @@
 @using BlazorApp.DA;
 
 
-@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
+@inject IDao<Application, ApplicationModel> applicationsDataAccess;
 @inject ILogger<CheckBoxInputComponent> _logger;
 
 <Switch Label="@label" @bind-Value="@propertyValue" @bind-Value:event="UpdateDbData" />

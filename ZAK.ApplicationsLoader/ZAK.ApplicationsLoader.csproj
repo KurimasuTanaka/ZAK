@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ZAK.ApplicationsScrapper\ZAK.ApplicationsScrapper.csproj" />
+    <ProjectReference Include="..\ZAK.DAO\ZAK.DAO.csproj" />
     <ProjectReference Include="..\ZAK.Da\ZAK.Da.csproj" />
     <ProjectReference Include="..\ZAK.GeoDataFetcher\ZAK.GeoDataFetcher.csproj" />
   </ItemGroup>

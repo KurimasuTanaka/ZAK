@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OsmSharp.API;
-using ZAK.Da.BaseDAO;
+using ZAK.DAO;
 using ZAK.Db.Models;
 namespace ZAK.MapRoutesManager;
 
@@ -33,7 +33,7 @@ public class MapRoutesManager : IMapRoutesManager
 
     }
 
-    public async Task<List<List<Vector2>>> GetRoutesAsync(IDaoBase<Brigade, BrigadeModel> brigadesDataAccess, IDaoBase<Application,ApplicationModel> applicationsDataAccess)
+    public async Task<List<List<Vector2>>> GetRoutesAsync(IDao<Brigade, BrigadeModel> brigadesDataAccess, IDao<Application,ApplicationModel> applicationsDataAccess)
     {
 
         _logger.LogInformation("Populationg brigades with applications");

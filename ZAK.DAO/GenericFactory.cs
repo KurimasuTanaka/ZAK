@@ -1,7 +1,7 @@
 using System;
 using System.Linq.Expressions;
 
-namespace ZAK.Da.BaseDAO;
+namespace ZAK.DAO;
 
 public static class GenericFactory
 {

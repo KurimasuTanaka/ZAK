@@ -2,7 +2,7 @@
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
 
-@inject IDaoBase<Coefficient, CoefficientModel> _coefficientsDataAccess; 
+@inject IDao<Coefficient, CoefficientModel> _coefficientsDataAccess; 
 
 
 <td><span>@coefficient.parameterAlias</span></td>

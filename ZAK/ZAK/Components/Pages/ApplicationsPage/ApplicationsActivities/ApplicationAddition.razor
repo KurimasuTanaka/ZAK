@@ -1,6 +1,6 @@
 ﻿@using BlazorApp.DA;
 
-@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
+@inject IDao<Application, ApplicationModel> applicationsDataAccess;
 
 
 <Modal @ref="modal" Title="Новая заявка" Size="ModalSize.Large">

@@ -1,6 +1,6 @@
 ﻿using BlazorApp.DA;
 using ApplicationsScrappingModule;
-using ZAK.Da.BaseDAO;
+using ZAK.DAO;
 using ZAK.Db.Models;
 using Microsoft.Extensions.Logging;
 
@@ -9,11 +9,11 @@ namespace BlazorApp.ApplicationsLoader;
 public class ApplicationsLoader : IApplicationsLoader
 {
     IApplicationsScrapper _applicationScrapper;
-    IDaoBase<Application, ApplicationModel> _applicationsDataAccess;
+    IDao<Application, ApplicationModel> _applicationsDataAccess;
     ILogger<ApplicationsLoader> _logger;
 
 
-    public ApplicationsLoader(ILogger<ApplicationsLoader> logger, IDaoBase<Application, ApplicationModel> applicationsDataAccess, IApplicationsScrapper applicationScrapper)
+    public ApplicationsLoader(ILogger<ApplicationsLoader> logger, IDao<Application, ApplicationModel> applicationsDataAccess, IApplicationsScrapper applicationScrapper)
     {
         _applicationsDataAccess = applicationsDataAccess;
         _applicationScrapper = applicationScrapper;

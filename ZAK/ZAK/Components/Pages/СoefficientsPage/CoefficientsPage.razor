@@ -5,7 +5,7 @@
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
 
-@inject IDaoBase<Coefficient, CoefficientModel> _coefficientsDataAccess; 
+@inject IDao<Coefficient, CoefficientModel> _coefficientsDataAccess; 
 
 <table>
         @foreach(Coefficient coefficient in coefficients)

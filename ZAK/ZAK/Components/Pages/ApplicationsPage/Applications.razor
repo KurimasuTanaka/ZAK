@@ -10,7 +10,7 @@
 @using ZAK.Components.Pages.ApplicationsPage.ApplicationsActivities;
 @using ZAK.Components.Pages.ApplicationsPage.ApplicationInputComponents;
 
-@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
+@inject IDao<Application, ApplicationModel> applicationsDataAccess;
 @inject IWebHostEnvironment enviroment;
 
 @inject ILogger<Applications> _logger;
@@ -105,7 +105,7 @@
 </Grid>
 
 @code {
-  private bool showIgnored = false;
+  private bool showIgnored = true;
 
   //Make this thing async
   List<Application> applications = new List<Application>();

@@ -1,7 +1,7 @@
 using System;
 using BlazorApp.DA;
 using Microsoft.EntityFrameworkCore;
-using ZAK.Da.BaseDAO;
+using ZAK.DAO;
 using ZAK.Db.Models;
 using ZAK.MapRoutesManager;
 
@@ -15,10 +15,10 @@ public class UnresolvedAddressesInfo
 
 public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
 {
-    IDaoBase<Address, AddressModel>  _addressesDataAccess;
+    IDao<Address, AddressModel>  _addressesDataAccess;
     IMapRoutesManager _mapRoutesManager;
 
-    public UnresolvedAddressesChecker(IDaoBase<Address, AddressModel> addressesDataAccess, IMapRoutesManager mapRoutesManager)
+    public UnresolvedAddressesChecker(IDao<Address, AddressModel> addressesDataAccess, IMapRoutesManager mapRoutesManager)
     {
         _addressesDataAccess = addressesDataAccess;
         _mapRoutesManager = mapRoutesManager;

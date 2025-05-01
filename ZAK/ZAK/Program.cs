@@ -12,12 +12,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Configuration;
 using ZAK.Services.UnresolvedAddressesChecker;
-using ZAK.Da.BaseDAO;
 using ZAK.Db.Models;
 using ZAK.Components.Pages.BlackoutSchedulePage;
 using MudBlazor.Services;
 using ZAK.Services.BrigadesManagerService;
 using ZAK.Services.ApplicationsManagerSerivce;
+using ZAK.DAO;
+
+
 namespace ZAK;
 
 public class Program
@@ -57,15 +59,15 @@ public class Program
         builder.Services.AddDbContextFactory<BlazorAppDbContext>(options =>
         options.UseMySql(connectionString, serverVersion).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
-        builder.Services.AddTransient<IDaoBase<Brigade, BrigadeModel>, DaoBase<Brigade, BrigadeModel>>();
+        builder.Services.AddTransient<DAO.IDao<Brigade, BrigadeModel>, DAO.Dao<Brigade, BrigadeModel>>();
 
-        builder.Services.AddTransient<IDaoBase<Coefficient, CoefficientModel>, DaoBase<Coefficient, CoefficientModel>>();
-        builder.Services.AddTransient<IDaoBase<Application, ApplicationModel>, DaoBase<Application, ApplicationModel>>();
-        builder.Services.AddTransient<IDaoBase<District, DistrictModel>, DaoBase<District, DistrictModel>>();
-        builder.Services.AddTransient<IDaoBase<Address, AddressModel>, DaoBase<Address, AddressModel>>();
-        builder.Services.AddTransient<IDaoBase<AddressPriority, AddressPriority>, DaoBase<AddressPriority, AddressPriority>>();
-        builder.Services.AddTransient<IDaoBase<AddressCoordinates, AddressCoordinatesModel>, DaoBase<AddressCoordinates, AddressCoordinatesModel>>();
-        builder.Services.AddTransient<IDaoBase<AddressAlias, AddressAliasModel>, DaoBase<AddressAlias, AddressAliasModel>>();
+        builder.Services.AddTransient<DAO.IDao<Coefficient, CoefficientModel>, DAO.Dao<Coefficient, CoefficientModel>>();
+        builder.Services.AddTransient<DAO.IDao<Application, ApplicationModel>, DAO.Dao<Application, ApplicationModel>>();
+        builder.Services.AddTransient<DAO.IDao<District, DistrictModel>, DAO.Dao<District, DistrictModel>>();
+        builder.Services.AddTransient<DAO.IDao<Address, AddressModel>, DAO.Dao<Address, AddressModel>>();
+        builder.Services.AddTransient<DAO.IDao<AddressPriority, AddressPriority>, DAO.Dao<AddressPriority, AddressPriority>>();
+        builder.Services.AddTransient<DAO.IDao<AddressCoordinates, AddressCoordinatesModel>, DAO.Dao<AddressCoordinates, AddressCoordinatesModel>>();
+        builder.Services.AddTransient<DAO.IDao<AddressAlias, AddressAliasModel>, DAO.Dao<AddressAlias, AddressAliasModel>>();
 
         builder.Services.AddTransient<IBlackoutScheduleDataAccess, BlackoutScheduleDataAccess>();
 

@@ -4,7 +4,7 @@
 @using BlazorBootstrap;
 
 
-@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
+@inject IDao<Application, ApplicationModel> applicationsDataAccess;
 
 <Switch Label="Ignored"      ValueChanged="PressIgnored" />
 <Switch Label="Hot"          ValueChanged="PressHot"/>

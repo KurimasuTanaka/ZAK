@@ -1,5 +1,6 @@
 ﻿@using System.Numerics
 @using BlazorApp.DA
+@using ZAK.DAO;
 @using System.Text.Json
 @using Microsoft.EntityFrameworkCore
 @using ZAK.MapRoutesManager
@@ -10,8 +11,8 @@
 @inject IJSRuntime Js
 
 @inject IMapRoutesManager mapRoutesManager
-@inject IDaoBase<Application, ApplicationModel> applicationsDataAccess;
-@inject IDaoBase<Brigade, BrigadeModel> brigadesDataAccess;
+@inject IDao<Application, ApplicationModel> applicationsDataAccess;
+@inject IDao<Brigade, BrigadeModel> brigadesDataAccess;
 
 @inject ILogger<MapComponentLeaflet> _logger;
 

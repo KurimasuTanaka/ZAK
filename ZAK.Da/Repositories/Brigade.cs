@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using ZAK.Da.BaseDAO;
+using ZAK.DAO;
 using ZAK.Db;
 using ZAK.Db.Models;
 
@@ -87,7 +87,7 @@ public class Brigade : BrigadeModel
         return applications;
     }
 
-    public async Task PopulateApplicationList(IDaoBase<Application, ApplicationModel> applicationsDataAccess)
+    public async Task PopulateApplicationList(IDao<Application, ApplicationModel> applicationsDataAccess)
     {
         // for(int i = 0; i < 9; i++)
         // {

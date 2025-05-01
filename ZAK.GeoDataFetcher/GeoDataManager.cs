@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using BlazorApp.DA;
 using Microsoft.EntityFrameworkCore;
-using ZAK.Da.BaseDAO;
+using ZAK.DAO;
 using ZAK.Db.Models;
 
 namespace BlazorApp.GeoDataManager;
@@ -13,11 +13,11 @@ namespace BlazorApp.GeoDataManager;
 
 public class GeoDataManager : IGeoDataManager
 {
-    IDaoBase<Address, AddressModel> _addressesDataAccess;
+    IDao<Address, AddressModel> _addressesDataAccess;
     ICoordinatesProvider? _coordinatesProvider = new NominatimCoordinatesProvider();
 
 
-    public GeoDataManager(IDaoBase<Address, AddressModel> addressesDataAccess)
+    public GeoDataManager(IDao<Address, AddressModel> addressesDataAccess)
     {
         _addressesDataAccess = addressesDataAccess;
     }
@@ -26,7 +26,7 @@ public class GeoDataManager : IGeoDataManager
     {
         List<Address> addresses = (await _addressesDataAccess.GetAll(
             query: a => a.Include(ad => ad.coordinates).Include(ad => ad.addressAlias)
-        )).Where(a => a.coordinates is null || (a.coordinates.lat == 0 || a.coordinates.lon == 0)).Take(10).ToList();
+        )).Where(a => a.coordinates is null || (a.coordinates.lat == 0 || a.coordinates.lon == 0)).ToList();
 
         foreach (Address address in addresses)
         {

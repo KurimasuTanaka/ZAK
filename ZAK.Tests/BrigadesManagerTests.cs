@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
-using ZAK.Da.BaseDAO;
+using ZAK.DAO;
 using ZAK.Db.Models;
 using ZAK.Services.BrigadesManagerService;
 
@@ -20,12 +20,12 @@ public class BrigadesManagerTests
 
         //Arrange
         ILogger<BrigadesManager> brigadeManagerLogger = new NullLogger<BrigadesManager>();
-        ILogger<DaoBase<Brigade, BrigadeModel>> brigadeDaoLogger = new NullLogger<DaoBase<Brigade, BrigadeModel>>();
+        ILogger<Dao<Brigade, BrigadeModel>> brigadeDaoLogger = new NullLogger<Dao<Brigade, BrigadeModel>>();
 
-        IDaoBase<Brigade, BrigadeModel> brigadesDao = new DaoBase<Brigade, BrigadeModel>(dbContextFactory, brigadeDaoLogger);
+        IDao<Brigade, BrigadeModel> brigadesDao = new Dao<Brigade, BrigadeModel>(dbContextFactory, brigadeDaoLogger);
 
-        ILogger<DaoBase<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<DaoBase<Application, ApplicationModel>>();
-        IDaoBase<Application, ApplicationModel> applicationsDAO = new DaoBase<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
+        ILogger<Dao<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
 
 
 
@@ -81,12 +81,12 @@ public class BrigadesManagerTests
 
         //Arrange
         ILogger<BrigadesManager> brigadeManagerLogger = new NullLogger<BrigadesManager>();
-        ILogger<DaoBase<Brigade, BrigadeModel>> brigadeDaoLogger = new NullLogger<DaoBase<Brigade, BrigadeModel>>();
+        ILogger<Dao<Brigade, BrigadeModel>> brigadeDaoLogger = new NullLogger<Dao<Brigade, BrigadeModel>>();
 
-        IDaoBase<Brigade, BrigadeModel> brigadesDao = new DaoBase<Brigade, BrigadeModel>(dbContextFactory, brigadeDaoLogger);
+        IDao<Brigade, BrigadeModel> brigadesDao = new Dao<Brigade, BrigadeModel>(dbContextFactory, brigadeDaoLogger);
 
-        ILogger<DaoBase<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<DaoBase<Application, ApplicationModel>>();
-        IDaoBase<Application, ApplicationModel> applicationsDAO = new DaoBase<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
+        ILogger<Dao<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
 
 
 

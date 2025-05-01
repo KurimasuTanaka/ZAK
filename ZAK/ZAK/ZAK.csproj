@@ -14,6 +14,7 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.3.efcore.9.0.0" />
     <ProjectReference Include="..\..\ZAK.ApplicationsLoader\ZAK.ApplicationsLoader.csproj" />
     <ProjectReference Include="..\..\ZAK.ApplicationsScrapper\ZAK.ApplicationsScrapper.csproj" />
+    <ProjectReference Include="..\..\ZAK.DAO\ZAK.DAO.csproj" />
     <ProjectReference Include="..\..\ZAK.Db\ZAK.Db.csproj" />
     <ProjectReference Include="..\..\ZAK.Enums\ZAK.Enums.csproj" />
     <ProjectReference Include="..\..\ZAK.GeoDataFetcher\ZAK.GeoDataFetcher.csproj" />

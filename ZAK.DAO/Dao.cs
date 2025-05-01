@@ -1,4 +1,5 @@
 using System;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
@@ -8,16 +9,16 @@ using Microsoft.Extensions.Logging;
 using ZAK.Db;
 using ZAK.Db.Models;
 
-namespace ZAK.Da.BaseDAO;
+namespace ZAK.DAO;
 
-public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
+public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
                                                 where EntityT : class
                                                 where TransObjT : class, EntityT, new()
 {
     private IDbContextFactory<BlazorAppDbContext> _dbContextFactory;
-    private ILogger<DaoBase<TransObjT, EntityT>> _logger;
+    private ILogger<Dao<TransObjT, EntityT>> _logger;
 
-    public DaoBase(IDbContextFactory<BlazorAppDbContext> dbContextFactory, ILogger<DaoBase<TransObjT, EntityT>> logger)
+    public Dao(IDbContextFactory<BlazorAppDbContext> dbContextFactory, ILogger<Dao<TransObjT, EntityT>> logger)
     {
         _dbContextFactory = dbContextFactory;
         _logger = logger;
@@ -100,14 +101,12 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
     }
 
     public async Task Insert(TransObjT entity, Func<IQueryable<EntityT>, TransObjT, DbContext, EntityT>? inputProcessQuery = null)
-    {    
+    {
         _logger.LogInformation($"Inserting new entity of type {typeof(EntityT)}");
-
-
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             EntityT insertedEntity = null;
-            if (inputProcessQuery is not null) insertedEntity = inputProcessQuery(dbContext.Set<EntityT>().AsTracking(), entity, dbContext);
+            if (inputProcessQuery is not null) insertedEntity = inputProcessQuery(dbContext.Set<EntityT>(), entity, dbContext);
             else insertedEntity = entity;
 
             await dbContext.Set<EntityT>().AddAsync(entity);
@@ -115,14 +114,28 @@ public class DaoBase<TransObjT, EntityT> : IDaoBase<TransObjT, EntityT>
         }
     }
 
-    public async Task InsertRange(IEnumerable<TransObjT> entities, Func<IQueryable<EntityT>, DbContext, IQueryable<EntityT>>? inputProcessQuery = null)
+    public async Task InsertRange(IEnumerable<EntityT> entities, Func<IEnumerable<EntityT>, DbContext, IEnumerable<EntityT>>? inputProcessQuery = null)
     {
         _logger.LogInformation($"Inserting range of entities of type {typeof(EntityT)}");
 
+
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
-            await dbContext.Set<EntityT>().AddRangeAsync(entities.Cast<EntityT>());
-            await dbContext.SaveChangesAsync();
+            if (inputProcessQuery is not null) entities = inputProcessQuery(entities, dbContext);
+
+            dbContext.Set<EntityT>().AddRange(entities.Cast<EntityT>());
+            string stack = Environment.StackTrace;
+
+            try
+            {
+
+
+                int amount = dbContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                int i = 0;
+            }
         }
     }
 

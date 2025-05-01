@@ -1,16 +1,16 @@
 using System;
 using BlazorApp.DA;
 using Microsoft.EntityFrameworkCore;
-using ZAK.Da.BaseDAO;
+using ZAK.DAO;
 using ZAK.Db.Models;
 
 namespace ZAK.Services.BrigadesManagerService;
 
 public class BrigadesManager : IBrigadesManager
 {
-    IDaoBase<Brigade, BrigadeModel> _brigadeDataAccess;
+    IDao<Brigade, BrigadeModel> _brigadeDataAccess;
     ILogger<BrigadesManager> _logger;
-    public BrigadesManager(IDaoBase<Brigade, BrigadeModel> brigadeDataAccess, ILogger<BrigadesManager> logger)
+    public BrigadesManager(IDao<Brigade, BrigadeModel> brigadeDataAccess, ILogger<BrigadesManager> logger)
     {
         _brigadeDataAccess = brigadeDataAccess;
         _logger = logger;

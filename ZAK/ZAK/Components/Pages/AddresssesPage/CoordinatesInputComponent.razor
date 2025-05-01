@@ -2,7 +2,7 @@
 @using BlazorApp.DA;
 
 
-@inject IDaoBase<Address, AddressModel> addressDataAccess;
+@inject IDao<Address, AddressModel> addressDataAccess;
 @inject ILogger<CoordinatesInputComponent> _logger;
 
 <InputNumber TValue="double" @bind-Value="@coordinate" @bind-Value:after="UpdateDbData" />
