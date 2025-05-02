@@ -101,42 +101,39 @@ public class Application : ApplicationModel
         }
     }
 
-    public void SetupApplicationPriorityLevel(Dictionary<string, double> coefficients, List<Application> nearApplications)
+    public void CalculateApplicationPriorityLevel(Dictionary<string, double> coefficients, List<Application> nearApplications)
     {
-        double distance = 0;
+        //Return if calculation of distance is impossible 
+        if (this.address is null || this.address.coordinates is null)
+        {
+            priority = 0;
+            return;
+        }
+
+        //Calculate distance to the nearest applications
+        double distance = 1;
         foreach (Application application in nearApplications)
         {
-            if (application.address is null || application.address.coordinates is null)
-            {
-                distance = 1;
-                break;
-            }
+            if (application.address is null || application.address.coordinates is null) break;
+
             else distance +=
                  (Math.Sqrt(
                      Math.Pow(application.address.coordinates.lat - this.address.coordinates.lat, 2) +
                      Math.Pow(application.address.coordinates.lon - this.address.coordinates.lon, 2)));
         }
 
-        if (this.address is null)
-        {
-            priority = 0;
-            return;
-        }
-        else
-        {
+        //Calculate priority 
+        priority =
+            (1 / distance) * coefficients["distance"]
+            + (address.addressPriority is null ? 0.0 : address.addressPriority.priority) * coefficients["housePriority"]
+            + (hot ? 1 : 0) * coefficients["urgency"]
+            + (statusWasChecked ? 1 : 0) * coefficients["statusCheck"]
+            + (freeCable ? 1 : 0) * coefficients["freeCable"]
+            - (tarChangeApp ? 1 : 0) * coefficients["tarrifeChangeApplication"];
 
-            priority =
-                (1 / (distance + 0.01)) * coefficients["distance"]
-                + (address.addressPriority is null ? 0.0 : address.addressPriority.priority) * coefficients["housePriority"]
-                + (hot ? 1 : 0) * coefficients["urgency"]
-                + (statusWasChecked ? 1 : 0) * coefficients["statusCheck"]
-                + (freeCable ? 1 : 0) * coefficients["freeCable"]
-                - (tarChangeApp ? 1 : 0) * coefficients["tarrifeChangeApplication"];
-
-            if (daysToDeadline > 0) priority += 1 / daysToDeadline * coefficients["deadline"];
-            else if (daysToDeadline < 0) priority += Math.Abs(daysToDeadline) / 1 * coefficients["deadline"];
-            else priority += 1 * coefficients["deadline"];
-        }
+        if (daysToDeadline > 0) priority += 1 / daysToDeadline * coefficients["deadline"];
+        else if (daysToDeadline < 0) priority += Math.Abs(daysToDeadline) / 1 * coefficients["deadline"];
+        else priority += 1 * coefficients["deadline"];
     }
 
     public void Copy(Application source)

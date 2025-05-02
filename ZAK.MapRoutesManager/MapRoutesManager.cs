@@ -62,18 +62,6 @@ public class MapRoutesManager : IMapRoutesManager
             addresses.Last().AddRange(brigade.scheduledApplications.Select(a => a.application).Select(a => new Address(a.address)).ToList());
         }
 
-        // foreach (Brigade brigade in brigades)
-        // {
-        //     addresses.Add(new List<Address>());
-        //     for (int i = 0; i < brigade.applications.Count; i++)
-        //     {
-        //         if (brigade.applications[i] != null)
-        //         {
-        //             addresses.Last().Add(new Address(brigade.applications[i].address));
-        //         }
-        //     }
-        // }
-
         _logger.LogInformation("Calculating routes...");
 
         //Calculate routes 

@@ -130,7 +130,7 @@
         Dictionary<string, double> priorities = (await coefficientsDataAccess.GetAll()).ToDictionary(x => x.parameter, x => x.coefficient);
 
         //Calculate priority for all applications
-        for (int i = 0; i < applications.Count; i++) applications[i].SetupApplicationPriorityLevel(priorities,
+        for (int i = 0; i < applications.Count; i++) applications[i].CalculateApplicationPriorityLevel(priorities,
         nearApplications);
 
         //Find new zones for applications
