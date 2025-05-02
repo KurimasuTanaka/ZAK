@@ -57,7 +57,7 @@
 </style>
 @code {
     [CascadingParameter]
-    UnresolvedAddressesInfo? unresolvedAddressesInfo { get; set; }
+    UnresolvedAddressesInfo unresolvedAddressesInfo { get; set; } = default!;
 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -68,8 +68,7 @@
 
             await Js.InvokeVoidAsync("initMap");
 
-            //TODO: FIX LATER
-            if (/* !unresolvedAddressesInfo.unresolvedAddressesExist */ false)
+            if (!unresolvedAddressesInfo.unresolvedAddressesExist)
             {
                 await DrawPaths();
                 await DrawMarkers();

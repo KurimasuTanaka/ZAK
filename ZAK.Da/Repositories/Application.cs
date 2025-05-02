@@ -126,7 +126,7 @@ public class Application : ApplicationModel
         {
 
             priority =
-                (1 / distance) * coefficients["distance"]
+                (1 / (distance + 0.01)) * coefficients["distance"]
                 + (address.addressPriority is null ? 0.0 : address.addressPriority.priority) * coefficients["housePriority"]
                 + (hot ? 1 : 0) * coefficients["urgency"]
                 + (statusWasChecked ? 1 : 0) * coefficients["statusCheck"]

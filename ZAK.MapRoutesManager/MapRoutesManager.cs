@@ -38,7 +38,14 @@ public class MapRoutesManager : IMapRoutesManager
 
         _logger.LogInformation("Populationg brigades with applications");
         //Populate brigades with applications
-        List<Brigade> brigades =  (await brigadesDataAccess.GetAll()).ToList();
+        List<Brigade> brigades =  (await brigadesDataAccess.GetAll(
+            query: brigades => 
+                brigades.Include(b => b.scheduledApplications).
+                    ThenInclude(sa => sa.application).
+                    ThenInclude(app => app.address).
+                    ThenInclude(add => add.coordinates)
+        )).ToList();
+        
         foreach (Brigade brigade in brigades)
         {
             await brigade.PopulateApplicationList(applicationsDataAccess);

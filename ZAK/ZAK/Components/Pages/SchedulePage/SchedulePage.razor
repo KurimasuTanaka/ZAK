@@ -6,24 +6,24 @@
 @inject ILogger<SchedulePage> _logger
 @inject IUnresolvedAddressesChecker _unresolvedAddressesChecker;
 
-@if (unresolvedAddressesInfo is not null)
+@if (unresolvedAddressesInfo is not null && unresolvedAddressesInfo.unresolvedAddressesExist)
 {
-    if( !unresolvedAddressesInfo.unresolvedAddressesExist)
-    {
-        <Callout Color="CalloutColor.Danger">
-            <p>В базе есть незарезолвленные адреса!</p>
-        </Callout>
-    }
+    <Callout Color="CalloutColor.Danger">
+        <p>В базе есть незарезолвленные адреса!</p>
+    </Callout>
 }
 
 
 
 <div style="display: flex; flex-direction: row">
-    <SchedulePart RefreshMap="RefreshMap" />    
+    <SchedulePart RefreshMap="RefreshMap" />
 
+    @if(unresolvedAddressesInfo is not null)
+    {
     <CascadingValue Value="unresolvedAddressesInfo">
         <MapPart @ref="mapPart" />
     </CascadingValue>
+    }
 </div>
 
 @code {
@@ -34,7 +34,7 @@
 
     UnresolvedAddressesInfo? unresolvedAddressesInfo { get; set; } = null;
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         _logger.LogInformation("Initializing SchedulePage component");
 
