@@ -91,20 +91,20 @@
         {
             if (true)
             {
-                applications[i].SetupApplicationPriorityLevel(priorities, new List<Application>());
+                applications[i].CalculateApplicationPriorityLevel(priorities, new List<Application>());
             }
             else
             if (i == 0)
             {
-                applications[i].SetupApplicationPriorityLevel(priorities, new List<Application> { applications[i + 1] });
+                applications[i].CalculateApplicationPriorityLevel(priorities, new List<Application> { applications[i + 1] });
             }
             else if (i == applications.Count - 1)
             {
-                applications[i].SetupApplicationPriorityLevel(priorities, new List<Application> { applications[i - 1] });
+                applications[i].CalculateApplicationPriorityLevel(priorities, new List<Application> { applications[i - 1] });
             }
             else
             {
-                applications[i].SetupApplicationPriorityLevel(priorities, new List<Application> { applications[i - 1], applications[i +
+                applications[i].CalculateApplicationPriorityLevel(priorities, new List<Application> { applications[i - 1], applications[i +
 1] });
             }
         }

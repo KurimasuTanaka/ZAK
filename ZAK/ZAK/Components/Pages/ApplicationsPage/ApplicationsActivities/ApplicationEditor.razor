@@ -1,0 +1,254 @@
+﻿@using BlazorApp.DA;
+@using BlazorApp.Enums;
+
+@inject IDao<Address, AddressModel> _addressesDataAccess;
+
+
+
+<div style="display: flex; flex-direction: column">
+
+    @*Id of application ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
+    <label class="form-label">Номер:</label>
+    <InputNumber class="col-2" TValue="int" @bind-Value=application.id />
+    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+
+    <hr>
+
+    @*Address part ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ *@
+
+    <h6>@swithLabel</h6>
+    <Switch Class="mt-3" Value="newAddressInput" ValueExpression="() => newAddressInput" ValueChanged="SwitchChanged" />
+
+
+
+    @if (newAddressInput)
+    {
+
+
+        <div class="py-2" style="display: flex; flex-direction: column">
+            <label class="form-label">Улица и дом:</label>
+
+            <div style="display: flex; flex-direction: row">
+                <InputText @bind-Value=application.streetName />
+                <InputText class="col-2" @bind-Value=application.building />
+            </div>
+
+        </div>
+    }
+    else
+    {
+
+        <Grid Data="@addresses" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true"
+            Class="table table-hover table-bordered table-striped" >
+            <GridColumns>
+                <GridColumn TItem="Address">
+                    @(context.district.name)
+                </GridColumn>
+
+                <GridColumn TItem="Address" PropertyName="streetName">
+                    @(context.streetName)
+                </GridColumn>
+
+                <GridColumn TItem="Address" PropertyName="building">
+                    @(context.building)
+                </GridColumn>
+            </GridColumns>
+
+        </Grid>
+
+    }
+    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+    <hr>
+
+
+    @*District part ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
+    @* <div class="py-2 col-2" style="display: flex; flex-direction: column"> 
+
+            <label class="form-label">Район:</label>
+            <InputSelect @bind-Value="application.districtName">
+                @foreach (District district in districts.GetDistricts())
+                {
+                    <option value="@district.name">@district.name</option>
+                }
+            </InputSelect>
+        </div> *@
+    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+
+
+
+    @*Date ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
+    <div class="py-2" style="display: flex; flex-direction: column">
+        <label class="form-label">День \ месяц \ год</label>
+        <div style="display: flex; flex-direction: row">
+            <InputNumber class="col-1" TValue="int" @bind-Value=application.year />
+            <InputNumber class="col-1" TValue="int" @bind-Value=application.month />
+            <InputNumber class="col-1" TValue="int" @bind-Value=application.day />
+        </div>
+    </div>
+    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+    <hr>
+
+    @*Stretching status ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
+    <div class="py-2 col-2" style="display: flex; flex-direction: column">
+        <label class="form-label">Статус: </label>
+        <InputSelect @bind-Value="application.stretchingStatus">
+            @foreach (StretchingStatus Item in Enum.GetValues(typeof(StretchingStatus)))
+            {
+                <option value="@Item">@Item.GetDisplayName()</option>
+            }
+        </InputSelect>
+    </div>
+
+
+    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+    <hr>
+
+
+    @*Timeframe ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
+    <Card class="py-2">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item p-1"> @result </li>
+            <li class="list-group-item" style="display: flex; align-items: baseline; padding:0px">
+                <Button style="width: 100%; --bs-btn-border-radius: 0;" class="btn-sm" Color="ButtonColor.Secondary"
+                    @onclick="UpdateFirstPartTimeframe">First</Button>
+                <Button style="width: 100%; --bs-btn-border-radius: 0;" class="btn-sm" Color="ButtonColor.Secondary"
+                    @onclick="UpdateSecondPartTimeframe">Second</Button>
+
+            </li>
+            <li class="list-group-item p-1" style="display: flex; align-items: center; padding:0px">
+                <span>From:</span>
+                <InputSelect @bind-Value="application.startHour" @bind-Value:after="UpdateStrartHour">
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                </InputSelect>
+                <span>To:</span>
+                <InputSelect @bind-Value="application.endHour" @bind-Value:after="UpdateEndHour">
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                </InputSelect>
+            </li>
+        </ul>
+    </Card>
+    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+    <hr>
+
+
+    @*Additional parameters ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
+    <div class="py-3" style="display: flex; flex-direction: column">
+        <Switch @bind-Value="@application.tarChangeApp" Label="Переход" />
+        <Switch @bind-Value="@application.statusWasChecked" Label="Интересовался статусом" />
+        <Switch @bind-Value="@application.hot" Label="Приоритетная" />
+
+    </div>
+    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+    <hr>
+
+
+    @*Comment sections ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
+
+    <div class="py-2" style="display: flex; flex-direction: column">
+        <label class="form-label">Комментарий оператора</label>
+        <InputTextArea @bind-Value="@application.operatorComment" rows="3"></InputTextArea>
+    </div>
+
+    <div class="py-2" style="display: flex; flex-direction: column">
+        <label class="form-label">Комментарий мастера</label>
+        <InputTextArea @bind-Value="@application.masterComment" rows="3"></InputTextArea>
+    </div>
+    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+
+
+    <Button Color="ButtonColor.Primary" @onclick="SubmitButtonPressed">@buttonText</Button>
+</div>
+
+@code {
+    [Parameter] public Application application { get; set; }
+    [Parameter] public EventCallback<Application> applicationSubmited { get; set; }
+    [Parameter] public string buttonText { get; set; }
+
+    string swithLabel = "Выбор существующего адреса";
+    private bool newAddressInput = false;
+
+    List<Address> addresses = new();
+
+    private void SwitchChanged(bool value)
+    {
+        newAddressInput = value;
+
+        if (newAddressInput)
+        {
+            swithLabel = "Выбор существующего адреса";
+        }
+        else swithLabel = "Добавление нового адреса";
+
+        StateHasChanged();
+    }
+
+    private async Task SubmitButtonPressed()
+    {
+        await applicationSubmited.InvokeAsync(application);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (application.timeRangeIsSet)
+        {
+            result = $"С {application.startHour} до {application.endHour}";
+        }
+        else result = application.firstPart ? "В первой половине" : "Во второй половине";
+
+        addresses = (await _addressesDataAccess.GetAll(
+        query: addresses => addresses.Include(add => add.district)
+        )).ToList();
+    }
+
+    public void OnRowClick(GridRowEventArgs<Address> application)
+    {
+
+    }
+
+    //Timeframe functions
+    private string result = "";
+
+    private void UpdateStrartHour()
+    {
+        application.timeRangeIsSet = true;
+        result = $"С {application.startHour} до {application.endHour}";
+    }
+    private void UpdateEndHour()
+    {
+        application.timeRangeIsSet = true;
+        result = $"С {application.startHour} до {application.endHour}";
+    }
+
+    private void UpdateFirstPartTimeframe()
+    {
+        application.firstPart = true;
+        application.secondPart = false;
+        application.timeRangeIsSet = false;
+
+        result = "В первой половине";
+    }
+    private void UpdateSecondPartTimeframe()
+    {
+        application.firstPart = false;
+        application.secondPart = true;
+        application.timeRangeIsSet = false;
+
+        result = "Во второй половине";
+    }
+}

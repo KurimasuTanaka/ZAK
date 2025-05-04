@@ -1,0 +1,179 @@
+﻿@using MudBlazor
+
+@rendermode InteractiveServer
+
+@inject IDao<Address, AddressModel> _addressDataAccess;
+@inject ISnackbar Snackbar;
+
+
+<MudPopoverProvider />
+
+
+<MudForm @ref="form">
+    <MudNumericField @bind-Value="@(application.id)" />
+    <MudCheckBox @bind-Value="@(application.hot)" Color="Color.Secondary">Важлива заявка</MudCheckBox>
+    <MudCheckBox @bind-Value="@(application.statusWasChecked)" Color="Color.Secondary">Цікавився статусом</MudCheckBox>
+    <MudCheckBox @bind-Value="@(application.urgent)" Color="Color.Secondary">Срочка</MudCheckBox>
+    <MudCheckBox @bind-Value="@(application.freeCable)" Color="Color.Secondary">Є вільний кабель</MudCheckBox>
+    <MudCheckBox @bind-Value="@(application.tarChangeApp)" Color="Color.Secondary">Заявка на зміну тарифу</MudCheckBox>
+
+    <MudDatePicker Label="Дата додавання заявки" @bind-Date="_date" />
+
+    <MudSwitch @bind-Value="addressAdding">
+        @if(addressAdding) {<span>Додавання нової адреси</span>}
+        else  
+            {<span>Вибір наявної адреси</span>}
+    </MudSwitch>
+
+    @if (application.address is null)
+    {
+        <MudText>Адреса не обрана</MudText>
+    }
+    else
+    {
+
+        <MudText>@( application.address.streetName + " " + application.address.building)</MudText>
+    }
+
+
+    @if (!addressAdding)
+    {
+
+
+        <MudPaper>
+            <MudTable T="Address" @ref="table" ServerData="ServerReload" Hover="true" Dense="true"
+                OnRowClick="AddressTableRowClick">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Адреса</MudText>
+                    <MudSpacer />
+                    <MudTextField T="string" ValueChanged="@(s => StreetNameSearchChanged(s))" Placeholder="Search"
+                        Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                        Class="mt-0"></MudTextField>
+                    <MudTextField T="string" ValueChanged="@(s => BuildingNameSearchChanged(s))" Placeholder="Search"
+                        Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                        Class="mt-0"></MudTextField>
+
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel SortLabel="streetName" T="Address">Улица</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortLabel="building" T="Address">Дом</MudTableSortLabel>
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="streetName">@context.streetName</MudTd>
+                    <MudTd DataLabel="building">@context.building</MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText>Адреса не знайшлась </MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudText>Завантаження...</MudText>
+                </LoadingContent>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </MudPaper>
+    }
+    else
+    {
+        <MudPaper>
+            <MudTextField @bind-Value="newAddressStreetName" Label="Вулиця" Variant="Variant.Text" />
+            <MudTextField @bind-Value="newAddressBuildingName" Label="Будинок" Variant="Variant.Filled" />
+            <MudButton OnClick="AddNewAddress"> text</MudButton>
+        </MudPaper>
+    }
+
+</MudForm>
+
+
+
+@code {
+
+    Application application = new();
+
+    MudForm form = default!;
+
+    MudTable<Address> table = default!;
+    private string streetNameSearch = "";
+    private string buildingNameSearch = "";
+
+    private string newAddressStreetName = "";
+    private string newAddressBuildingName = "";
+
+
+    private bool addressAdding = false;
+
+    private DateTime? _date
+    {
+        get
+        {
+            if (application.year == 0)
+            {
+                return DateTime.Today;
+            }
+            else return new DateTime(application.year, application.month, application.day);
+        }
+        set
+        {
+            if (value is null) return;
+            application.year = value.Value.Year;
+            application.month = value.Value.Month;
+            application.day = value.Value.Day;
+        }
+    }
+    private async Task<TableData<Address>> ServerReload(TableState state, CancellationToken token)
+    {
+        List<Address> addresses = (await _addressDataAccess.GetAll()).ToList();
+        if (streetNameSearch != "") addresses = addresses.Where(add => add.streetName.Contains(streetNameSearch)).ToList();
+        if (buildingNameSearch != "") addresses = addresses.Where(add => add.building.Contains(buildingNameSearch)).ToList();
+        addresses = addresses.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
+
+        TableData<Address> tableData = new();
+        tableData.Items = addresses;
+        tableData.TotalItems = tableData.Items.Count();
+
+        return tableData;
+    }
+
+    private void StreetNameSearchChanged(string text)
+    {
+        streetNameSearch = text;
+        table.ReloadServerData();
+    }
+
+
+    private void BuildingNameSearchChanged(string text)
+    {
+        buildingNameSearch = text;
+        table.ReloadServerData();
+    }
+
+    private void AddressTableRowClick(TableRowClickEventArgs<Address> tableRowClickEventArgs)
+    {
+        application.address = tableRowClickEventArgs.Item;
+    }
+    private async void AddNewAddress(MouseEventArgs args)
+    {
+        Address newAddress = new();
+        newAddress.streetName = newAddressStreetName;
+        newAddress.building = newAddressBuildingName;
+
+        List<Address> addresses = (await _addressDataAccess.GetAll()).ToList();
+        if (addresses.Where(add =>
+        add.streetName == newAddress.streetName &&
+        add.building == newAddress.building).Count() == 0)
+        {
+            await _addressDataAccess.Insert(newAddress);
+            application.address = newAddress;
+        }
+        else
+        {
+            Snackbar.Add("Така адреса вже існує!");
+        }
+
+    }
+}

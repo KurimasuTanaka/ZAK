@@ -50,7 +50,10 @@ public class Program
         builder.Services.AddAuthorization();
         builder.Services.AddCascadingAuthenticationState();
 
-        builder.Services.AddMudServices();
+        builder.Services.AddMudServices(options =>
+    {
+        options.PopoverOptions.ThrowOnDuplicateProvider = false;
+    });
 
         string? connectionString = builder.Configuration["ConnectionStrings:MySQL"];
         if (String.IsNullOrEmpty(connectionString)) throw new Exception("Connection string is empty");

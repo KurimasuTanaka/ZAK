@@ -3,6 +3,8 @@
 @using ZAK.Services.UnresolvedAddressesChecker
 @rendermode InteractiveServer
 
+@attribute [StreamRendering]
+
 @inject ILogger<SchedulePage> _logger
 @inject IUnresolvedAddressesChecker _unresolvedAddressesChecker;
 
