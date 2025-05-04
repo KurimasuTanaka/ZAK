@@ -7,21 +7,23 @@
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
 @using Microsoft.AspNetCore.Authorization
-@using ZAK.Components.Pages.ApplicationsPage.ApplicationsActivities;
 @using ZAK.Components.Pages.ApplicationsPage.ApplicationInputComponents;
+@using ZAK.Components.Pages.ApplicationsPage.ApplicationsActivities;
+
 
 @inject IDao<Application, ApplicationModel> applicationsDataAccess;
 @inject IWebHostEnvironment enviroment;
 
 @inject ILogger<Applications> _logger;
 
-<ApplicationsActivities ApplicationsInformationWasChanged="Redraw" />
+<ApplicationEditorModal @ref="applicationEditorModal" />
 
-<DeleteAllApplicationsButton />
+
 
 <Card class="my-3">
   <CardBody>
     <Switch Label="Show ignored" @bind-Value="showIgnored" @bind-Value:after="Redraw" />
+    <ApplicationsActivities />
   </CardBody>
 </Card>
 
@@ -32,7 +34,7 @@
   <GridColumn TItem="Application" HeaderText="Id" PropertyName="id" SortKeySelector="item => item.id">
     <div>
       @context.id
-      <Button>
+      <Button @onclick="@(mouseArg => applicationEditorModal.ShowModal(context))">
         <Icon Name="IconName.Pencil" />
       </Button>
     </div>
@@ -110,18 +112,22 @@
   //Make this thing async
   List<Application> applications = new List<Application>();
 
+  ApplicationAdditionModal applicationAdditionModal = default!;
+  ApplicationEditorModal applicationEditorModal = default!;
   protected override async Task OnParametersSetAsync()
   {
     _logger.LogInformation("Drawing applications table");
 
-    await Redraw();  
+    await Redraw();
   }
   public async Task Redraw()
   {
     _logger.LogInformation("Redrawing applications table");
 
-    if (showIgnored) applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad => ad.district))).ToList();
-    else applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad => ad.district))).Where(a => a.ignored == false).ToList();
+    if (showIgnored) applications = (await applicationsDataAccess.GetAll(query => query.Include(a =>
+    a.address).ThenInclude(ad => ad.district))).ToList();
+    else applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad =>
+    ad.district))).Where(a => a.ignored == false).ToList();
 
     StateHasChanged();
   }

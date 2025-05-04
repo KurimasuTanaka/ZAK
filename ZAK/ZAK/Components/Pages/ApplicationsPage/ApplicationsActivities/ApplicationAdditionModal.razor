@@ -1,0 +1,54 @@
+﻿@using BlazorApp.DA;
+
+@inject IDao<Application, ApplicationModel> applicationsDataAccess;
+
+
+<Modal @ref="modal" Title="Додавання нової заявки" Size="ModalSize.Large">
+    <BodyTemplate>
+        <ApplicationEditor application="@application" applicationUpdateSubmited="FormSubmitted" />
+    </BodyTemplate>
+</Modal>
+
+
+@code {
+    [Parameter]
+    public EventCallback ApplicationsInformationWasChanged { get; set; }
+
+    [Parameter] public Application application { get; set; } = new();
+
+    private Modal modal = default!;
+
+    async void FormSubmitted()
+    {
+        await applicationsDataAccess.Insert(
+        application,
+        inputProcessQuery: (query, newApplication, dbContext) =>
+        {
+            if (newApplication.address is not null)
+            {
+
+                Address? address = dbContext.Set<AddressModel>()!.
+        Where(add => add.streetName == newApplication.address.streetName && add.building == newApplication.address.building).
+        Select(add => new Address(add)).FirstOrDefault();
+
+                if (address is null)
+                {
+                    newApplication.address = dbContext.Set<AddressModel>().Add(newApplication.address).Entity;
+                }
+                dbContext.Attach<AddressModel>(newApplication.address);
+
+            }
+
+            return newApplication;
+        });
+
+
+        await ApplicationsInformationWasChanged.InvokeAsync();
+
+    }
+    public async Task ShowModal()
+    {
+        await modal.ShowAsync();
+    }
+
+}

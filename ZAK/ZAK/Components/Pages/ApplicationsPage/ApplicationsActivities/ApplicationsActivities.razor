@@ -1,12 +1,15 @@
-﻿<Card class="my-3">
+﻿<ApplicationAdditionModal @ref="applicatonAdditionModal" ApplicationsInformationWasChanged="ApplicationsInformationWasChanged" />
+
+<Card class="my-3">
   <CardBody class="gap-3" style="display:flex; flex-direction:row">
-    <ApplicationsFileLoader  ApplicationsInformationWasChanged="ApplicationsInformationWasChanged"/>
-    <ApplicationAddition />
+    <ApplicationsFileLoader ApplicationsInformationWasChanged="ApplicationsInformationWasChanged" />
+    <Button @onclick="@(async () => await applicatonAdditionModal.ShowModal())">Додати нову заявку</Button>
   </CardBody>
 </Card>
 
 @code {
   [Parameter]
-  public EventCallback ApplicationsInformationWasChanged {get; set;} 
+  public EventCallback ApplicationsInformationWasChanged { get; set; }
 
+  private ApplicationAdditionModal applicatonAdditionModal = default!;
 }

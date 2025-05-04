@@ -1,254 +1,190 @@
-﻿@using BlazorApp.DA;
-@using BlazorApp.Enums;
+﻿@using MudBlazor
 
-@inject IDao<Address, AddressModel> _addressesDataAccess;
+@rendermode InteractiveServer
 
-
-
-<div style="display: flex; flex-direction: column">
-
-    @*Id of application ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-    <label class="form-label">Номер:</label>
-    <InputNumber class="col-2" TValue="int" @bind-Value=application.id />
-    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
-
-    <hr>
-
-    @*Address part ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓ *@
-
-    <h6>@swithLabel</h6>
-    <Switch Class="mt-3" Value="newAddressInput" ValueExpression="() => newAddressInput" ValueChanged="SwitchChanged" />
+@inject ISnackbar Snackbar;
+@inject IDao<Application, ApplicationModel> _applicationsDataAccess;
+@inject IDao<Address, AddressModel> _addressDataAccess;
 
 
+<MudPopoverProvider />
 
-    @if (newAddressInput)
+
+<MudNumericField @bind-Value="@(application.id)" />
+<MudCheckBox @bind-Value="@(application.hot)" Color="Color.Secondary">Важлива заявка</MudCheckBox>
+<MudCheckBox @bind-Value="@(application.statusWasChecked)" Color="Color.Secondary">Цікавився статусом</MudCheckBox>
+<MudCheckBox @bind-Value="@(application.urgent)" Color="Color.Secondary">Срочка</MudCheckBox>
+<MudCheckBox @bind-Value="@(application.freeCable)" Color="Color.Secondary">Є вільний кабель</MudCheckBox>
+<MudCheckBox @bind-Value="@(application.tarChangeApp)" Color="Color.Secondary">Заявка на зміну тарифу</MudCheckBox>
+
+<MudDatePicker Label="Дата додавання заявки" @bind-Date="_date" />
+
+<MudSwitch @bind-Value="addressAdding">
+    @if (addressAdding)
     {
-
-
-        <div class="py-2" style="display: flex; flex-direction: column">
-            <label class="form-label">Улица и дом:</label>
-
-            <div style="display: flex; flex-direction: row">
-                <InputText @bind-Value=application.streetName />
-                <InputText class="col-2" @bind-Value=application.building />
-            </div>
-
-        </div>
+        <span>Додавання нової адреси</span>
     }
     else
     {
 
-        <Grid Data="@addresses" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true"
-            Class="table table-hover table-bordered table-striped" >
-            <GridColumns>
-                <GridColumn TItem="Address">
-                    @(context.district.name)
-                </GridColumn>
-
-                <GridColumn TItem="Address" PropertyName="streetName">
-                    @(context.streetName)
-                </GridColumn>
-
-                <GridColumn TItem="Address" PropertyName="building">
-                    @(context.building)
-                </GridColumn>
-            </GridColumns>
-
-        </Grid>
-
+        <span>Вибір наявної адреси</span>
     }
-    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
-    <hr>
+</MudSwitch>
+
+@if (application.address is null)
+{
+    <MudText>Адреса не обрана</MudText>
+}
+else
+{
+
+    <MudText>@( application.address.streetName + " " + application.address.building)</MudText>
+}
 
 
-    @*District part ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-    @* <div class="py-2 col-2" style="display: flex; flex-direction: column"> 
-
-            <label class="form-label">Район:</label>
-            <InputSelect @bind-Value="application.districtName">
-                @foreach (District district in districts.GetDistricts())
-                {
-                    <option value="@district.name">@district.name</option>
-                }
-            </InputSelect>
-        </div> *@
-    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
+@if (!addressAdding)
+{
 
 
+    <MudPaper>
+        <MudTable T="Address" @ref="table" ServerData="ServerReload" Hover="true" Dense="true"
+            OnRowClick="AddressTableRowClick">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Адреса</MudText>
+                <MudSpacer />
+                <MudTextField T="string" ValueChanged="@(s => StreetNameSearchChanged(s))" Placeholder="Search"
+                    Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                    Class="mt-0"></MudTextField>
+                <MudTextField T="string" ValueChanged="@(s => BuildingNameSearchChanged(s))" Placeholder="Search"
+                    Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                    Class="mt-0"></MudTextField>
 
-    @*Date ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-    <div class="py-2" style="display: flex; flex-direction: column">
-        <label class="form-label">День \ месяц \ год</label>
-        <div style="display: flex; flex-direction: row">
-            <InputNumber class="col-1" TValue="int" @bind-Value=application.year />
-            <InputNumber class="col-1" TValue="int" @bind-Value=application.month />
-            <InputNumber class="col-1" TValue="int" @bind-Value=application.day />
-        </div>
-    </div>
-    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
-    <hr>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortLabel="streetName" T="Address">Улица</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortLabel="building" T="Address">Дом</MudTableSortLabel>
+                </MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="streetName">@context.streetName</MudTd>
+                <MudTd DataLabel="building">@context.building</MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText>Адреса не знайшлась </MudText>
+            </NoRecordsContent>
+            <LoadingContent>
+                <MudText>Завантаження...</MudText>
+            </LoadingContent>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudPaper>
+}
+else
+{
+    <MudPaper>
+        <MudTextField @bind-Value="newAddressStreetName" Label="Вулиця" Variant="Variant.Text" />
+        <MudTextField @bind-Value="newAddressBuildingName" Label="Будинок" Variant="Variant.Filled" />
+        <MudButton OnClick="AddNewAddress">Додати адресу</MudButton>
+    </MudPaper>
+}
 
-    @*Stretching status ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-    <div class="py-2 col-2" style="display: flex; flex-direction: column">
-        <label class="form-label">Статус: </label>
-        <InputSelect @bind-Value="application.stretchingStatus">
-            @foreach (StretchingStatus Item in Enum.GetValues(typeof(StretchingStatus)))
-            {
-                <option value="@Item">@Item.GetDisplayName()</option>
-            }
-        </InputSelect>
-    </div>
-
-
-    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
-    <hr>
-
-
-    @*Timeframe ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-    <Card class="py-2">
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item p-1"> @result </li>
-            <li class="list-group-item" style="display: flex; align-items: baseline; padding:0px">
-                <Button style="width: 100%; --bs-btn-border-radius: 0;" class="btn-sm" Color="ButtonColor.Secondary"
-                    @onclick="UpdateFirstPartTimeframe">First</Button>
-                <Button style="width: 100%; --bs-btn-border-radius: 0;" class="btn-sm" Color="ButtonColor.Secondary"
-                    @onclick="UpdateSecondPartTimeframe">Second</Button>
-
-            </li>
-            <li class="list-group-item p-1" style="display: flex; align-items: center; padding:0px">
-                <span>From:</span>
-                <InputSelect @bind-Value="application.startHour" @bind-Value:after="UpdateStrartHour">
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                </InputSelect>
-                <span>To:</span>
-                <InputSelect @bind-Value="application.endHour" @bind-Value:after="UpdateEndHour">
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                </InputSelect>
-            </li>
-        </ul>
-    </Card>
-    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
-    <hr>
+<Button @onclick="UpdateApplicationData">Підтвердити</Button>
 
 
-    @*Additional parameters ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-    <div class="py-3" style="display: flex; flex-direction: column">
-        <Switch @bind-Value="@application.tarChangeApp" Label="Переход" />
-        <Switch @bind-Value="@application.statusWasChecked" Label="Интересовался статусом" />
-        <Switch @bind-Value="@application.hot" Label="Приоритетная" />
-
-    </div>
-    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
-    <hr>
-
-
-    @*Comment sections ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-
-    <div class="py-2" style="display: flex; flex-direction: column">
-        <label class="form-label">Комментарий оператора</label>
-        <InputTextArea @bind-Value="@application.operatorComment" rows="3"></InputTextArea>
-    </div>
-
-    <div class="py-2" style="display: flex; flex-direction: column">
-        <label class="form-label">Комментарий мастера</label>
-        <InputTextArea @bind-Value="@application.masterComment" rows="3"></InputTextArea>
-    </div>
-    @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
-
-
-    <Button Color="ButtonColor.Primary" @onclick="SubmitButtonPressed">@buttonText</Button>
-</div>
 
 @code {
-    [Parameter] public Application application { get; set; }
-    [Parameter] public EventCallback<Application> applicationSubmited { get; set; }
-    [Parameter] public string buttonText { get; set; }
 
-    string swithLabel = "Выбор существующего адреса";
-    private bool newAddressInput = false;
+    [Parameter] public Application application {get; set;} = new();
+    [Parameter] public EventCallback<Application> applicationUpdateSubmited {get;set;}
 
-    List<Address> addresses = new();
+    MudTable<Address> table = default!;
+    private string streetNameSearch = "";
+    private string buildingNameSearch = "";
 
-    private void SwitchChanged(bool value)
+    private string newAddressStreetName = "";
+    private string newAddressBuildingName = "";
+
+
+    private bool addressAdding = false;
+
+    private DateTime? _date
     {
-        newAddressInput = value;
-
-        if (newAddressInput)
+        get
         {
-            swithLabel = "Выбор существующего адреса";
+            if (application.year == 0)
+            {
+                return DateTime.Today;
+            }
+            else return new DateTime(application.year, application.month, application.day);
         }
-        else swithLabel = "Добавление нового адреса";
-
-        StateHasChanged();
-    }
-
-    private async Task SubmitButtonPressed()
-    {
-        await applicationSubmited.InvokeAsync(application);
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (application.timeRangeIsSet)
+        set
         {
-            result = $"С {application.startHour} до {application.endHour}";
+            if (value is null) return;
+            application.year = value.Value.Year;
+            application.month = value.Value.Month;
+            application.day = value.Value.Day;
         }
-        else result = application.firstPart ? "В первой половине" : "Во второй половине";
-
-        addresses = (await _addressesDataAccess.GetAll(
-        query: addresses => addresses.Include(add => add.district)
-        )).ToList();
     }
 
-    public void OnRowClick(GridRowEventArgs<Address> application)
+    private async Task UpdateApplicationData()
     {
-
+        await applicationUpdateSubmited.InvokeAsync(application);
     }
 
-    //Timeframe functions
-    private string result = "";
-
-    private void UpdateStrartHour()
+    private async Task<TableData<Address>> ServerReload(TableState state, CancellationToken token)
     {
-        application.timeRangeIsSet = true;
-        result = $"С {application.startHour} до {application.endHour}";
+        List<Address> addresses = (await _addressDataAccess.GetAll()).ToList();
+        if (streetNameSearch != "") addresses = addresses.Where(add => add.streetName.Contains(streetNameSearch)).ToList();
+        if (buildingNameSearch != "") addresses = addresses.Where(add => add.building.Contains(buildingNameSearch)).ToList();
+        addresses = addresses.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
+
+        TableData<Address> tableData = new();
+        tableData.Items = addresses;
+        tableData.TotalItems = tableData.Items.Count();
+
+        return tableData;
     }
-    private void UpdateEndHour()
+
+    private void StreetNameSearchChanged(string text)
     {
-        application.timeRangeIsSet = true;
-        result = $"С {application.startHour} до {application.endHour}";
+        streetNameSearch = text;
+        table.ReloadServerData();
     }
 
-    private void UpdateFirstPartTimeframe()
-    {
-        application.firstPart = true;
-        application.secondPart = false;
-        application.timeRangeIsSet = false;
 
-        result = "В первой половине";
+    private void BuildingNameSearchChanged(string text)
+    {
+        buildingNameSearch = text;
+        table.ReloadServerData();
     }
-    private void UpdateSecondPartTimeframe()
-    {
-        application.firstPart = false;
-        application.secondPart = true;
-        application.timeRangeIsSet = false;
 
-        result = "Во второй половине";
+    private void AddressTableRowClick(TableRowClickEventArgs<Address> tableRowClickEventArgs)
+    {
+        application.address = tableRowClickEventArgs.Item;
+    }
+    private async void AddNewAddress(MouseEventArgs args)
+    {
+        Address newAddress = new();
+        newAddress.streetName = newAddressStreetName;
+        newAddress.building = newAddressBuildingName;
+
+        List<Address> addresses = (await _addressDataAccess.GetAll()).ToList();
+        if (addresses.Where(add =>
+        add.streetName == newAddress.streetName &&
+        add.building == newAddress.building).Count() == 0)
+        {
+            await _addressDataAccess.Insert(newAddress);
+            application.address = newAddress;
+        }
+        else
+        {
+            Snackbar.Add("Така адреса вже існує!");
+        }
+
     }
 }
