@@ -93,6 +93,8 @@ else
     </MudPaper>
 }
 
+<MudTextField T="string" Label="Коментар оператора" Lines="3" Variant="Variant.Outlined" @bind-Value="@application.operatorComment" />
+
 <Button @onclick="UpdateApplicationData">Підтвердити</Button>
 
 

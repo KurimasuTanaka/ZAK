@@ -5,14 +5,13 @@
 @inject IDao<Application, ApplicationModel> applicationsDataAccess;
 @inject ILogger<CheckBoxInputComponent> _logger;
 
-<Switch Label="@label" @bind-Value="@propertyValue" @bind-Value:event="UpdateDbData" />
+<Switch Label="@label" @bind-Value="@propertyValue" @bind-Value:after="UpdateDbData" />
 
 
 
 @code {
     [Parameter] public string label {get; set;} = "Empty lable";
 
-    int coutnt = 0;
     [Parameter] public string propertyName {get; set;} = String.Empty;
     
     [Parameter] public int applicationId { get; set; }
