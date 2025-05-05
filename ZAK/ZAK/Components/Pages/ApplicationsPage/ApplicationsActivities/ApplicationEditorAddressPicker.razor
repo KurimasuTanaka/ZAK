@@ -1,0 +1,156 @@
+﻿@inject IDao<Address, AddressModel> _addressDataAccess;
+@inject ISnackbar Snackbar;
+
+<MudPopoverProvider />
+
+<MudCard Outlined="true">
+
+    <MudCardContent>
+
+
+        <MudCardHeader>
+            @if (application.address is null)
+            {
+                <MudText><b>Адреса не обрана</b></MudText>
+            }
+            else
+            {
+
+                <MudText><b>@( application.address.streetName + " " + application.address.building)</b></MudText>
+            }
+        </MudCardHeader>
+        <MudSwitch @bind-Value="addressAdding">
+            @if (addressAdding)
+            {
+                <span>Додавання нової адреси</span>
+            }
+            else
+            {
+
+                <span>Вибір наявної адреси</span>
+            }
+        </MudSwitch>
+
+        @if (!addressAdding)
+        {
+
+
+            <MudTable T="Address" @ref="table" ServerData="ServerReload" Hover="true" Dense="true"
+                OnRowClick="AddressTableRowClick">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6">Адреса</MudText>
+                    <MudSpacer />
+                    <MudTextField T="string" ValueChanged="@(s => StreetNameSearchChanged(s))" Placeholder="Search"
+                        Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                        Class="mt-0"></MudTextField>
+                    <MudTextField T="string" ValueChanged="@(s => BuildingNameSearchChanged(s))" Placeholder="Search"
+                        Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                        Class="mt-0"></MudTextField>
+
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh>
+                        <MudTableSortLabel SortLabel="streetName" T="Address">Улица</MudTableSortLabel>
+                    </MudTh>
+                    <MudTh>
+                        <MudTableSortLabel SortLabel="building" T="Address">Дом</MudTableSortLabel>
+                    </MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="streetName">@context.streetName</MudTd>
+                    <MudTd DataLabel="building">@context.building</MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText>Адреса не знайшлась </MudText>
+                </NoRecordsContent>
+                <LoadingContent>
+                    <MudText>Завантаження...</MudText>
+                </LoadingContent>
+            </MudTable>
+        }
+        else
+        {
+            <MudCard Outlined="true">
+                <MudCardContent>
+
+                    <MudStack>
+                        <MudTextField @bind-Value="newAddressStreetName" Label="Вулиця" Variant="Variant.Outlined"
+                            Margin="Margin.Dense" />
+                        <MudTextField @bind-Value="newAddressBuildingName" Label="Будинок" Variant="Variant.Outlined"
+                            Margin="Margin.Dense" />
+                        <MudButton OnClick="AddNewAddress">Додати адресу</MudButton>
+                    </MudStack>
+                </MudCardContent>
+            </MudCard>
+
+        }
+    </MudCardContent>
+</MudCard>
+@code {
+    [Parameter] public Application application { get; set; } = new();
+    [Parameter] public EventCallback<Address> addressChanged { get; set; }
+
+    MudTable<Address> table = default!;
+    private string streetNameSearch = "";
+    private string buildingNameSearch = "";
+
+    private string newAddressStreetName = "";
+    private string newAddressBuildingName = "";
+
+
+    private bool addressAdding = false;
+
+    private async Task<TableData<Address>> ServerReload(TableState state, CancellationToken token)
+    {
+        List<Address> addresses = (await _addressDataAccess.GetAll()).ToList();
+        if (streetNameSearch != "") addresses = addresses.Where(add => add.streetName.Contains(streetNameSearch)).ToList();
+        if (buildingNameSearch != "") addresses = addresses.Where(add => add.building.Contains(buildingNameSearch)).ToList();
+        addresses = addresses.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
+
+        TableData<Address> tableData = new();
+        tableData.Items = addresses;
+        tableData.TotalItems = tableData.Items.Count();
+
+        return tableData;
+    }
+
+    private void StreetNameSearchChanged(string text)
+    {
+        streetNameSearch = text;
+        table.ReloadServerData();
+    }
+
+
+    private void BuildingNameSearchChanged(string text)
+    {
+        buildingNameSearch = text;
+        table.ReloadServerData();
+    }
+
+    private async void AddressTableRowClick(TableRowClickEventArgs<Address> tableRowClickEventArgs)
+    {
+        application.address = tableRowClickEventArgs.Item;
+        if (application.address is not null) await addressChanged.InvokeAsync(new Address(application.address));
+    }
+    private async void AddNewAddress(MouseEventArgs args)
+    {
+        Address newAddress = new();
+        newAddress.streetName = newAddressStreetName;
+        newAddress.building = newAddressBuildingName;
+
+        List<Address> addresses = (await _addressDataAccess.GetAll()).ToList();
+        if (addresses.Where(add =>
+        add.streetName == newAddress.streetName &&
+        add.building == newAddress.building).Count() == 0)
+        {
+            await _addressDataAccess.Insert(newAddress);
+            application.address = newAddress;
+        }
+        else
+        {
+            Snackbar.Add("Така адреса вже існує!");
+        }
+
+    }
+
+}
