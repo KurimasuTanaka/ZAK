@@ -28,8 +28,8 @@
             {
 
                 Address? address = dbContext.Set<AddressModel>()!.
-        Where(add => add.streetName == newApplication.address.streetName && add.building == newApplication.address.building).
-        Select(add => new Address(add)).FirstOrDefault();
+                    Where(add => add.streetName == newApplication.address.streetName && add.building == newApplication.address.building).
+                    Select(add => new Address(add)).FirstOrDefault();
 
                 if (address is null)
                 {
@@ -42,7 +42,7 @@
             return newApplication;
         });
 
-
+        await modal.HideAsync();
         await ApplicationsInformationWasChanged.InvokeAsync();
 
     }

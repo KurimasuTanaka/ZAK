@@ -1,4 +1,6 @@
 using System;
+using ApplicationsScrappingModule;
+using BlazorApp;
 using BlazorApp.DA;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -175,4 +177,33 @@ public class ApplicationsManagerTests
     }
 
 
+    [Fact]
+    public async void UploadingDifferenApplicationFiles()
+    {
+        TestDbContextFactory dbContextFactory = new();
+
+        //Arrange
+        ILogger<ApplicationsManagerService> applicationsManagerLogger = new NullLogger<ApplicationsManagerService>();
+        ILogger<Dao<Address, AddressModel>> addressDaoLogger = new NullLogger<Dao<Address, AddressModel>>();
+        ILogger<Dao<Application, ApplicationModel>> applicationDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
+        ILogger<ApplicationsScrapperBase> applicationsScrapperLogger = new NullLogger<ApplicationsScrapperBase>();
+        ILogger<FileLoader> fileLoaderLogger = new NullLogger<FileLoader>();
+
+        IDao<Address, AddressModel> addressesDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
+        IDao<Application, ApplicationModel> applicationsDao = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
+
+        IApplicationsScrapper applicationsScrapper = new ApplicationsScrapperUpdated(applicationsScrapperLogger);
+
+
+       // ApplicationsManagerService applicationsManagerService = new(applicationsDao, addressesDao, applicationsScrapper, fileLoader, applicationsManagerLogger);
+
+        //Act
+
+  //      applicationsManagerService.
+
+        //Assert
+
+
+//        dbContextFactory.DeleteTestDb();
+    }
 }

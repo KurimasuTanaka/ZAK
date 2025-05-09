@@ -1,8 +1,8 @@
 ﻿<div>
-    <table >
+    <table>
         <tr>
             <td>
-                <AddressCoordinatesClearButtonComponent addressId="@context.Id" />
+                <AddressCoordinatesClearButtonComponent addressId="@context.Id" informationUpdated="informationUpdated" />
             </td>
             <td>
                 <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Latitude" Lat="@true" />
@@ -15,4 +15,5 @@
 </div>
 @code {
     [Parameter] public Address context { get; set; } = default!;
+    [Parameter] public EventCallback informationUpdated { get; set; }
 }

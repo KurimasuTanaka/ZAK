@@ -21,7 +21,7 @@ public class ApplicationsManagerService : IApplicationsManagerService
     private readonly IDao<Address, AddressModel> _addressesDataAccess;
 
     public ApplicationsManagerService(
-        IDao<Application, ZAK.Db.Models.ApplicationModel> applicationsDataAccess,
+        IDao<Application, Db.Models.ApplicationModel> applicationsDataAccess,
         IDao<Address, AddressModel> addressesDataAccess,
         IApplicationsScrapper applicationsScrapper,
         IFileLoader fileLoader,
@@ -130,6 +130,21 @@ public class ApplicationsManagerService : IApplicationsManagerService
                             add.district = districtFromDb;
                             dbContext.Attach(add.district);
                         }
+
+                        // if (districtFromDb is not null)
+                        // {
+                        //     add.district = districtFromDb;
+                        //     if(!dbContext.Set<DistrictModel>().Local.Any(dis => districtFromDb.name == dis.name )) 
+                        //     {
+                        //         dbContext.Attach(add.district);
+                        //     }
+                        // } else if(add.district is not null)
+                        // {
+                        //     dbContext.Add(add.district);
+                        //     dbContext.SaveChanges();
+                        //     districts = dbContext.Set<DistrictModel>().Select(d => new District(d)).ToList();
+
+                        // }
 
                     }
                     return addresses;

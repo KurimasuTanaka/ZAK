@@ -5,6 +5,7 @@
 </Button>
 @code {
     [Parameter] public int addressId { get; set; }
+    [Parameter] public EventCallback informationUpdated {get ;set;}
 
     private async void DeleteCoordinates()
     {
@@ -25,6 +26,8 @@
             addressId, 
             findPredicate: a => a.Id == addressId,
             includeQuery: a => a.Include(x => x.coordinates)
-            );    }
-
+            );    
+            
+        await informationUpdated.InvokeAsync();        
+    }
 }

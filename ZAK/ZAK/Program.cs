@@ -62,15 +62,15 @@ public class Program
         builder.Services.AddDbContextFactory<BlazorAppDbContext>(options =>
         options.UseMySql(connectionString, serverVersion).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
-        builder.Services.AddTransient<DAO.IDao<Brigade, BrigadeModel>, DAO.Dao<Brigade, BrigadeModel>>();
+        builder.Services.AddTransient<IDao<Brigade, BrigadeModel>, DAO.Dao<Brigade, BrigadeModel>>();
 
-        builder.Services.AddTransient<DAO.IDao<Coefficient, CoefficientModel>, DAO.Dao<Coefficient, CoefficientModel>>();
-        builder.Services.AddTransient<DAO.IDao<Application, ApplicationModel>, DAO.Dao<Application, ApplicationModel>>();
-        builder.Services.AddTransient<DAO.IDao<District, DistrictModel>, DAO.Dao<District, DistrictModel>>();
-        builder.Services.AddTransient<DAO.IDao<Address, AddressModel>, DAO.Dao<Address, AddressModel>>();
-        builder.Services.AddTransient<DAO.IDao<AddressPriority, AddressPriority>, DAO.Dao<AddressPriority, AddressPriority>>();
-        builder.Services.AddTransient<DAO.IDao<AddressCoordinates, AddressCoordinatesModel>, DAO.Dao<AddressCoordinates, AddressCoordinatesModel>>();
-        builder.Services.AddTransient<DAO.IDao<AddressAlias, AddressAliasModel>, DAO.Dao<AddressAlias, AddressAliasModel>>();
+        builder.Services.AddTransient<IDao<Coefficient, CoefficientModel>, DAO.Dao<Coefficient, CoefficientModel>>();
+        builder.Services.AddTransient<IDao<Application, ApplicationModel>, DAO.Dao<Application, ApplicationModel>>();
+        builder.Services.AddTransient<IDao<District, DistrictModel>, DAO.Dao<District, DistrictModel>>();
+        builder.Services.AddTransient<IDao<Address, AddressModel>, DAO.Dao<Address, AddressModel>>();
+        builder.Services.AddTransient<IDao<AddressPriority, AddressPriority>, DAO.Dao<AddressPriority, AddressPriority>>();
+        builder.Services.AddTransient<IDao<AddressCoordinates, AddressCoordinatesModel>, DAO.Dao<AddressCoordinates, AddressCoordinatesModel>>();
+        builder.Services.AddTransient<IDao<AddressAlias, AddressAliasModel>, DAO.Dao<AddressAlias, AddressAliasModel>>();
 
         builder.Services.AddTransient<IBlackoutScheduleDataAccess, BlackoutScheduleDataAccess>();
 

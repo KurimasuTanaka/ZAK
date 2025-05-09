@@ -45,7 +45,7 @@
 
 
     <GridColumn TItem="Address" HeaderText="Широта \ Долгота" PropertyName="Latitude" ColumnClass="@(x => "blackoutCell")">
-        <CoordinatesBoxComponent context="context" />
+        <CoordinatesBoxComponent context="context" informationUpdated="UpdateTable" />
     </GridColumn>
 
     <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" SortKeySelector="item => item.resolved">
@@ -83,6 +83,11 @@
         StateHasChanged();
 
         return await Task.FromResult(request.ApplyTo(addresses));
+    }
+
+    private async void UpdateTable()
+    {
+        await addressGrid.RefreshDataAsync();
     }
 
     private async void LoadCoordinatesData()
