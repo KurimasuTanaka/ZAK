@@ -158,70 +158,34 @@ public class ApplicationsManagerService : IApplicationsManagerService
         List<Application> oldApplications = (await _applicationsDataAccess.GetAll()).ToList();
 
         List<Application> newApplications = parsedApplications.Except(oldApplications).ToList();
-        try
-        {
 
-            await _applicationsDataAccess.InsertRange(
-                newApplications,
-                inputProcessQuery: (applications, dbContext) =>
+        await _applicationsDataAccess.InsertRange(
+            newApplications,
+            inputProcessQuery: (applications, dbContext) =>
+            {
+                List<Address> addresses = dbContext.Set<AddressModel>().Select(a => new Address(a)).ToList();
+
+                foreach (Application app in applications)
                 {
-                    List<Address> addresses = dbContext.Set<AddressModel>().Select(a => new Address(a)).ToList();
-
-                    foreach (Application app in applications)
+                    Address? addressFromDb = addresses.Find(add =>
                     {
-                        Address? addressFromDb = addresses.Find(add =>
+                        if (app.address.streetName == add.streetName && app.address.building == add.building)
                         {
-                            if (app.address.streetName == add.streetName && app.address.building == add.building)
-                            {
-                                return true;
-                            }
-                            return false;
-                        });
-
-                        if (addressFromDb is not null)
-                        {
-                            app.address = addressFromDb;
-                            dbContext.Attach(app.address);
+                            return true;
                         }
+                        return false;
+                    });
 
+                    if (addressFromDb is not null)
+                    {
+                        app.address = addressFromDb;
+                        dbContext.Attach(app.address);
                     }
-                    return applications;
+
                 }
-            );
-
-        }
-        catch (Exception ex)
-        {
-
-        }
-
-
-
-
-
-
-
-
-
-
-        // newApplications.Except(oldApplications).ToList().ForEach(async (newApplication) =>
-        // {
-        //     await _applicationsDataAccess.Insert(newApplication, inputProcessQuery: (query, newApplication, dbContext) =>
-        //     {
-        //         AddressModel? possibleAddress = dbContext.
-        //             Set<AddressModel>().AsTracking().
-        //             FirstOrDefault(ad => ad.streetName == newApplication.address!.streetName && ad.building == newApplication.address.building);
-
-        //         if (possibleAddress is not null)
-        //         {
-        //             newApplication.address = possibleAddress;
-        //             newApplication.address.district = null;
-        //             dbContext.Attach(newApplication.address);
-
-        //         }
-        //         return newApplication;
-        //     });
-        // });
+                return applications;
+            }
+        );
 
         _logger.LogInformation("New applications added successfully!");
     }

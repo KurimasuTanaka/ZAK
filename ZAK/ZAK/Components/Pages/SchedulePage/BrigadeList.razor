@@ -29,7 +29,7 @@
         </ChildContent>
         <ItemRenderer>
             <MudListItem T="ApplicationScheduled" Text="@($"{context.applicationScheduledTime} - {@context.id}")"
-                OnClick="@(async () => { await ShowSortedApplicationsList(context); })" />
+                OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
         </ItemRenderer>
     </MudDropContainer>
 </MudExpansionPanels>
@@ -53,9 +53,6 @@
         dropItem.Item.brigadeId,
         dropItem.Item.applicationScheduledTime);
 
-        // applications.Find(a => a.id == dropItem.Item!.id)!.applicationScheduledTime = dropItem.IndexInZone;
-        // applications.Find(a => a.id == dropItem.Item!.id)!.brigadeId = Int32.Parse(dropItem.DropzoneIdentifier);
-
         applications.Clear();
         await GetApplications();
         StateHasChanged();
@@ -74,7 +71,7 @@
         await applicationsRatedList.HideAsync();
         StateHasChanged();
     }
-    private async Task ShowSortedApplicationsList(ApplicationScheduled scheduledApplication)
+    private async Task ShowSortedApplicationsListModal(ApplicationScheduled scheduledApplication)
     {
         _logger.LogInformation("Button on application was pressed. Opening modal window with applications list...");
 
@@ -101,6 +98,11 @@
             }
             dropContainer.Refresh();
         }
+    }
+
+    public void Refresh()
+    {
+        dropContainer.Refresh();
     }
 
     protected override async Task OnParametersSetAsync()

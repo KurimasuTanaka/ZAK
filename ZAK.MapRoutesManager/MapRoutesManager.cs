@@ -46,11 +46,6 @@ public class MapRoutesManager : IMapRoutesManager
                     ThenInclude(add => add.coordinates)
         )).ToList();
         
-        foreach (Brigade brigade in brigades)
-        {
-            await brigade.PopulateApplicationList(applicationsDataAccess);
-        }
-
         _logger.LogInformation("Removing empty adresses and creating lists of scheduled addresses...");
 
         //Remove empty adresses and create lists scheduled addresses

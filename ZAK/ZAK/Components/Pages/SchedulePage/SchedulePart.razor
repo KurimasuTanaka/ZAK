@@ -5,7 +5,8 @@
 @inject ILogger<SchedulePart> _logger
 
 <div style="width: 50%">
-    <MudButton  Variant="Variant.Filled" Style="@($"background:{Colors.Gray.Darken3}; color:{Colors.Orange.Lighten2};")"  @onclick="AddNewBrigade"> Добавить бригаду</MudButton >
+    <Button Color="ButtonColor.Secondary" @onclick="AddNewBrigade">Додати бригаду</Button >
+    <BrigadeDeletionDropdown brigadeWasDeleted="RefreshList" />
 
     <BrigadeList @ref=@brigadeList  RefreshMap="async (value) => {await RefreshMap.InvokeAsync();}"/>
 </div>
@@ -15,11 +16,18 @@
 
     BrigadeList brigadeList = default!;
 
+    private void RefreshList()
+    {
+        brigadeList.Refresh();
+    }
+
     private async Task AddNewBrigade()
     {
         _logger.LogInformation("Adding new brigade");
 
-        await brigadesDataAccess.Insert(new Brigade());
+        Brigade brigade = new();
+
+        await brigadesDataAccess.Insert(brigade);
     }
 
 }

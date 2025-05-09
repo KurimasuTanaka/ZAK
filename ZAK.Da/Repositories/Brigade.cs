@@ -86,17 +86,4 @@ public class Brigade : BrigadeModel
         }
         return applications;
     }
-
-    public async Task PopulateApplicationList(IDao<Application, ApplicationModel> applicationsDataAccess)
-    {
-        // for(int i = 0; i < 9; i++)
-        // {
-        //     if(applicationsIds[i] == 0) 
-        //     {
-        //         applications[i] = null;
-        //         continue;
-        //     }
-        //     else applications[i] = await applicationsDataAccess.GetById(applicationsIds[i]);
-        // }
-    }
 }

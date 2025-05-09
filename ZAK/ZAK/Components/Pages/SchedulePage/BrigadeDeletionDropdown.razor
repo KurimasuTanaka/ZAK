@@ -1,0 +1,34 @@
+﻿@inject IDao<Brigade, BrigadeModel> brigadesDataAccess;
+
+<Dropdown Color="DropdownColor.Secondary" OnShown="UploadBrigades">
+    <DropdownToggleButton>Видалити бригаду</DropdownToggleButton>
+    <DropdownMenu>
+        @for (int i = 0; i < brigades.Count; i++)
+        {
+            var brigadeNum = i;
+            <DropdownItem>
+                <Button @onclick="(arg => DeleteBrigade(brigadeNum))">Brigade @(brigadeNum + 1)</Button>
+            </DropdownItem>
+        }
+    </DropdownMenu>
+</Dropdown>
+
+@code {
+    [Parameter] public EventCallback brigadeWasDeleted {get ;set;}
+    
+    List<Brigade> brigades = new();
+    
+
+
+    public async Task UploadBrigades()
+    {
+        brigades = (await brigadesDataAccess.GetAll()).ToList();
+        brigades.Order();
+    }
+
+    public async Task DeleteBrigade(int brigadeNumber)
+    {
+        await brigadesDataAccess.Delete(brigades[brigadeNumber].id);
+        await brigadeWasDeleted.InvokeAsync();
+    }
+}
