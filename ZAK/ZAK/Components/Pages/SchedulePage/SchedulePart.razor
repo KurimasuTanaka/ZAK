@@ -25,9 +25,8 @@
     {
         _logger.LogInformation("Adding new brigade");
 
-        Brigade brigade = new();
-
-        await brigadesDataAccess.Insert(brigade);
+        await brigadesDataAccess.Insert(new Brigade());
+        await brigadeList.ReuploadApplications();
     }
 
 }

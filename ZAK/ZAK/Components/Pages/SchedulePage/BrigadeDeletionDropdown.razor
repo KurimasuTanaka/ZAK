@@ -6,18 +6,16 @@
         @for (int i = 0; i < brigades.Count; i++)
         {
             var brigadeNum = i;
-            <DropdownItem>
-                <Button @onclick="(arg => DeleteBrigade(brigadeNum))">Brigade @(brigadeNum + 1)</Button>
-            </DropdownItem>
+                <Button @onclick="(arg => DeleteBrigade(brigadeNum))">Бригаду @(brigadeNum + 1)</Button>
         }
     </DropdownMenu>
 </Dropdown>
 
 @code {
-    [Parameter] public EventCallback brigadeWasDeleted {get ;set;}
-    
+    [Parameter] public EventCallback brigadeWasDeleted { get; set; }
+
     List<Brigade> brigades = new();
-    
+
 
 
     public async Task UploadBrigades()

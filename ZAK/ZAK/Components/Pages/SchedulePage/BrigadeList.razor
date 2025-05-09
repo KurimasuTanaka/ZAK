@@ -7,14 +7,17 @@
 @inject IBrigadesManager _brigadesManager;
 @inject ILogger<BrigadeList> _logger;
 
-<ApplicationsRatedListModal @ref="applicationsRatedList" applicationWasChosen="ApplicationWasChosen" />
+<ApplicationsRatedListModal @ref="applicationsRatedList" applicationWasChosen="ApplicationWasChosen"
+    TimeWasLeftEmpty="TimeWasLeftEmpty" />
 
 
 <MudExpansionPanels MultiExpansion="true">
     <MudDropContainer @ref="dropContainer" T="ApplicationScheduled" Items="@applications"
         ItemsSelector="@((item, dropzone) => item.brigadeId.ToString() == dropzone)" ItemDropped="ItemDroppedHandler">
         <ChildContent>
-            @{int brigadeNumber = 0;}
+            @{
+                int brigadeNumber = 0;
+            }
             @foreach (Brigade brigade in brigades)
             {
                 ++brigadeNumber;
@@ -65,12 +68,27 @@
         scheduledApplication.brigadeId,
         scheduledApplication.applicationScheduledTime);
 
+        //Refreshing the brigade list
         applications.Clear();
         await GetApplications();
 
+        //Hiding modal window
         await applicationsRatedList.HideAsync();
         StateHasChanged();
     }
+
+    private async Task TimeWasLeftEmpty(ApplicationScheduled scheduledTime)
+    {
+        await _brigadesManager.MakeSlotEmpty(scheduledTime.brigadeId, scheduledTime.applicationScheduledTime);
+        //Refreshing the brigade list
+        applications.Clear();
+        await GetApplications();
+
+        //Hiding modal window
+        await applicationsRatedList.HideAsync();
+        StateHasChanged();
+    }
+
     private async Task ShowSortedApplicationsListModal(ApplicationScheduled scheduledApplication)
     {
         _logger.LogInformation("Button on application was pressed. Opening modal window with applications list...");
@@ -80,15 +98,15 @@
     }
 
 
-    private async Task GetApplications()
+    public async Task GetApplications()
     {
         _logger.LogInformation("Getting all brigades...");
 
         brigades = (
-            await brigadesDataAccess.GetAll(
-                query => query.
-                    Include(b => b.scheduledApplications).
-                    ThenInclude(sa => sa.application))).ToList();
+        await brigadesDataAccess.GetAll(
+        query => query.
+        Include(b => b.scheduledApplications).
+        ThenInclude(sa => sa.application))).ToList();
 
         if (applications.Count == 0)
         {
@@ -98,6 +116,26 @@
             }
             dropContainer.Refresh();
         }
+    }
+
+    public async Task ReuploadApplications()
+    {
+        _logger.LogInformation("Getting all brigades...");
+
+        brigades = (
+        await brigadesDataAccess.GetAll(
+        query => query.
+        Include(b => b.scheduledApplications).
+        ThenInclude(sa => sa.application))).ToList();
+
+        applications.Clear();
+
+        foreach (var brigade in brigades)
+        {
+            applications.AddRange(brigade.GetApplications());
+        }
+        dropContainer.Refresh();
+
     }
 
     public void Refresh()
@@ -110,7 +148,7 @@
         await GetApplications();
     }
 
-    protected override void  OnAfterRender(bool firstRender)
+    protected override void OnAfterRender(bool firstRender)
     {
     }
 

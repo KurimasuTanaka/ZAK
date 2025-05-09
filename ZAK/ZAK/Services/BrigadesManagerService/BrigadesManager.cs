@@ -171,4 +171,37 @@ public class BrigadesManager : IBrigadesManager
             return b;
         });
     }
+
+    public async Task MakeSlotEmpty(int brigadeId, int time)
+    {
+        _logger.LogInformation($"Getting new brigade {brigadeId}...");
+        //Getting brigade
+        Brigade? brigade = (await _brigadeDataAccess.GetAll(query => query.Include(b => b.scheduledApplications).ThenInclude(sa =>
+        sa.application))).FirstOrDefault(b => b.id == brigadeId);
+
+        if (brigade is null) throw new Exception("New brigade not found");
+
+        ScheduledApplicationModel? scheduledApplication = brigade.scheduledApplications.Where(sa => sa.scheduledTime == time).First();
+        if(scheduledApplication is null) return;
+
+        brigade.scheduledApplications.Remove(scheduledApplication);
+
+        await _brigadeDataAccess.Update(
+        brigade,
+        brigade.id,
+        includeQuery: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application),
+        findPredicate: b => b.id == brigade.id,
+        inputDataProccessingQuery: (b, context) =>
+        {
+            foreach (var schedule in brigade.scheduledApplications)
+            {
+                if (schedule.application != null)
+                {
+                    context.Attach(schedule.application);
+                }
+            }
+            return b;
+        });
+
+    }
 }

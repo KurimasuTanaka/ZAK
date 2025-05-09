@@ -7,6 +7,8 @@
 
 <Modal @ref=applicationsList Title="Выбрать заявку" Size="ModalSize.ExtraLarge">
     <BodyTemplate>
+        <Button Color="ButtonColor.Light" @onclick="LeaveChosenTimeEmpty">Залишити час пустим</Button> 
+
         <Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowDetailView="true"
             AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true" OnRowClick="OnRowClick"
             AllowRowClick="true" style="width: 100%; height: 100%; border-collapse: collapse;">
@@ -100,6 +102,8 @@
 
 @code {
     [Parameter] public EventCallback<ApplicationScheduled> ApplicationWasChosen { get; set; }
+    [Parameter] public EventCallback<ApplicationScheduled> TimeWasLeftEmpty { get; set; }
+
     private Modal applicationsList = default!;
     List<Application> applications = new List<Application>();
 
@@ -203,5 +207,16 @@
         ApplicationWasChosen.InvokeAsync(scheduledApplication);
     }
 
+    public void LeaveChosenTimeEmpty()
+    {
+        ApplicationScheduled scheduledApplication = new ApplicationScheduled()
+        {
+            id = -1,
+            applicationScheduledTime = scheduledTime,
+            brigadeId = scheduledBrigadeId
+        };
+
+        TimeWasLeftEmpty.InvokeAsync(scheduledApplication);
+    }
 
 }
