@@ -11,15 +11,12 @@ using ZAK.Services.ScheduleManagerService;
 namespace ZAK.Tests;
 public class ScheduleManagerTests : ZakTestBase
 {
+
+
     [Fact]
     public async void InsertNewApplicationToEmptySchedule()
     {
-
         //Arrange
-        IDao<Brigade, BrigadeModel> brigadesDao = new Dao<Brigade, BrigadeModel>(dbContextFactory, brigadeDaoLogger);
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
-
-
 
         //Creating brigade and adding it to the Db
         Brigade emptyBrigade = new();
@@ -35,23 +32,15 @@ public class ScheduleManagerTests : ZakTestBase
         Application newApplication = new();
         newApplication.address = newAddress;
 
-        await applicationsDAO.Insert(newApplication);
+        await applicationsDao.Insert(newApplication);
 
         int timeToScheduleApplication = 3;
-
-
-
-
         //Act 
 
-        Application applicationToAddToSchedule = (await applicationsDAO.GetAll()).First();
+        Application applicationToAddToSchedule = (await applicationsDao.GetAll()).First();
         Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
 
         await scheduleManager.ScheduleApplication(applicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleApplication);
-
-
-
-
 
 
         //Assert
@@ -68,8 +57,6 @@ public class ScheduleManagerTests : ZakTestBase
     public async void InsertNewApplicationToScheduleBeforePreviouslyScheduledApplication()
     {
         //Arrange
-        IDao<Brigade, BrigadeModel> brigadesDao = new Dao<Brigade, BrigadeModel>(dbContextFactory, brigadeDaoLogger);
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
 
         //Creating brigade and adding it to the Db
         Brigade emptyBrigade = new();
@@ -91,22 +78,18 @@ public class ScheduleManagerTests : ZakTestBase
         Application newApplication3 = new();
         newApplication1.address = newAddress;
 
-
-        await applicationsDAO.Insert(newApplication1);
-        await applicationsDAO.Insert(newApplication2);
-        await applicationsDAO.Insert(newApplication3);
+        await applicationsDao.Insert(newApplication1);
+        await applicationsDao.Insert(newApplication2);
+        await applicationsDao.Insert(newApplication3);
 
         int timeToScheduleFirstApplication = 3;
         int timeToScheduleSecondApplication = 4;
 
-
-
-
         //Act 
 
-        Application firstApplicationToAddToSchedule = (await applicationsDAO.GetAll()).ElementAt(0);
-        Application secondApplicationToAddToSchedule = (await applicationsDAO.GetAll()).ElementAt(1);
-        Application thirdApplicationToAddToSchedule = (await applicationsDAO.GetAll()).ElementAt(2);
+        Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
+        Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
+        Application thirdApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
 
         Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
 

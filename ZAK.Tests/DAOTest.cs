@@ -16,8 +16,6 @@ public class DAOTests : ZakTestBase
     public async void InsertNewApplicationToTheEmptyDb()
     {
         //Arrange
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
-        IDao<Address, AddressModel> addressesDAO = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
 
         //Act
 
@@ -28,31 +26,30 @@ public class DAOTests : ZakTestBase
         Application newApplication = new();
         newApplication.address = newAddress;
 
-        await applicationsDAO.Insert(newApplication);
+        await applicationsDao.Insert(newApplication);
 
         //Assert
-        Assert.Single(await addressesDAO.GetAll());
-        Assert.Single(await applicationsDAO.GetAll());
+        Assert.Single(await addressesDao.GetAll());
+        Assert.Single(await applicationsDao.GetAll());
     }
 
     [Fact]
     public async void InsertNewAddressAndUpdateItWithoutTracking()
     {
         //Arrange
-        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
 
         //Act 
         Address address = new();
         address.streetName = "вулиця Володимира Івасюка";
         address.building = "54";
 
-        await addressDao.Insert(address);
+        await addressesDao.Insert(address);
 
-        Address addressToUpdate = (await addressDao.GetAll()).FirstOrDefault()!;
+        Address addressToUpdate = (await addressesDao.GetAll()).FirstOrDefault()!;
         addressToUpdate.streetName = "проспект Володимира Івасюка";
-        await addressDao.Update(addressToUpdate, addressToUpdate.Id);
+        await addressesDao.Update(addressToUpdate, addressToUpdate.Id);
 
-        Address updatedAddress = (await addressDao.GetAll()).FirstOrDefault()!;
+        Address updatedAddress = (await addressesDao.GetAll()).FirstOrDefault()!;
 
         //Assert
         Assert.NotNull(updatedAddress);
@@ -63,21 +60,20 @@ public class DAOTests : ZakTestBase
     public async void InsertNewAddressAndUpdateRelatedEntityUsingInclueQuery()
     {
         //Arrange
-        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
 
         //Act 
         Address address = new();
         address.streetName = "проспект Володимира Івасюка";
         address.building = "54";
 
-        await addressDao.Insert(address);
+        await addressesDao.Insert(address);
 
-        Address addressToUpdate = (await addressDao.GetAll()).FirstOrDefault()!;
+        Address addressToUpdate = (await addressesDao.GetAll()).FirstOrDefault()!;
         addressToUpdate.coordinates = new AddressCoordinates();
         addressToUpdate.coordinates.lat = 5000;
         addressToUpdate.coordinates.lon = 5000;
 
-        await addressDao.Update(
+        await addressesDao.Update(
             addressToUpdate,
             addressToUpdate.Id, 
             includeQuery: q => 
@@ -90,7 +86,7 @@ public class DAOTests : ZakTestBase
             }
         );
 
-        Address updatedAddress = (await addressDao.GetAll(
+        Address updatedAddress = (await addressesDao.GetAll(
             query: q => {
                 return q.Include(e => e.coordinates);
             }
@@ -107,10 +103,6 @@ public class DAOTests : ZakTestBase
     public async void InsertNewApplicationWithTheAlreadyExistedAddress()
     {
         //Arrange
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
-        IDao<Address, AddressModel> addressesDAO = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
-
-
         Address sharedAddress = new();
         sharedAddress.streetName = "PaperStreet 1";
         sharedAddress.building = "building";
@@ -118,20 +110,17 @@ public class DAOTests : ZakTestBase
         Application oldApplication = new();
         oldApplication.address = sharedAddress;
 
-        await applicationsDAO.Insert(oldApplication);
+        await applicationsDao.Insert(oldApplication);
 
         //Act
 
         Application newApplication = new();
         newApplication.address = sharedAddress;
 
-        Address sharedAddressToEdit = (await addressesDAO.GetAll(query: a => a.Include(a => a.applications))).FirstOrDefault()!;
-        //haredAddressToEdit.applications.Add(newApplication);
-
-        //await addressesDAO.Update(sharedAddressToEdit, sharedAddressToEdit.Id);
+        Address sharedAddressToEdit = (await addressesDao.GetAll(query: a => a.Include(a => a.applications))).FirstOrDefault()!;
 
 
-        await applicationsDAO.Insert(newApplication,
+        await applicationsDao.Insert(newApplication,
             inputProcessQuery: (query, newApplication, dbContext) =>
             {
                 dbContext.Attach(newApplication.address);
@@ -140,16 +129,14 @@ public class DAOTests : ZakTestBase
         );
 
         //Assert
-        Assert.Equal(2, (await applicationsDAO.GetAll()).Count());
-        Assert.Single(await addressesDAO.GetAll());
+        Assert.Equal(2, (await applicationsDao.GetAll()).Count());
+        Assert.Single(await addressesDao.GetAll());
     }
 
     [Fact]
     public async void InsertRangeOfApplicationsAndUpdateRangeOfApplicationsInBulk()
     {
         //Arrange
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
-
         Application application1 = new Application();
         application1.operatorComment = "Comment 1 Unedited";
 
@@ -163,16 +150,16 @@ public class DAOTests : ZakTestBase
 
         List<Application> applications = new([application1, application2, application3]);
 
-        await applicationsDAO.InsertRange(applications);
+        await applicationsDao.InsertRange(applications);
 
-        List<Application> applicationsFromDb = (await applicationsDAO.GetAll()).ToList();
+        List<Application> applicationsFromDb = (await applicationsDao.GetAll()).ToList();
 
         applicationsFromDb.RemoveAt(1);
 
         applicationsFromDb.ElementAt(0).operatorComment = "Comment 1 Edited";
         applicationsFromDb.ElementAt(1).operatorComment = "Comment 3 Edited";
 
-        await applicationsDAO.UpdateRange(
+        await applicationsDao.UpdateRange(
             applicationsFromDb,
             findPredicate: a =>
             {
@@ -189,7 +176,7 @@ public class DAOTests : ZakTestBase
                 return entityArray.FirstOrDefault(e => e.id == oldEntity.id)!;
             });
 
-        applicationsFromDb = (await applicationsDAO.GetAll()).ToList();
+        applicationsFromDb = (await applicationsDao.GetAll()).ToList();
 
         //Assert
         Assert.Equal(3, applicationsFromDb.Count());
@@ -202,8 +189,6 @@ public class DAOTests : ZakTestBase
     public async void InsertNewAddressesWithInsertRange()
     {
         //Arrange
-        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
-        IDao<District, DistrictModel> districtsDao = new Dao<District, DistrictModel>(dbContextFactory, districtDaoLogger);
 
         //Act 
         District district1 = new();
@@ -229,11 +214,11 @@ public class DAOTests : ZakTestBase
 
         List<Address> addresses = new () {address1, address2, address3};
 
-        await addressDao.InsertRange(addresses);
+        await addressesDao.InsertRange(addresses);
 
         //Assert
 
-        List<Address> addressesFromDb = (await addressDao.GetAll()).ToList();
+        List<Address> addressesFromDb = (await addressesDao.GetAll()).ToList();
         List<District> districtsFromDb = (await districtsDao.GetAll()).ToList();
 
         Assert.Equal(3, addressesFromDb.Count);

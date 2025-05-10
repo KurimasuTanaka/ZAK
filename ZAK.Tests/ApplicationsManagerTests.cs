@@ -1,12 +1,5 @@
-using System;
-using ApplicationsScrappingModule;
-using BlazorApp;
 using BlazorApp.DA;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
-using ZAK.DAO;
-using ZAK.Db.Models;
 using ZAK.Services.ApplicationsManagerSerivce;
 
 namespace ZAK.Tests;
@@ -15,11 +8,7 @@ public class ApplicationsManagerTests : ZakTestBase
     [Fact]
     public async void UploadNewApplicationsToDb()
     {
-
         //Arrange
-        IDao<Address, AddressModel> addressesDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
-        IDao<Application, ApplicationModel> applicationsDao = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
-        IDao<District, DistrictModel> districtDao = new Dao<District, DistrictModel>(dbContextFactory, districtDaoLogger);
 
         ApplicationsManagerService applicationsManagerService = new(applicationsDao, addressesDao, null, null, applicationsManagerLogger);
 
@@ -66,7 +55,7 @@ public class ApplicationsManagerTests : ZakTestBase
         //Assert
         List<Application> addedApplications = (await applicationsDao.GetAll()).ToList();
         List<Address> addedAddresses = (await addressesDao.GetAll()).ToList();
-        List<District> addedDistricts = (await districtDao.GetAll()).ToList();
+        List<District> addedDistricts = (await districtsDao.GetAll()).ToList();
 
         Assert.Equal(2, addedAddresses.Count);
         Assert.Single(addedDistricts);
@@ -78,10 +67,6 @@ public class ApplicationsManagerTests : ZakTestBase
     public async void UnploadNewApplicationsToDbWithExistingAddressAndApplications()
     {
         //Arrange
-        IDao<Address, AddressModel> addressesDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
-        IDao<Application, ApplicationModel> applicationsDao = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
-        IDao<District, DistrictModel> districtDao = new Dao<District, DistrictModel>(dbContextFactory, districtDaoLogger);
-
         ApplicationsManagerService applicationsManagerService = new(applicationsDao, addressesDao, null, null, applicationsManagerLogger);
 
 
@@ -150,7 +135,7 @@ public class ApplicationsManagerTests : ZakTestBase
         //Assert
         List<Application> addedApplications = (await applicationsDao.GetAll()).ToList();
         List<Address> addedAddresses = (await addressesDao.GetAll()).ToList();
-        List<District> addedDistricts = (await districtDao.GetAll()).ToList();
+        List<District> addedDistricts = (await districtsDao.GetAll()).ToList();
 
         Assert.Equal(2, addedAddresses.Count);
         Assert.Equal(2, addedDistricts.Count);

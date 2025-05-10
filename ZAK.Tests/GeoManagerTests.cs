@@ -15,8 +15,8 @@ public class GeoDataManagerTests : ZakTestBase
     public async void CoordinatesLoadingTest()
     {
         //Arrange
-        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressesDaoLogger);
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
 
         Address address1 = new();
         address1.streetName = "вулиця Володимира Івасюка";
@@ -53,8 +53,8 @@ public class GeoDataManagerTests : ZakTestBase
     public async void UpdatingExistedCoordinates()
     {
         //Arrange
-        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressesDaoLogger);
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
 
         Address address = new();
         address.streetName = "вулиця Володимира Івасюка";
