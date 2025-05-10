@@ -9,19 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ZAK.Tests;
 
-public class GeoDataManagerTests
+public class GeoDataManagerTests : ZakTestBase
 {
     [Fact]
     public async void CoordinatesLoadingTest()
     {
-        TestDbContextFactory dbContextFactory = new();
-
         //Arrange
-        ILogger<Dao<Address, AddressModel>> addressLogger = new NullLogger<Dao<Address, AddressModel>>();
-        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressLogger);
-
-        ILogger<Dao<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
 
         Address address1 = new();
         address1.streetName = "вулиця Володимира Івасюка";
@@ -52,21 +47,14 @@ public class GeoDataManagerTests
         Assert.NotNull(populatedAddresses[0].coordinates);
         Assert.NotNull(populatedAddresses[1].coordinates);
         Assert.NotNull(populatedAddresses[2].coordinates);
-
-        dbContextFactory.DeleteTestDb();
     }
 
     [Fact]
     public async void UpdatingExistedCoordinates()
     {
-        TestDbContextFactory dbContextFactory = new();
-
         //Arrange
-        ILogger<Dao<Address, AddressModel>> addressLogger = new NullLogger<Dao<Address, AddressModel>>();
-        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressLogger);
-
-        ILogger<Dao<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
 
         Address address = new();
         address.streetName = "вулиця Володимира Івасюка";
@@ -93,8 +81,6 @@ public class GeoDataManagerTests
         List<Address> populatedAddresses = (await addressDao.GetAll(query: b => b.Include(a => a.coordinates))).ToList();
 
         Assert.NotNull(populatedAddresses[0].coordinates);
-
-        dbContextFactory.DeleteTestDb();
     }
 
 }

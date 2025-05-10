@@ -5,7 +5,7 @@ using ZAK.Db;
 
 namespace ZAK.Tests;
 
-class TestDbContextFactory : IDbContextFactory<BlazorAppDbContext>
+public class TestDbContextFactory : IDbContextFactory<BlazorAppDbContext>
 {
     DbContextOptionsBuilder<BlazorAppDbContext> builder = new DbContextOptionsBuilder<BlazorAppDbContext>();
     public TestDbContextFactory()

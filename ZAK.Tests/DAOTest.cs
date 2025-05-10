@@ -9,26 +9,15 @@ using ZAK.Db.Models;
 
 namespace ZAK.Tests;
 
-public class DAOTests
+public class DAOTests : ZakTestBase
 {
-    private readonly ITestOutputHelper _output;
-
-    public DAOTests(ITestOutputHelper output)
-    {
-        _output = output;
-    }
 
     [Fact]
     public async void InsertNewApplicationToTheEmptyDb()
     {
-        TestDbContextFactory dbContextFactory = new();
-
         //Arrange
-        ILogger<Dao<Application, ApplicationModel>> daoLogger1 = new NullLogger<Dao<Application, ApplicationModel>>();
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, daoLogger1);
-
-        ILogger<Dao<Address, AddressModel>> daoLogger2 = new NullLogger<Dao<Address, AddressModel>>();
-        IDao<Address, AddressModel> addressesDAO = new Dao<Address, AddressModel>(dbContextFactory, daoLogger2);
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
+        IDao<Address, AddressModel> addressesDAO = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
 
         //Act
 
@@ -44,18 +33,13 @@ public class DAOTests
         //Assert
         Assert.Single(await addressesDAO.GetAll());
         Assert.Single(await applicationsDAO.GetAll());
-
-        dbContextFactory.DeleteTestDb();
     }
 
     [Fact]
     public async void InsertNewAddressAndUpdateItWithoutTracking()
     {
-        TestDbContextFactory dbContextFactory = new();
-
         //Arrange
-        ILogger<Dao<Address, AddressModel>> addressLogger = new NullLogger<Dao<Address, AddressModel>>();
-        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressLogger);
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
 
         //Act 
         Address address = new();
@@ -78,11 +62,8 @@ public class DAOTests
     [Fact]
     public async void InsertNewAddressAndUpdateRelatedEntityUsingInclueQuery()
     {
-        TestDbContextFactory dbContextFactory = new();
-
         //Arrange
-        ILogger<Dao<Address, AddressModel>> addressLogger = new NullLogger<Dao<Address, AddressModel>>();
-        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressLogger);
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
 
         //Act 
         Address address = new();
@@ -125,14 +106,9 @@ public class DAOTests
     [Fact]
     public async void InsertNewApplicationWithTheAlreadyExistedAddress()
     {
-        TestDbContextFactory dbContextFactory = new();
-
         //Arrange
-        ILogger<Dao<Application, ApplicationModel>> daoLogger1 = new NullLogger<Dao<Application, ApplicationModel>>();
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, daoLogger1);
-
-        ILogger<Dao<Address, AddressModel>> daoLogger2 = new NullLogger<Dao<Address, AddressModel>>();
-        IDao<Address, AddressModel> addressesDAO = new Dao<Address, AddressModel>(dbContextFactory, daoLogger2);
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
+        IDao<Address, AddressModel> addressesDAO = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
 
 
         Address sharedAddress = new();
@@ -166,18 +142,13 @@ public class DAOTests
         //Assert
         Assert.Equal(2, (await applicationsDAO.GetAll()).Count());
         Assert.Single(await addressesDAO.GetAll());
-
-        dbContextFactory.DeleteTestDb();
     }
 
     [Fact]
     public async void InsertRangeOfApplicationsAndUpdateRangeOfApplicationsInBulk()
     {
-        TestDbContextFactory dbContextFactory = new();
-
         //Arrange
-        ILogger<Dao<Application, ApplicationModel>> daoLogger1 = new NullLogger<Dao<Application, ApplicationModel>>();
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, daoLogger1);
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
 
         Application application1 = new Application();
         application1.operatorComment = "Comment 1 Unedited";
@@ -221,30 +192,18 @@ public class DAOTests
         applicationsFromDb = (await applicationsDAO.GetAll()).ToList();
 
         //Assert
-
-        _output.WriteLine(applicationsFromDb.ElementAt(0).operatorComment);
-        _output.WriteLine(applicationsFromDb.ElementAt(1).operatorComment);
-        _output.WriteLine(applicationsFromDb.ElementAt(2).operatorComment);
-
         Assert.Equal(3, applicationsFromDb.Count());
         Assert.Equal("Comment 1 Edited", applicationsFromDb.ElementAt(0).operatorComment);
         Assert.Equal("Comment 2 Unedited", applicationsFromDb.ElementAt(1).operatorComment);
         Assert.Equal("Comment 3 Edited", applicationsFromDb.ElementAt(2).operatorComment);
-
-        dbContextFactory.DeleteTestDb();
     }
 
     [Fact]
     public async void InsertNewAddressesWithInsertRange()
     {
-        TestDbContextFactory dbContextFactory = new();
-
         //Arrange
-        ILogger<Dao<Address, AddressModel>> addressLogger = new NullLogger<Dao<Address, AddressModel>>();
-        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressLogger);
-
-        ILogger<Dao<District, DistrictModel>> districtsLogger = new NullLogger<Dao<District, DistrictModel>>();
-        IDao<District, DistrictModel> districtsDao = new Dao<District, DistrictModel>(dbContextFactory, districtsLogger);
+        IDao<Address, AddressModel> addressDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
+        IDao<District, DistrictModel> districtsDao = new Dao<District, DistrictModel>(dbContextFactory, districtDaoLogger);
 
         //Act 
         District district1 = new();

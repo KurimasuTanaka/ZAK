@@ -10,19 +10,13 @@ using ZAK.Db.Models;
 using ZAK.Services.ApplicationsManagerSerivce;
 
 namespace ZAK.Tests;
-public class ApplicationsManagerTests
+public class ApplicationsManagerTests : ZakTestBase
 {
     [Fact]
     public async void UploadNewApplicationsToDb()
     {
-        TestDbContextFactory dbContextFactory = new();
 
         //Arrange
-        ILogger<ApplicationsManagerService> applicationsManagerLogger = new NullLogger<ApplicationsManagerService>();
-        ILogger<Dao<Address, AddressModel>> addressDaoLogger = new NullLogger<Dao<Address, AddressModel>>();
-        ILogger<Dao<Application, ApplicationModel>> applicationDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
-        ILogger<Dao<District, DistrictModel>> districtDaoLogger = new NullLogger<Dao<District, DistrictModel>>();
-
         IDao<Address, AddressModel> addressesDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
         IDao<Application, ApplicationModel> applicationsDao = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
         IDao<District, DistrictModel> districtDao = new Dao<District, DistrictModel>(dbContextFactory, districtDaoLogger);
@@ -77,22 +71,13 @@ public class ApplicationsManagerTests
         Assert.Equal(2, addedAddresses.Count);
         Assert.Single(addedDistricts);
         Assert.Equal(2, addedApplications.Count);
-
-        dbContextFactory.DeleteTestDb();
     }
 
 
     [Fact]
     public async void UnploadNewApplicationsToDbWithExistingAddressAndApplications()
     {
-        TestDbContextFactory dbContextFactory = new();
-
         //Arrange
-        ILogger<ApplicationsManagerService> applicationsManagerLogger = new NullLogger<ApplicationsManagerService>();
-        ILogger<Dao<Address, AddressModel>> addressDaoLogger = new NullLogger<Dao<Address, AddressModel>>();
-        ILogger<Dao<Application, ApplicationModel>> applicationDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
-        ILogger<Dao<District, DistrictModel>> districtDaoLogger = new NullLogger<Dao<District, DistrictModel>>();
-
         IDao<Address, AddressModel> addressesDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
         IDao<Application, ApplicationModel> applicationsDao = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
         IDao<District, DistrictModel> districtDao = new Dao<District, DistrictModel>(dbContextFactory, districtDaoLogger);
@@ -171,38 +156,5 @@ public class ApplicationsManagerTests
         Assert.Equal(2, addedDistricts.Count);
         Assert.Equal(2, addedApplications.Count);
         Assert.Equal("Application comment 3", addedApplications.Last().operatorComment);
-
-        dbContextFactory.DeleteTestDb();
-    }
-
-
-    [Fact]
-    public async void UploadingDifferenApplicationFiles()
-    {
-        TestDbContextFactory dbContextFactory = new();
-
-        //Arrange
-        ILogger<ApplicationsManagerService> applicationsManagerLogger = new NullLogger<ApplicationsManagerService>();
-        ILogger<Dao<Address, AddressModel>> addressDaoLogger = new NullLogger<Dao<Address, AddressModel>>();
-        ILogger<Dao<Application, ApplicationModel>> applicationDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
-        ILogger<ApplicationsScrapperBase> applicationsScrapperLogger = new NullLogger<ApplicationsScrapperBase>();
-        ILogger<FileLoader> fileLoaderLogger = new NullLogger<FileLoader>();
-
-        IDao<Address, AddressModel> addressesDao = new Dao<Address, AddressModel>(dbContextFactory, addressDaoLogger);
-        IDao<Application, ApplicationModel> applicationsDao = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
-
-        IApplicationsScrapper applicationsScrapper = new ApplicationsScrapperUpdated(applicationsScrapperLogger);
-
-
-       // ApplicationsManagerService applicationsManagerService = new(applicationsDao, addressesDao, applicationsScrapper, fileLoader, applicationsManagerLogger);
-
-        //Act
-
-  //      applicationsManagerService.
-
-        //Assert
-
-
-//        dbContextFactory.DeleteTestDb();
     }
 }

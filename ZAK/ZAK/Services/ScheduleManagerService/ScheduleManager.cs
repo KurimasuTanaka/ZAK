@@ -19,8 +19,6 @@ public class ScheduleManager : IScheduleManager
     public async Task MoveScheduledApplicationFromOneBrigadeToAnother(int applicationId, int brigadeId, int time, int prevBrigadeId, int prevTime)
     {
         _logger.LogInformation($"Inserting application {applicationId} to brigade {brigadeId} at {time} hour");
-
-
         _logger.LogInformation($"Deleting application {applicationId} from previous brigade {prevBrigadeId}...");
 
         //Delete application from previous place
@@ -203,5 +201,10 @@ public class ScheduleManager : IScheduleManager
             return b;
         });
 
+    }
+
+    public Task MoveScheduledApplicationFromOneTimeToAnother(int applicationId, int brigadeId, int newTime, int prevTime)
+    {
+        throw new NotImplementedException();
     }
 }

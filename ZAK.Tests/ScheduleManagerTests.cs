@@ -9,22 +9,15 @@ using ZAK.Db.Models;
 using ZAK.Services.ScheduleManagerService;
 
 namespace ZAK.Tests;
-public class ScheduleManagerTests
+public class ScheduleManagerTests : ZakTestBase
 {
-
     [Fact]
     public async void InsertNewApplicationToEmptySchedule()
     {
-        TestDbContextFactory dbContextFactory = new();
 
         //Arrange
-        ILogger<ScheduleManager> scheduleManagerLogger = new NullLogger<ScheduleManager>();
-        ILogger<Dao<Brigade, BrigadeModel>> brigadeDaoLogger = new NullLogger<Dao<Brigade, BrigadeModel>>();
-
         IDao<Brigade, BrigadeModel> brigadesDao = new Dao<Brigade, BrigadeModel>(dbContextFactory, brigadeDaoLogger);
-
-        ILogger<Dao<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
 
 
 
@@ -69,31 +62,20 @@ public class ScheduleManagerTests
 
         Assert.Equal<int>(timeToScheduleApplication, editedBrigade.GetApplicationScheduledOn(3).applicationScheduledTime);
         Assert.Equal<int>(applicationToAddToSchedule.id, editedBrigade.GetApplications().ElementAt(timeToScheduleApplication).id);
-
-        dbContextFactory.DeleteTestDb();
     }
 
     [Fact]
     public async void InsertNewApplicationToScheduleBeforePreviouslyScheduledApplication()
     {
-        TestDbContextFactory dbContextFactory = new();
-
         //Arrange
-        ILogger<ScheduleManager> brigadeManagerLogger = new NullLogger<ScheduleManager>();
-        ILogger<Dao<Brigade, BrigadeModel>> brigadeDaoLogger = new NullLogger<Dao<Brigade, BrigadeModel>>();
-
         IDao<Brigade, BrigadeModel> brigadesDao = new Dao<Brigade, BrigadeModel>(dbContextFactory, brigadeDaoLogger);
-
-        ILogger<Dao<Application, ApplicationModel>> applicationsDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
-        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
-
-
+        IDao<Application, ApplicationModel> applicationsDAO = new Dao<Application, ApplicationModel>(dbContextFactory, applicationDaoLogger);
 
         //Creating brigade and adding it to the Db
         Brigade emptyBrigade = new();
         await brigadesDao.Insert(emptyBrigade);
 
-        ScheduleManager brigadesManager = new(brigadesDao, brigadeManagerLogger);
+        ScheduleManager brigadesManager = new(brigadesDao, scheduleManagerLogger);
 
         //Adding new application to the Db
         Address newAddress = new();
@@ -141,7 +123,6 @@ public class ScheduleManagerTests
 
         Assert.Equal<int>(timeToScheduleFirstApplication, editedBrigade.GetApplicationScheduledOn(3).applicationScheduledTime);
         Assert.Equal<int>(timeToScheduleSecondApplication, editedBrigade.GetApplicationScheduledOn(4).applicationScheduledTime);
-        dbContextFactory.DeleteTestDb();
     }
 
 }
