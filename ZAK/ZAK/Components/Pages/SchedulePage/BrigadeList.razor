@@ -1,10 +1,10 @@
 ﻿@using BlazorApp.DA;
 @using ZAK.Components.Pages.SchedulePage.BrigadeComponents
 @using MudBlazor
-@using ZAK.Services.BrigadesManagerService
+@using ZAK.Services.ScheduleManagerService
 
 @inject IDao<Brigade, BrigadeModel> brigadesDataAccess;
-@inject IBrigadesManager _brigadesManager;
+@inject IScheduleManager _brigadesManager;
 @inject ILogger<BrigadeList> _logger;
 
 <ApplicationsRatedListModal @ref="applicationsRatedList" applicationWasChosen="ApplicationWasChosen"

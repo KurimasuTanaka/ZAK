@@ -6,11 +6,10 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 using ZAK.DAO;
 using ZAK.Db.Models;
-using ZAK.Services.BrigadesManagerService;
+using ZAK.Services.ScheduleManagerService;
 
 namespace ZAK.Tests;
-[Collection("Non-Parallel Collection")]
-public class BrigadesManagerTests
+public class ScheduleManagerTests
 {
 
     [Fact]
@@ -19,7 +18,7 @@ public class BrigadesManagerTests
         TestDbContextFactory dbContextFactory = new();
 
         //Arrange
-        ILogger<BrigadesManager> brigadeManagerLogger = new NullLogger<BrigadesManager>();
+        ILogger<ScheduleManager> scheduleManagerLogger = new NullLogger<ScheduleManager>();
         ILogger<Dao<Brigade, BrigadeModel>> brigadeDaoLogger = new NullLogger<Dao<Brigade, BrigadeModel>>();
 
         IDao<Brigade, BrigadeModel> brigadesDao = new Dao<Brigade, BrigadeModel>(dbContextFactory, brigadeDaoLogger);
@@ -33,7 +32,7 @@ public class BrigadesManagerTests
         Brigade emptyBrigade = new();
         await brigadesDao.Insert(emptyBrigade);
 
-        BrigadesManager brigadesManager = new(brigadesDao, brigadeManagerLogger);
+        ScheduleManager scheduleManager = new(brigadesDao, scheduleManagerLogger);
 
         //Adding new application to the Db
         Address newAddress = new();
@@ -55,7 +54,7 @@ public class BrigadesManagerTests
         Application applicationToAddToSchedule = (await applicationsDAO.GetAll()).First();
         Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
 
-        await brigadesManager.InsertNewApplicationInEmptySlot(applicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleApplication);
+        await scheduleManager.InsertNewApplicationInEmptySlot(applicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleApplication);
 
 
 
@@ -80,7 +79,7 @@ public class BrigadesManagerTests
         TestDbContextFactory dbContextFactory = new();
 
         //Arrange
-        ILogger<BrigadesManager> brigadeManagerLogger = new NullLogger<BrigadesManager>();
+        ILogger<ScheduleManager> brigadeManagerLogger = new NullLogger<ScheduleManager>();
         ILogger<Dao<Brigade, BrigadeModel>> brigadeDaoLogger = new NullLogger<Dao<Brigade, BrigadeModel>>();
 
         IDao<Brigade, BrigadeModel> brigadesDao = new Dao<Brigade, BrigadeModel>(dbContextFactory, brigadeDaoLogger);
@@ -94,7 +93,7 @@ public class BrigadesManagerTests
         Brigade emptyBrigade = new();
         await brigadesDao.Insert(emptyBrigade);
 
-        BrigadesManager brigadesManager = new(brigadesDao, brigadeManagerLogger);
+        ScheduleManager brigadesManager = new(brigadesDao, brigadeManagerLogger);
 
         //Adding new application to the Db
         Address newAddress = new();

@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using ZAK.DAO;
 using ZAK.Db.Models;
 
-namespace ZAK.Services.BrigadesManagerService;
+namespace ZAK.Services.ScheduleManagerService;
 
-public class BrigadesManager : IBrigadesManager
+public class ScheduleManager : IScheduleManager
 {
     IDao<Brigade, BrigadeModel> _brigadeDataAccess;
-    ILogger<BrigadesManager> _logger;
-    public BrigadesManager(IDao<Brigade, BrigadeModel> brigadeDataAccess, ILogger<BrigadesManager> logger)
+    ILogger<ScheduleManager> _logger;
+    public ScheduleManager(IDao<Brigade, BrigadeModel> brigadeDataAccess, ILogger<ScheduleManager> logger)
     {
         _brigadeDataAccess = brigadeDataAccess;
         _logger = logger;

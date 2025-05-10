@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace ZAK.Tests;
-[Collection("Non-Parallel Collection")]
+
 public class GeoDataManagerTests
 {
     [Fact]

@@ -10,7 +10,10 @@ class TestDbContextFactory : IDbContextFactory<BlazorAppDbContext>
     DbContextOptionsBuilder<BlazorAppDbContext> builder = new DbContextOptionsBuilder<BlazorAppDbContext>();
     public TestDbContextFactory()
     {
-        builder.UseSqlite("Data Source=./testdb.db");
+        SqliteConnection connection = new ("Data Source=:memory:");
+        connection.Open();
+        
+        builder.UseSqlite(connection);
         builder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
         BlazorAppDbContext blazorAppDbContext = new(builder.Options);

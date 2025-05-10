@@ -9,7 +9,6 @@ using ZAK.Db.Models;
 
 namespace ZAK.Tests;
 
-[Collection("Non-Parallel Collection")]
 public class DAOTests
 {
     private readonly ITestOutputHelper _output;

@@ -15,7 +15,7 @@ using ZAK.Services.UnresolvedAddressesChecker;
 using ZAK.Db.Models;
 using ZAK.Components.Pages.BlackoutSchedulePage;
 using MudBlazor.Services;
-using ZAK.Services.BrigadesManagerService;
+using ZAK.Services.ScheduleManagerService;
 using ZAK.Services.ApplicationsManagerSerivce;
 using ZAK.DAO;
 
@@ -80,7 +80,7 @@ public class Program
         builder.Services.AddScoped<IApplicationsLoader, ApplicationsLoader>();
         
         builder.Services.AddTransient<IApplicationsManagerService, ApplicationsManagerService>();
-        builder.Services.AddTransient<IBrigadesManager, BrigadesManager>();
+        builder.Services.AddTransient<IScheduleManager, ScheduleManager>();
 
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
         builder.Services.AddSingleton<IMapRoutesManager, MapRoutesManager.MapRoutesManager>();

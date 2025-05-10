@@ -10,7 +10,6 @@ using ZAK.Db.Models;
 using ZAK.Services.ApplicationsManagerSerivce;
 
 namespace ZAK.Tests;
-[Collection("Non-Parallel Collection")]
 public class ApplicationsManagerTests
 {
     [Fact]
