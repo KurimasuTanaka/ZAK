@@ -54,7 +54,7 @@ public class ScheduleManagerTests
         Application applicationToAddToSchedule = (await applicationsDAO.GetAll()).First();
         Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
 
-        await scheduleManager.InsertNewApplicationInEmptySlot(applicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleApplication);
+        await scheduleManager.ScheduleApplication(applicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleApplication);
 
 
 
@@ -128,10 +128,10 @@ public class ScheduleManagerTests
 
         Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
 
-        await brigadesManager.InsertNewApplicationInEmptySlot(firstApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleFirstApplication);
-        await brigadesManager.InsertNewApplicationInEmptySlot(secondApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleSecondApplication);
+        await brigadesManager.ScheduleApplication(firstApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleFirstApplication);
+        await brigadesManager.ScheduleApplication(secondApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleSecondApplication);
 
-        await brigadesManager.InsertApplication(thirdApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleFirstApplication, brigadeToEdit.id, 9);
+        await brigadesManager.MoveScheduledApplicationFromOneBrigadeToAnother(thirdApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleFirstApplication, brigadeToEdit.id, 9);
 
         //Assert
 

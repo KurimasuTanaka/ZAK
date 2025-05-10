@@ -16,7 +16,7 @@ public class ScheduleManager : IScheduleManager
         _logger = logger;
     }
 
-    public async Task InsertApplication(int applicationId, int brigadeId, int time, int prevBrigadeId, int prevTime)
+    public async Task MoveScheduledApplicationFromOneBrigadeToAnother(int applicationId, int brigadeId, int time, int prevBrigadeId, int prevTime)
     {
         _logger.LogInformation($"Inserting application {applicationId} to brigade {brigadeId} at {time} hour");
 
@@ -132,7 +132,7 @@ public class ScheduleManager : IScheduleManager
             return b;
         });
     }
-    public async Task InsertNewApplicationInEmptySlot(int applicationId, int brigadeId, int time)
+    public async Task ScheduleApplication(int applicationId, int brigadeId, int time)
     {
         _logger.LogInformation($"Getting new brigade {brigadeId}...");
         //Get new brigade
@@ -172,7 +172,7 @@ public class ScheduleManager : IScheduleManager
         });
     }
 
-    public async Task MakeSlotEmpty(int brigadeId, int time)
+    public async Task MakeTimeSlotEmpty(int brigadeId, int time)
     {
         _logger.LogInformation($"Getting new brigade {brigadeId}...");
         //Getting brigade

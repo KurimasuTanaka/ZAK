@@ -70,7 +70,7 @@
 
     private async Task ItemDroppedHandler(MudItemDropInfo<ApplicationScheduled> dropItem)
     {
-        await _brigadesManager.InsertApplication(
+        await _brigadesManager.MoveScheduledApplicationFromOneBrigadeToAnother(
         dropItem.Item!.id,
         Int32.Parse(dropItem.DropzoneIdentifier),
         dropItem.IndexInZone,
@@ -84,7 +84,7 @@
 
     private async Task ApplicationWasChosen(ApplicationScheduled scheduledApplication)
     {
-        await _brigadesManager.InsertNewApplicationInEmptySlot(
+        await _brigadesManager.ScheduleApplication(
         scheduledApplication.id,
         scheduledApplication.brigadeId,
         scheduledApplication.applicationScheduledTime);
@@ -100,7 +100,7 @@
 
     private async Task TimeWasLeftEmpty(ApplicationScheduled scheduledTime)
     {
-        await _brigadesManager.MakeSlotEmpty(scheduledTime.brigadeId, scheduledTime.applicationScheduledTime);
+        await _brigadesManager.MakeTimeSlotEmpty(scheduledTime.brigadeId, scheduledTime.applicationScheduledTime);
         //Refreshing the brigade list
         applications.Clear();
         await GetApplications();
