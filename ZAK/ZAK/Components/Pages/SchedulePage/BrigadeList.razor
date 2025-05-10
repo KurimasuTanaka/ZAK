@@ -31,8 +31,29 @@
             }
         </ChildContent>
         <ItemRenderer>
-            <MudListItem T="ApplicationScheduled" Text="@($"{context.applicationScheduledTime} - {@context.id}")"
-                OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
+            @if (context.address is not null)
+            {
+                <MudListItem T="ApplicationScheduled"
+                    Text="@($"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id} - {@context.address!.streetName} {@context.address!.building}")"
+                    OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
+            }
+            else
+            {
+                if (context.id == 0)
+                {
+                    <MudListItem T="ApplicationScheduled"
+                        Text="@($"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | РЕЗЕРВ")"
+                        OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
+
+                }
+                else
+                {
+                    <MudListItem T="ApplicationScheduled"
+                        Text="@($"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id}")"
+                        OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
+                }
+            }
+
         </ItemRenderer>
     </MudDropContainer>
 </MudExpansionPanels>
@@ -106,7 +127,7 @@
         await brigadesDataAccess.GetAll(
         query => query.
         Include(b => b.scheduledApplications).
-        ThenInclude(sa => sa.application))).ToList();
+        ThenInclude(sa => sa.application).ThenInclude(app => app.address))).ToList();
 
         if (applications.Count == 0)
         {
@@ -126,7 +147,7 @@
         await brigadesDataAccess.GetAll(
         query => query.
         Include(b => b.scheduledApplications).
-        ThenInclude(sa => sa.application))).ToList();
+        ThenInclude(sa => sa.application).ThenInclude(app => app.address))).ToList();
 
         applications.Clear();
 
