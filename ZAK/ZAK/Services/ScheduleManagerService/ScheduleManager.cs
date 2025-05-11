@@ -86,7 +86,7 @@ public class ScheduleManager : IScheduleManager
     {
         _logger.LogInformation($"Moving applications in brigade {brigade.id} that scheduled from {fromTime} to {toTime} to the previous hour...");
 
-        brigade.scheduledApplications.Where(sa => sa.scheduledTime > fromTime && sa.scheduledTime < toTime).ToList().ForEach(sa =>
+        brigade.scheduledApplications.Where(sa => sa.scheduledTime > fromTime && sa.scheduledTime <= toTime).ToList().ForEach(sa =>
         {
             sa.scheduledTime--;
         });
@@ -148,9 +148,9 @@ public class ScheduleManager : IScheduleManager
     {
         Brigade brigade = await GetBrigadeById(brigadeId);
 
-        brigade.scheduledApplications.Where(sa => sa.scheduledTime == prevTime).First().scheduledTime = newTime;
 
         ShiftScheduledApplicationsBackward(brigade, prevTime, newTime);
+        brigade.scheduledApplications.Where(sa => sa.scheduledTime == prevTime).First().scheduledTime = newTime;
 
         await UpdateBrigade(brigade);
     }

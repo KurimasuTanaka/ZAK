@@ -342,7 +342,7 @@ public class ScheduleManagerTests : ZakTestBase
         int timeToScheduleThirdApplication = 5;
         int timeToScheduleForthApplication = 9;
 
-        int timeToMoveApplication = 7;
+        int timeToMoveApplication = 5;
 
         Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
         Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);

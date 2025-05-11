@@ -70,13 +70,43 @@
 
     private async Task ItemDroppedHandler(MudItemDropInfo<ApplicationScheduled> dropItem)
     {
-        await _brigadesManager.MoveScheduledApplicationFromOneBrigadeToAnother(
-        dropItem.Item!.id,
-        Int32.Parse(dropItem.DropzoneIdentifier),
-        dropItem.IndexInZone,
-        dropItem.Item.brigadeId,
-        dropItem.Item.applicationScheduledTime);
-
+        if(dropItem.Item.id == 0)
+        {
+            if(dropItem.Item.brigadeId == Int32.Parse(dropItem.DropzoneIdentifier))
+            {
+                await _brigadesManager.MoveEmptyTimeslotFromOneTimeToAnother(
+                    dropItem.Item.brigadeId, 
+                    dropItem.IndexInZone, 
+                    dropItem.Item.applicationScheduledTime);
+            }
+            else
+            {
+                await _brigadesManager.MoveEmptyTimeslotFromOneBrigadeToAnother(
+                    Int32.Parse(dropItem.DropzoneIdentifier),
+                    dropItem.IndexInZone, 
+                    dropItem.Item.brigadeId, 
+                    dropItem.Item.applicationScheduledTime);
+            }
+        } else 
+        {
+            if (dropItem.Item.brigadeId == Int32.Parse(dropItem.DropzoneIdentifier))
+            {
+                await _brigadesManager.MoveScheduledApplicationFromOneTimeToAnother(
+                    dropItem.Item.id,
+                    dropItem.Item.brigadeId,
+                    dropItem.IndexInZone,
+                    dropItem.Item.applicationScheduledTime);
+            }
+            else
+            {
+                await _brigadesManager.MoveScheduledApplicationFromOneBrigadeToAnother(
+                    dropItem.Item.id,
+                    Int32.Parse(dropItem.DropzoneIdentifier),
+                    dropItem.IndexInZone,
+                    dropItem.Item.brigadeId,
+                    dropItem.Item.applicationScheduledTime);
+            }
+        }
         applications.Clear();
         await GetApplications();
         StateHasChanged();
