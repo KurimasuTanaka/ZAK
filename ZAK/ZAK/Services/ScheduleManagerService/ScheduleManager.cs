@@ -18,6 +18,8 @@ public class ScheduleManager : IScheduleManager
 
     private async Task UpdateBrigade(Brigade brigade)
     {
+        _logger.LogInformation($"Updating brigade {brigade.id}...");
+
         await _brigadeDataAccess.Update(
         brigade,
         brigade.id,
@@ -34,6 +36,8 @@ public class ScheduleManager : IScheduleManager
             }
             return b;
         });
+
+        _logger.LogInformation($"Brigade {brigade.id} updated!");
     }
 
     public async Task MoveScheduledApplicationFromOneBrigadeToAnother(int applicationId, int brigadeId, int newTime, int prevBrigadeId, int prevTime)
@@ -58,8 +62,6 @@ public class ScheduleManager : IScheduleManager
             sa.scheduledTime--;
         });
 
-        _logger.LogInformation($"Updating previous brigade {prevBrigadeId}...");
-        //Update previous brigade
         await UpdateBrigade(prevBrigade);
 
         _logger.LogInformation($"Getting new brigade {brigadeId}...");
@@ -100,10 +102,6 @@ public class ScheduleManager : IScheduleManager
             newBrigade.scheduledApplications.Add(newScheduledApplication);
         }
 
-
-
-        _logger.LogInformation($"Updating new brigade {brigadeId}...");
-        //Update new brigade
         await UpdateBrigade(newBrigade);
     }
     public async Task ScheduleApplication(int applicationId, int brigadeId, int time)
@@ -124,11 +122,8 @@ public class ScheduleManager : IScheduleManager
         };
         newBrigade.scheduledApplications.Add(newScheduledApplication);
 
-        _logger.LogInformation($"Updating new brigade {brigadeId}...");
 
         newBrigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime == time && sa.applicationId != applicationId);
-
-        //Update new brigade
         await UpdateBrigade(newBrigade);
     }
 
@@ -168,8 +163,70 @@ public class ScheduleManager : IScheduleManager
             sa.scheduledTime--;
         });
 
-        _logger.LogInformation($"Updating previous brigade {brigadeId}...");
-        //Update previous brigade
+        await UpdateBrigade(brigade);
+    }
+
+    public async Task MoveEmptyTimeslotFromOneBrigadeToAnother(int brigadeId, int newTime, int prevBrigadeId, int prevTime)
+    {
+        //Delete application from previous place
+        Brigade? prevBrigade = (await _brigadeDataAccess.GetAll(query => query.Include(b => b.scheduledApplications).ThenInclude(sa =>
+        sa.application))).FirstOrDefault(b => b.id == prevBrigadeId);
+
+        if (prevBrigade is null) throw new Exception("Prevoius brigade not found");
+
+        _logger.LogInformation($"Moving applications in brigade {prevBrigadeId} that scheduled after {prevTime} hour to the previous hour...");
+
+        prevBrigade.scheduledApplications.Where(sa => sa.scheduledTime > prevTime).ToList().ForEach(sa =>
+        {
+            sa.scheduledTime--;
+        });
+
+        await UpdateBrigade(prevBrigade);
+
+        _logger.LogInformation($"Getting new brigade {brigadeId}...");
+        //Get new brigade
+        Brigade? newBrigade = (await _brigadeDataAccess.GetAll(query => query.Include(b => b.scheduledApplications).ThenInclude(sa =>
+        sa.application))).FirstOrDefault(b => b.id == brigadeId);
+
+        if (newBrigade is null) throw new Exception("New brigade not found");
+
+
+        //Increse application count in new brigade
+        if (brigadeId != prevBrigadeId)
+        {
+            _logger.LogInformation($"Increasing brigade {brigadeId} slots count...");
+
+            newBrigade.brigadeSlotsCount++;
+        }
+
+        _logger.LogInformation($"Moving applications in brigade {brigadeId} that scheduled after {newTime} hour to the next hour...");
+
+        //Move all applications that scheduled after new one to the next hour
+        newBrigade.scheduledApplications.Where(sa => sa.scheduledTime > newTime).ToList().ForEach(sa =>
+        {
+            sa.scheduledTime++;
+        });
+        newBrigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime > 9);
+
+        await UpdateBrigade(newBrigade);
+    }
+
+    public async Task MoveEmptyTimeslotFromOneTimeToAnother(int brigadeId, int newTime, int prevTime)
+    {
+        //Delete application from previous place
+        Brigade? brigade = (await _brigadeDataAccess.GetAll(query => query.Include(b => b.scheduledApplications).ThenInclude(sa =>
+        sa.application))).FirstOrDefault(b => b.id == brigadeId);
+
+        if (brigade is null) throw new Exception("Brigade not found");
+
+
+        _logger.LogInformation($"Moving applications in brigade {brigadeId} that scheduled after {prevTime} hour to the previous hour...");
+
+        brigade.scheduledApplications.Where(sa => sa.scheduledTime > prevTime && sa.scheduledTime < newTime).ToList().ForEach(sa =>
+        {
+            sa.scheduledTime--;
+        });
+
         await UpdateBrigade(brigade);
     }
 }
