@@ -358,12 +358,10 @@ public class ScheduleManagerTests : ZakTestBase
 
         //Act 
 
-        await brigadesManager.MoveScheduledApplicationFromOneBrigadeToAnother(
+        await brigadesManager.MoveScheduledApplicationFromOneTimeToAnother(
             secondApplicationToAddToSchedule.id,
             brigadeToEdit.id,
-            timeToMoveApplication,
-            brigadeToEdit.id,
-            timeToScheduleSecondApplication);
+            timeToMoveApplication,timeToScheduleSecondApplication);
 
         //Assert
 

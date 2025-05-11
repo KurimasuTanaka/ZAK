@@ -16,6 +16,26 @@ public class ScheduleManager : IScheduleManager
         _logger = logger;
     }
 
+    private async Task UpdateBrigade(Brigade brigade)
+    {
+        await _brigadeDataAccess.Update(
+        brigade,
+        brigade.id,
+        includeQuery: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application),
+        findPredicate: b => b.id == brigade.id,
+        inputDataProccessingQuery: (b, context) =>
+        {
+            foreach (var schedule in brigade.scheduledApplications)
+            {
+                if (schedule.application != null)
+                {
+                    context.Entry(schedule.application).State = EntityState.Unchanged;
+                }
+            }
+            return b;
+        });
+    }
+
     public async Task MoveScheduledApplicationFromOneBrigadeToAnother(int applicationId, int brigadeId, int newTime, int prevBrigadeId, int prevTime)
     {
         _logger.LogInformation($"Inserting application {applicationId} to brigade {brigadeId} at {newTime} hour");
@@ -32,20 +52,6 @@ public class ScheduleManager : IScheduleManager
 
         _logger.LogInformation($"Moving applications in brigade {prevBrigadeId} that scheduled after {prevTime} hour to the previous hour...");
 
-        //Move all applications that scheduled after new one to the previous hour
-        // for (int i = 0; i < prevBrigade.scheduledApplications.Count; i++)
-        // {
-        //     if (prevBrigade.scheduledApplications[i].scheduledTime >= prevTime)
-        //     {
-        //         //Delete application from previous scheduled time
-        //         ScheduledApplicationModel scheduledApplication = prevBrigade.scheduledApplications[i];
-        //         scheduledApplication.scheduledTime--;
-
-        //         prevBrigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime == prevBrigade.scheduledApplications[i].scheduledTime);
-        //         prevBrigade.scheduledApplications.Add(scheduledApplication);
-        //     }
-        // }
-
         prevBrigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime == prevTime);
         prevBrigade.scheduledApplications.Where(sa => sa.scheduledTime > prevTime).ToList().ForEach(sa =>
         {
@@ -54,23 +60,7 @@ public class ScheduleManager : IScheduleManager
 
         _logger.LogInformation($"Updating previous brigade {prevBrigadeId}...");
         //Update previous brigade
-        await _brigadeDataAccess.Update(
-        prevBrigade,
-        prevBrigade.id,
-        includeQuery: b => b.Include(b => b.scheduledApplications),
-        findPredicate: b => b.id == prevBrigade.id,
-        inputDataProccessingQuery: (b, context) =>
-        {
-            foreach (var schedule in prevBrigade.scheduledApplications)
-            {
-                if (schedule.application != null)
-                {
-                    context.Entry(schedule.application).State = EntityState.Unchanged;
-                }
-            }
-            return b;
-        });
-
+        await UpdateBrigade(prevBrigade);
 
         _logger.LogInformation($"Getting new brigade {brigadeId}...");
         //Get new brigade
@@ -114,22 +104,7 @@ public class ScheduleManager : IScheduleManager
 
         _logger.LogInformation($"Updating new brigade {brigadeId}...");
         //Update new brigade
-        await _brigadeDataAccess.Update(
-        newBrigade,
-        newBrigade.id,
-        includeQuery: b => b.Include(b => b.scheduledApplications),
-        findPredicate: b => b.id == newBrigade.id,
-        inputDataProccessingQuery: (b, context) =>
-        {
-            foreach (var schedule in newBrigade.scheduledApplications)
-            {
-                if (schedule.application != null)
-                {
-                    context.Entry(schedule.application).State = EntityState.Unchanged;
-                }
-            }
-            return b;
-        });
+        await UpdateBrigade(newBrigade);
     }
     public async Task ScheduleApplication(int applicationId, int brigadeId, int time)
     {
@@ -151,34 +126,10 @@ public class ScheduleManager : IScheduleManager
 
         _logger.LogInformation($"Updating new brigade {brigadeId}...");
 
+        newBrigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime == time && sa.applicationId != applicationId);
 
         //Update new brigade
-        await _brigadeDataAccess.Update(
-        newBrigade,
-        newBrigade.id,
-        includeQuery: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application),
-        findPredicate: b => b.id == newBrigade.id,
-        inputDataProccessingQuery: (b, context) =>
-        {
-            foreach (var scheduledApplication in newBrigade.scheduledApplications)
-            {
-                if (scheduledApplication.applicationId != applicationId && scheduledApplication.scheduledTime == time)
-                {
-                    b.scheduledApplications.Remove(scheduledApplication);
-                    break;
-                }
-            }
-
-
-            foreach (var scheduledApplication in newBrigade.scheduledApplications)
-            {
-                if (scheduledApplication.application != null)
-                {
-                    context.Attach(scheduledApplication.application);
-                }
-            }
-            return b;
-        });
+        await UpdateBrigade(newBrigade);
     }
 
     public async Task MakeTimeSlotEmpty(int brigadeId, int time)
@@ -195,27 +146,30 @@ public class ScheduleManager : IScheduleManager
 
         brigade.scheduledApplications.Remove(scheduledApplication);
 
-        await _brigadeDataAccess.Update(
-        brigade,
-        brigade.id,
-        includeQuery: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application),
-        findPredicate: b => b.id == brigade.id,
-        inputDataProccessingQuery: (b, context) =>
-        {
-            foreach (var schedule in brigade.scheduledApplications)
-            {
-                if (schedule.application != null)
-                {
-                    context.Attach(schedule.application);
-                }
-            }
-            return b;
-        });
-
+        await UpdateBrigade(brigade);
     }
 
-    public Task MoveScheduledApplicationFromOneTimeToAnother(int applicationId, int brigadeId, int newTime, int prevTime)
+    public async Task MoveScheduledApplicationFromOneTimeToAnother(int applicationId, int brigadeId, int newTime, int prevTime)
     {
-        throw new NotImplementedException();
+        _logger.LogInformation($"Inserting application {applicationId} to brigade {brigadeId} at {newTime} hour");
+
+        //Delete application from previous place
+        Brigade? brigade = (await _brigadeDataAccess.GetAll(query => query.Include(b => b.scheduledApplications).ThenInclude(sa =>
+        sa.application))).FirstOrDefault(b => b.id == brigadeId);
+
+        if (brigade is null) throw new Exception("Brigade not found");
+
+
+        _logger.LogInformation($"Moving applications in brigade {brigadeId} that scheduled after {prevTime} hour to the previous hour...");
+
+        brigade.scheduledApplications.Where(sa => sa.scheduledTime == prevTime).First().scheduledTime = newTime;
+        brigade.scheduledApplications.Where(sa => sa.scheduledTime > prevTime && sa.scheduledTime < newTime).ToList().ForEach(sa =>
+        {
+            sa.scheduledTime--;
+        });
+
+        _logger.LogInformation($"Updating previous brigade {brigadeId}...");
+        //Update previous brigade
+        await UpdateBrigade(brigade);
     }
 }
