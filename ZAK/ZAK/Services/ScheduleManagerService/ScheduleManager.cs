@@ -16,7 +16,7 @@ public class ScheduleManager : IScheduleManager
         _logger = logger;
     }
 
-    private async Task<Brigade?> GetBrigadeById(int brigadeId)
+    private async Task<Brigade> GetBrigadeById(int brigadeId)
     {
         Brigade? brigade = (await _brigadeDataAccess.GetAll(query => query.Include(b => b.scheduledApplications).ThenInclude(sa =>
         sa.application))).FirstOrDefault(b => b.id == brigadeId);
@@ -39,7 +39,7 @@ public class ScheduleManager : IScheduleManager
             {
                 if (schedule.application != null)
                 {
-                    context.Entry(schedule.application).State = EntityState.Unchanged;
+                    context.Attach(schedule.application);
                 }
             }
             return b;
@@ -94,27 +94,17 @@ public class ScheduleManager : IScheduleManager
 
     public async Task MoveScheduledApplicationFromOneBrigadeToAnother(int applicationId, int brigadeId, int newTime, int prevBrigadeId, int prevTime)
     {
-        _logger.LogInformation($"Inserting application {applicationId} to brigade {brigadeId} at {newTime} hour");
-        _logger.LogInformation($"Deleting application {applicationId} from previous brigade {prevBrigadeId}...");
-
-        //Delete application from previous place
+        //Delete application from previous brigade
         Brigade? prevBrigade = await GetBrigadeById(prevBrigadeId);
-
-
         prevBrigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime == prevTime);
         ShiftScheduledApplicationsBackward(prevBrigade, prevTime);
-
         await UpdateBrigade(prevBrigade);
 
-        _logger.LogInformation($"Getting new brigade {brigadeId}...");
-        //Get new brigade
+        //Insert application to the new brigade
         Brigade? newBrigade = await GetBrigadeById(brigadeId);
-
-        newBrigade.brigadeSlotsCount++;
-
         ShiftScheduledApplicationsForward(newBrigade, newTime);
+
         _logger.LogInformation($"Inserting application {applicationId} in brigade {brigadeId} on time {newTime}...");
-        //Insert new application to the schedule
         ScheduledApplicationModel newScheduledApplication = new ScheduledApplicationModel()
         {
             applicationId = applicationId,
@@ -126,7 +116,7 @@ public class ScheduleManager : IScheduleManager
     }
     public async Task ScheduleApplication(int applicationId, int brigadeId, int time)
     {
-        Brigade? newBrigade = await GetBrigadeById(brigadeId);
+        Brigade newBrigade = await GetBrigadeById(brigadeId);
 
         _logger.LogInformation($"Inserting application {applicationId} in brigade {brigadeId} on time {time}...");
         //Insert new application to the schedule
@@ -138,14 +128,13 @@ public class ScheduleManager : IScheduleManager
         };
         newBrigade.scheduledApplications.Add(newScheduledApplication);
 
-
         newBrigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime == time && sa.applicationId != applicationId);
         await UpdateBrigade(newBrigade);
     }
 
     public async Task MakeTimeSlotEmpty(int brigadeId, int time)
     {
-        Brigade? brigade = await GetBrigadeById(brigadeId);
+        Brigade brigade = await GetBrigadeById(brigadeId);
 
         ScheduledApplicationModel? scheduledApplication = brigade.scheduledApplications.Where(sa => sa.scheduledTime == time).First();
         if (scheduledApplication is null) return;
@@ -157,7 +146,7 @@ public class ScheduleManager : IScheduleManager
 
     public async Task MoveScheduledApplicationFromOneTimeToAnother(int applicationId, int brigadeId, int newTime, int prevTime)
     {
-        Brigade? brigade = await GetBrigadeById(brigadeId);
+        Brigade brigade = await GetBrigadeById(brigadeId);
 
         brigade.scheduledApplications.Where(sa => sa.scheduledTime == prevTime).First().scheduledTime = newTime;
 
@@ -168,32 +157,22 @@ public class ScheduleManager : IScheduleManager
 
     public async Task MoveEmptyTimeslotFromOneBrigadeToAnother(int brigadeId, int newTime, int prevBrigadeId, int prevTime)
     {
-        Brigade? prevBrigade = await GetBrigadeById(prevBrigadeId);
+        Brigade prevBrigade = await GetBrigadeById(prevBrigadeId);
 
         ShiftScheduledApplicationsBackward(prevBrigade, prevTime);
 
         await UpdateBrigade(prevBrigade);
 
-        Brigade? newBrigade = await GetBrigadeById(brigadeId);
-
-        //Increse application count in new brigade
-        if (brigadeId != prevBrigadeId)
-        {
-            _logger.LogInformation($"Increasing brigade {brigadeId} slots count...");
-
-            newBrigade.brigadeSlotsCount++;
-        }
+        Brigade newBrigade = await GetBrigadeById(brigadeId);
 
         ShiftScheduledApplicationsForward(newBrigade, newTime);
-
 
         await UpdateBrigade(newBrigade);
     }
 
     public async Task MoveEmptyTimeslotFromOneTimeToAnother(int brigadeId, int newTime, int prevTime)
     {
-        //Delete application from previous place
-        Brigade? brigade = await GetBrigadeById(brigadeId);
+        Brigade brigade = await GetBrigadeById(brigadeId);
 
         ShiftScheduledApplicationsBackward(brigade, prevTime, newTime);
 

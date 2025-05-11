@@ -410,7 +410,7 @@ public class ScheduleManagerTests : ZakTestBase
         await applicationsDao.Insert(newApplication3);
 
         int timeToScheduleFirstApplication = 1;
-        int timeToScheduleEmptySlot = 2;
+        int timeToScheduleSecondApplication = 2;
         int timeToScheduleThirdApplication = 5;
         int timeToScheduleForthApplication = 9;
 
@@ -420,7 +420,7 @@ public class ScheduleManagerTests : ZakTestBase
         Application thirdApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
         Application forthApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
 
-        Brigade brigadeToEdit = (await brigadesDao.GetAll()).ElementAt(0);
+        Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
 
         await brigadesManager.ScheduleApplication(firstApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleFirstApplication);
         await brigadesManager.ScheduleApplication(thirdApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleThirdApplication);
@@ -430,7 +430,7 @@ public class ScheduleManagerTests : ZakTestBase
 
         await brigadesManager.MoveEmptyTimeslotFromOneTimeToAnother(
             brigadeToEdit.id,
-            timeToMoveEmptySlot, timeToScheduleEmptySlot);
+            timeToMoveEmptySlot, timeToScheduleSecondApplication);
 
         //Assert
 
