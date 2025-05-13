@@ -38,6 +38,10 @@
       <Button @onclick="@(mouseArg => applicationEditorModal.ShowModal(context))">
         <Icon Name="IconName.Pencil" />
       </Button>
+      @if(context.applicationWasUpdated)
+      {
+        <Icon Name="IconName.ExclamationDiamondFill" Size="IconSize.x3" Color="IconColor.Warning" />
+      }
     </div>
     @*Interactive components in Id section ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
     <CheckBoxInputComponent label="Ігнорувати" applicationId="@context.id" propertyName="ignored"
@@ -121,7 +125,6 @@
   public async Task Redraw()
   {
     _logger.LogInformation("Redrawing applications table");
-    Stopwatch sw = new Stopwatch();
 
     await applicationsGrid.RefreshDataAsync();
   }
