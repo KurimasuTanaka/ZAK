@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using ZAK.DAO;
 using ZAK.Db.Models;
-using ZAK.Services.ApplicationsManagerSerivce;
+using ZAK.Services.ApplicationsLoadingService;
 using ZAK.Services.ScheduleManagerService;
 
 namespace ZAK.Tests;
@@ -22,7 +22,7 @@ public class ZakTestBase : IDisposable
     protected ILogger<Dao<Coefficient, CoefficientModel>> coeficientsDaoLogger;
     protected ILogger<Dao<BlazorApp.DA.District, Db.Models.DistrictModel>> districtsDaoLogger;
     protected ILogger<ScheduleManager> scheduleManagerLogger;
-    protected ILogger<ApplicationsManagerService> applicationsManagerLogger;
+    protected ILogger<ApplicationsLoadingService> applicationsManagerLogger;
 
 
 
@@ -49,7 +49,7 @@ public class ZakTestBase : IDisposable
         coeficientsDaoLogger = new NullLogger<Dao<Coefficient, CoefficientModel>>();
         districtsDaoLogger = new NullLogger<Dao<BlazorApp.DA.District, Db.Models.DistrictModel>>();
         scheduleManagerLogger = new NullLogger<ScheduleManager>();
-        applicationsManagerLogger = new NullLogger<ApplicationsManagerService>();
+        applicationsManagerLogger = new NullLogger<ApplicationsLoadingService>();
 
         addressesDao = new Dao<Address, AddressModel>(dbContextFactory, addressesDaoLogger);
         addressCoordinatesDao = new Dao<AddressCoordinates, AddressCoordinatesModel>(dbContextFactory, addressCooerdinatesDaoLogger);
