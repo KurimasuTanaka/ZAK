@@ -74,7 +74,7 @@ public class ApplicationsDataAccess(BlazorAppDbContext blazorAppDbContext) : IAp
     {
         ApplicationModel? application = await _dbContext.applications.FindAsync(id);
 
-        if (application != null) application.hot = !application.hot;
+        if (application != null) application.important = !application.important;
 
         await _dbContext.SaveChangesAsync();
     }

@@ -10,7 +10,7 @@
     <MudNumericField @bind-Value="@(application.id)" Label="Номер заявки" HideSpinButtons="true"  Variant="Variant.Outlined"  />
 
     <div>
-        <MudCheckBox @bind-Value="@(application.hot)">Важлива заявка</MudCheckBox>
+        <MudCheckBox @bind-Value="@(application.important)">Важлива заявка</MudCheckBox>
         <MudCheckBox @bind-Value="@(application.statusWasChecked)">Цікавився статусом
         </MudCheckBox>
         <MudCheckBox @bind-Value="@(application.urgent)" >Срочка</MudCheckBox>

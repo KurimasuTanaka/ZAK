@@ -127,7 +127,7 @@ public class Application : ApplicationModel
         priority =
             (1 / distance) * coefficients["distance"]
             + (address.addressPriority is null ? 0.0 : address.addressPriority.priority) * coefficients["housePriority"]
-            + (hot ? 1 : 0) * coefficients["urgency"]
+            + (urgent ? 1 : 0) * coefficients["urgency"]
             + (statusWasChecked ? 1 : 0) * coefficients["statusCheck"]
             + (freeCable ? 1 : 0) * coefficients["freeCable"]
             - (tarChangeApp ? 1 : 0) * coefficients["tarrifeChangeApplication"];
