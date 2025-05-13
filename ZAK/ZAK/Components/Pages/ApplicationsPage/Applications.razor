@@ -27,8 +27,9 @@
   </CardBody>
 </Card>
 
-<Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowFiltering="true"
-  AllowPaging="true" PageSize="100" AllowSorting="true" SelectionMode="GridSelectionMode.Multiple" Responsive="true">
+<Grid @ref="applicationsGrid" TItem="Application" Class="table table-hover table-bordered" DataProvider="ApplicationsDataProvider"
+  AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true" SelectionMode="GridSelectionMode.Multiple"
+  Responsive="true">
 
   @*Id column with set of interactive components*@
   <GridColumn TItem="Application" HeaderText="Id" PropertyName="id" SortKeySelector="item => item.id">
@@ -110,31 +111,31 @@
   private bool showIgnored = true;
 
   //Make this thing async
-  List<Application> applications = new List<Application>();
 
   ApplicationAdditionModal applicationAdditionModal = default!;
   ApplicationEditorModal applicationEditorModal = default!;
-  protected override async Task OnParametersSetAsync()
-  {
-    _logger.LogInformation("Drawing applications table");
+  private Grid<Application> applicationsGrid = default!;
 
-    await Redraw();
-  }
   public async Task Redraw()
   {
     _logger.LogInformation("Redrawing applications table");
     Stopwatch sw = new Stopwatch();
 
-    sw.Start();
+    await applicationsGrid.RefreshDataAsync();
+  }
+
+  private async Task<GridDataProviderResult<Application>> ApplicationsDataProvider(
+  GridDataProviderRequest<Application> request)
+  {
+    List<Application> applications;
+
     if (showIgnored) applications = (await applicationsDataAccess.GetAll(query => query.Include(a =>
     a.address).ThenInclude(ad => ad.district).AsSplitQuery())).ToList();
     else applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad =>
     ad.district).AsSplitQuery())).Where(a => a.ignored == false).ToList();
-    sw.Stop();
-    _logger.LogInformation($"Time for loading applications: {sw.ElapsedMilliseconds} ms");
-    StateHasChanged();
-  }
 
+    return await Task.FromResult(request.ApplyTo(applications));
+  }
 
 
 
