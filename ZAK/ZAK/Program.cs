@@ -5,19 +5,15 @@ using BlazorApp.DA;
 using BlazorApp.GeoDataManager;
 using Microsoft.EntityFrameworkCore;
 using ZAK.Components;
-using Syncfusion.Blazor;
 using ZAK.MapRoutesManager;
 using ZAK.Db;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.Configuration;
 using ZAK.Services.UnresolvedAddressesChecker;
 using ZAK.Db.Models;
-using ZAK.Components.Pages.BlackoutSchedulePage;
 using MudBlazor.Services;
 using ZAK.Services.ScheduleManagerService;
-using ZAK.Services.ApplicationsManagerSerivce;
 using ZAK.DAO;
+using ZAK.Services.ApplicationsLoadingService;
 
 
 namespace ZAK;
@@ -79,7 +75,7 @@ public class Program
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
         builder.Services.AddScoped<IApplicationsLoader, ApplicationsLoader>();
         
-        builder.Services.AddTransient<IApplicationsManagerService, ApplicationsManagerService>();
+        builder.Services.AddTransient<IApplicationsLoadingService, ApplicationsLoadingService>();
         builder.Services.AddTransient<IScheduleManager, ScheduleManager>();
 
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();

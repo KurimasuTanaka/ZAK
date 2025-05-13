@@ -4,12 +4,12 @@
 @using BlazorBootstrap;
 @using Microsoft.AspNetCore.Components.Forms
 @using BlazorApp.ApplicationsLoader;
-@using ZAK.Services.ApplicationsManagerSerivce
+@using ZAK.Services.ApplicationsLoadingService
 
 @inject IFileLoader fileLoader;
 @inject IApplicationsLoader applicationsLoader;
 
-@inject IApplicationsManagerService _applicationsManagerSerivce
+@inject IApplicationsLoadingService _applicationsLoadingSerivce
 
 <div>
   <InputFile OnChange="@((InputFileChangeEventArgs e) => applicationsFileToLoad = e.File)"></InputFile>
@@ -30,7 +30,7 @@
   private async Task UpdateApplications()
   {
     updateApplicationButton.ShowLoading("Загрузка заявок...");
-    if (applicationsFileToLoad is not null) await _applicationsManagerSerivce.UpdateApplications(applicationsFileToLoad);
+    if (applicationsFileToLoad is not null) await _applicationsLoadingSerivce.UpdateApplications(applicationsFileToLoad);
     else
     {
       ShowToast();
