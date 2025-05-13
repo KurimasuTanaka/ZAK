@@ -3,7 +3,8 @@
 
 @inject IDao<Application, ApplicationModel> applicationsDataAccess;
 
-<InputNumber Label="Дней на подключение" @bind-Value="daysForConnection" @bind-Value:after="UpdateDbData" />
+<span>Кількість днів для підключення</span>
+<InputNumber @bind-Value="daysForConnection" @bind-Value:after="UpdateDbData" />
 
 
 
