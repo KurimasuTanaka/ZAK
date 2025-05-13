@@ -128,6 +128,7 @@ public class ApplicationsManagerTests : ZakTestBase
 
         applicationsToInsert.Add(application3);
         applicationsToInsert[1].operatorComment = "Applications comment 2 UPDATED";
+        applicationsToInsert[1].address = address3;
         applicationsToInsert.RemoveAt(0);
 
         await applicationsManagerService.ProceedApplications(applicationsToInsert);
@@ -137,7 +138,7 @@ public class ApplicationsManagerTests : ZakTestBase
         List<Address> addedAddresses = (await addressesDao.GetAll()).ToList();
         List<District> addedDistricts = (await districtsDao.GetAll()).ToList();
 
-        Assert.Equal(2, addedAddresses.Count);
+        Assert.Equal(3, addedAddresses.Count);
         Assert.Equal(2, addedDistricts.Count);
         Assert.Equal(2, addedApplications.Count);
         Assert.Equal("Application comment 3", addedApplications.Last().operatorComment);

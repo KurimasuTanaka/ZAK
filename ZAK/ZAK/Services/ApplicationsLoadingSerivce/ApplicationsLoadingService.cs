@@ -9,40 +9,29 @@ using Microsoft.EntityFrameworkCore;
 using ZAK.DAO;
 using ZAK.Db.Models;
 
-namespace ZAK.Services.ApplicationsManagerSerivce;
+namespace ZAK.Services.ApplicationsLoadingService;
 
-public class ApplicationsManagerService : IApplicationsManagerService
+public class ApplicationsLoadingService : IApplicationsLoadingService
 {
-    private readonly ILogger<ApplicationsManagerService> _logger;
+    private readonly ILogger<ApplicationsLoadingService> _logger;
     private readonly IFileLoader _fileLoader;
     private readonly IApplicationsScrapper _applicationScrapper;
 
     private readonly IDao<Application, ZAK.Db.Models.ApplicationModel> _applicationsDataAccess;
     private readonly IDao<Address, AddressModel> _addressesDataAccess;
 
-    public ApplicationsManagerService(
+    public ApplicationsLoadingService(
         IDao<Application, Db.Models.ApplicationModel> applicationsDataAccess,
         IDao<Address, AddressModel> addressesDataAccess,
         IApplicationsScrapper applicationsScrapper,
         IFileLoader fileLoader,
-        ILogger<ApplicationsManagerService> logger)
+        ILogger<ApplicationsLoadingService> logger)
     {
         _fileLoader = fileLoader;
         _logger = logger;
         _applicationScrapper = applicationsScrapper;
         _applicationsDataAccess = applicationsDataAccess;
         _addressesDataAccess = addressesDataAccess;
-    }
-
-
-    public Task AddApplication()
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<List<Application>> GetApplications()
-    {
-        throw new NotImplementedException();
     }
 
     public async Task UpdateApplications(IBrowserFile file)
@@ -221,17 +210,4 @@ class AddressComparer : IEqualityComparer<Address?>
     }
 }
 
-class ApplicationComparer : IEqualityComparer<Application?>
-{
-    public bool Equals(Application? x, Application? y)
-    {
-        if (x is null || y is null) return false;
-        if (x.id == y.id) return true;
-        else return false;
-    }
 
-    public int GetHashCode([DisallowNull] Application? obj)
-    {
-        throw new NotImplementedException();
-    }
-}

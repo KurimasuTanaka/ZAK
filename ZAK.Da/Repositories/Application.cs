@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using BlazorApp.Enums;
 using ZAK.Db;
 using ZAK.Db.Models;
@@ -142,5 +143,20 @@ public class Application : ApplicationModel
         {
             property.SetValue(this, property.GetValue(source));
         }
+    }
+}
+
+class ApplicationComparer : IEqualityComparer<Application?>
+{
+    public bool Equals(Application? x, Application? y)
+    {
+        if (x is null || y is null) return false;
+        if (x.id == y.id) return true;
+        else return false;
+    }
+
+    public int GetHashCode([DisallowNull] Application? obj)
+    {
+        throw new NotImplementedException();
     }
 }
