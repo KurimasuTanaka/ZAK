@@ -14,10 +14,12 @@
 <div>
   <InputFile OnChange="@((InputFileChangeEventArgs e) => applicationsFileToLoad = e.File)"></InputFile>
 
-  <Button @ref="updateApplicationButton" class="p-2" Color="ButtonColor.Info"
-    @onclick="UpdateApplications">Оновити заявки</Button>
+  <Button @ref="updateApplicationButton" class="p-2" Color="ButtonColor.Info" @onclick="UpdateApplications">Оновити
+    заявки</Button>
 </div>
 
+
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopLeft" />
 @code
 {
   [Parameter]
@@ -25,57 +27,28 @@
 
   private Button updateApplicationButton = default!;
   IBrowserFile? applicationsFileToLoad;
-
-  @* Alert noFileAlert = default!;  *@
-
   private async Task UpdateApplications()
   {
     updateApplicationButton.ShowLoading("Загрузка заявок...");
-
     if (applicationsFileToLoad is not null) await _applicationsManagerSerivce.UpdateApplications(applicationsFileToLoad);
-    else {
-      ///Code for alert
+    else
+    {
+      ShowToast();
       return;
     }
     updateApplicationButton.HideLoading();
-}
-
-    
-@* 
-    await applicationsLoader.AddNewApplications(fileLoader.GetLastLoadedFile());
-
-    //applicationScrapper.ProcessFileWithAddition(fileLoader.GetLastLoadedFile());
-
-    await ApplicationsInformationWasChanged.InvokeAsync();
-
-    fileLoader.DeleteTempFiles(); *@
-
   }
-@* 
-  private async void LoadNewApplicationsWithReplacement()
-  {
-    LoadWithRemoval.ShowLoading("Загрузка заявок...");
 
-    if (applicationsFileToLoad is null)
+  List<ToastMessage> messages = [];
+  private void ShowToast()
+  {
+    messages.Add(
+    new ToastMessage
     {
-      return;
-    }
-    await fileLoader.LoadFile(applicationsFileToLoad);
-
-
-    await applicationsLoader.AddNewApplicationsWithRemoval(fileLoader.GetLastLoadedFile());
-
-
-    await ApplicationsInformationWasChanged.InvokeAsync();
-
-    fileLoader.DeleteTempFiles();
-
-    LoadWithRemoval.HideLoading();
+      Type = ToastType.Warning,
+      Title = "Завантаження заявок!",
+      Message = "Файл заявок не обрано!",
+      AutoHide = true,
+    });
   }
-
-  public void LoadFile(InputFileChangeEventArgs e)
-  {
-    //fileLoader.LoadFile(e.File, "C:/Users/Kurimasu Tanaka/Documents/Coding projects/C#/ZAK/file.html");
-    applicationsFileToLoad = e.File;
-  }
-  *@
+}

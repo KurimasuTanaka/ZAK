@@ -10,7 +10,7 @@
 @using ZAK.Components.Pages.ApplicationsPage.ApplicationInputComponents;
 @using ZAK.Components.Pages.ApplicationsPage.ApplicationsActivities;
 
-
+@using System.Diagnostics;
 @inject IDao<Application, ApplicationModel> applicationsDataAccess;
 @inject IWebHostEnvironment enviroment;
 
@@ -123,12 +123,15 @@
   public async Task Redraw()
   {
     _logger.LogInformation("Redrawing applications table");
+    Stopwatch sw = new Stopwatch();
 
+    sw.Start();
     if (showIgnored) applications = (await applicationsDataAccess.GetAll(query => query.Include(a =>
-    a.address).ThenInclude(ad => ad.district))).ToList();
+    a.address).ThenInclude(ad => ad.district).AsSplitQuery())).ToList();
     else applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad =>
-    ad.district))).Where(a => a.ignored == false).ToList();
-
+    ad.district).AsSplitQuery())).Where(a => a.ignored == false).ToList();
+    sw.Stop();
+    _logger.LogInformation($"Time for loading applications: {sw.ElapsedMilliseconds} ms");
     StateHasChanged();
   }
 
