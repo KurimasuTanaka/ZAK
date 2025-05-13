@@ -157,6 +157,6 @@ public class ApplicationComparer : IEqualityComparer<Application?>
 
     public int GetHashCode([DisallowNull] Application? obj)
     {
-        throw new NotImplementedException();
+        return obj.id.GetHashCode();
     }
 }

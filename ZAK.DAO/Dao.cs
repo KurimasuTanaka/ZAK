@@ -177,29 +177,13 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
         }
     }
 
-    public async Task Update(TransObjT entity, int id)
+    public async Task Update(TransObjT entity)
     {
+        _logger.LogInformation($"Updating entity of type {typeof(EntityT)}");
 
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
-
-            EntityT? oldEntity = await dbContext.Set<EntityT>().FindAsync(id);
-
-            if (oldEntity is null)
-            {
-                _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {id} not found. Adding new entity...");
-                await dbContext.Set<EntityT>().AddAsync(entity);
-            }
-            else
-            {
-                _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {id} found. Updating...");
-
-                foreach (PropertyInfo property in typeof(EntityT).GetProperties().Where(p => p.CanWrite))
-                {
-                    property.SetValue(oldEntity, property.GetValue(entity, null), null);
-                }
-                dbContext.Update(oldEntity);
-            }
+            dbContext.Update(entity);
             await dbContext.SaveChangesAsync();
         }
     }
@@ -263,6 +247,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
         using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>().AsTracking();
+
             if (includeQuery is not null) baseQuery = includeQuery(baseQuery);
             List<EntityT> oldEntities = baseQuery.AsEnumerable().Where(a => findPredicate(a)).ToList();
 
@@ -287,6 +272,17 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
 
 
         _logger.LogInformation($"Entities updated successfully");
+    }
+
+
+    async Task IDao<TransObjT, EntityT>.UpdateRange(IEnumerable<TransObjT> entities)
+    {
+        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        {
+
+            dbContext.UpdateRange(entities);
+            await dbContext.SaveChangesAsync();
+        }
     }
 }
 

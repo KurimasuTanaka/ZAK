@@ -62,7 +62,10 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         _logger.LogInformation("Deleting old applications...");
 
         List<Application> oldApplications = (await _applicationsDataAccess.GetAll()).ToList();
-        await _applicationsDataAccess.DeleteRange(oldApplications.Except(newApplications));
+
+        List<Application> applicationsToDelete = oldApplications.Except(newApplications, new ApplicationComparer()).ToList();
+
+        await _applicationsDataAccess.DeleteRange(applicationsToDelete);
 
         _logger.LogInformation("Old applications deleted successfully!");
     }
@@ -73,20 +76,18 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
 
         List<Application> oldApplications = (await _applicationsDataAccess.GetAll()).ToList();
 
-        foreach (Application application in newApplications.Intersect(oldApplications))
+        List<Application> applicationsToUpdate = newApplications.Intersect(oldApplications, new ApplicationComparer()).ToList();
+        for (int i = 0; i < applicationsToUpdate.Count; i++)
         {
-            await _applicationsDataAccess.Update(
-                application,
-                application.id);
+            applicationsToUpdate[i].applicationWasUpdated = true;
         }
+        await _applicationsDataAccess.UpdateRange(applicationsToUpdate);
         _logger.LogInformation("Old applications updated successfully!");
     }
 
     public async Task AddNewApplcations(List<Application> parsedApplications)
     {
         _logger.LogInformation("Adding new applications...");
-
-
 
         //Insert addresses with districts
 
@@ -95,7 +96,9 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
 
         List<Address> oldAddresses = (await _addressesDataAccess.GetAll()).ToList();
 
-        List<Address> newAddresses = parsedAddresses.Except(oldAddresses, new AddressComparer()).ToList();
+        List<Address> newAddresses = new();
+        if(oldAddresses.Count() is not 0) newAddresses = parsedAddresses.Except(oldAddresses, new AddressComparer()).ToList();
+        else newAddresses = parsedAddresses;
 
         await _addressesDataAccess.InsertRange(
             newAddresses,
@@ -132,7 +135,9 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
 
         List<Application> oldApplications = (await _applicationsDataAccess.GetAll()).ToList();
 
-        List<Application> newApplications = parsedApplications.Except(oldApplications).ToList();
+        List<Application> newApplications = new List<Application>();
+        if (oldApplications.Count() is not 0) newApplications = parsedApplications.Except(oldApplications, new ApplicationComparer()).ToList();
+        else newApplications = parsedApplications;
 
         await _applicationsDataAccess.InsertRange(
             newApplications,

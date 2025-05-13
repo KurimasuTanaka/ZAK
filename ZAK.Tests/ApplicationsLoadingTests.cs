@@ -1,9 +1,10 @@
 using BlazorApp.DA;
+using Microsoft.EntityFrameworkCore;
 using Xunit;
 using ZAK.Services.ApplicationsLoadingService;
 
 namespace ZAK.Tests;
-public class ApplicationsManagerTests : ZakTestBase
+public class ApplicationsLoadingTests : ZakTestBase
 {
     [Fact]
     public async void UploadNewApplicationsToDb()
@@ -126,6 +127,11 @@ public class ApplicationsManagerTests : ZakTestBase
 
         await applicationsManagerService.ProceedApplications(applicationsToInsert);
 
+        applicationsToInsert[1].statusWasChecked = true;
+        Application applicationToUpdate = applicationsToInsert[1];
+        applicationToUpdate.address = null;
+        await applicationsDao.Update(applicationToUpdate);
+
         applicationsToInsert.Add(application3);
         applicationsToInsert[1].operatorComment = "Applications comment 2 UPDATED";
         applicationsToInsert[1].address = address3;
@@ -134,13 +140,19 @@ public class ApplicationsManagerTests : ZakTestBase
         await applicationsManagerService.ProceedApplications(applicationsToInsert);
 
         //Assert
-        List<Application> addedApplications = (await applicationsDao.GetAll()).ToList();
+        List<Application> addedApplications = (await applicationsDao.GetAll(
+            query => query.Include(a => a.address)
+        )).ToList();
+
         List<Address> addedAddresses = (await addressesDao.GetAll()).ToList();
         List<District> addedDistricts = (await districtsDao.GetAll()).ToList();
 
         Assert.Equal(3, addedAddresses.Count);
+        Assert.Equal(address3.building, addedApplications.Where(a => a.operatorComment == "Applications comment 2 UPDATED").First().address!.building);
+        Assert.True(addedApplications.Where(a => a.operatorComment == "Applications comment 2 UPDATED").First().statusWasChecked);
         Assert.Equal(2, addedDistricts.Count);
         Assert.Equal(2, addedApplications.Count);
+        Assert.Single(addedApplications.Where(a => a.applicationWasUpdated is true));
         Assert.Equal("Application comment 3", addedApplications.Last().operatorComment);
     }
 }

@@ -18,7 +18,7 @@ public interface IDao<TransObjT, EntityT> where TransObjT : class, new() where E
     Func<TransObjT, DbContext, TransObjT>? inputDataProccessingQuery = null
     );
 
-    Task Update(TransObjT entity, int id);
+    Task Update(TransObjT entity);
 
     Task UpdateRange(
         IEnumerable<TransObjT> entities, 
@@ -27,6 +27,8 @@ public interface IDao<TransObjT, EntityT> where TransObjT : class, new() where E
         Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null,
         Func<DbContext, EntityT, EntityT>? attachFunction = null,
         Func<EntityT, EntityT, EntityT>? updatingFunction = null); 
+
+    Task UpdateRange(IEnumerable<TransObjT> entities);
 
     Task Delete(int id);
     Task DeleteAll();
