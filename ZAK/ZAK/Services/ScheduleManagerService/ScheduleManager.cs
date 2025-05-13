@@ -96,7 +96,7 @@ public class ScheduleManager : IScheduleManager
     {
         //Delete application from previous brigade
         Brigade? prevBrigade = await GetBrigadeById(prevBrigadeId);
-        prevBrigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime == prevTime);
+        prevBrigade.scheduledApplications.RemoveAll(sa => sa.applicationId == applicationId);
         ShiftScheduledApplicationsBackward(prevBrigade, prevTime);
         await UpdateBrigade(prevBrigade);
 
@@ -120,6 +120,8 @@ public class ScheduleManager : IScheduleManager
 
         _logger.LogInformation($"Inserting application {applicationId} in brigade {brigadeId} on time {time}...");
         //Insert new application to the schedule
+        newBrigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime == time);
+
         ScheduledApplicationModel newScheduledApplication = new ScheduledApplicationModel()
         {
             applicationId = applicationId,
@@ -128,7 +130,6 @@ public class ScheduleManager : IScheduleManager
         };
         newBrigade.scheduledApplications.Add(newScheduledApplication);
 
-        newBrigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime == time && sa.applicationId != applicationId);
         await UpdateBrigade(newBrigade);
     }
 
@@ -150,7 +151,7 @@ public class ScheduleManager : IScheduleManager
 
 
         ShiftScheduledApplicationsBackward(brigade, prevTime, newTime);
-        brigade.scheduledApplications.Where(sa => sa.scheduledTime == prevTime).First().scheduledTime = newTime;
+        brigade.scheduledApplications.Where(sa => sa.applicationId == applicationId).First().scheduledTime = newTime;
 
         await UpdateBrigade(brigade);
     }
