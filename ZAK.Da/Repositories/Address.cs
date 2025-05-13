@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using ZAK.Db;
 using ZAK.Db.Models;
@@ -127,4 +128,19 @@ public class Address : AddressModel
         }
     }
 
+}
+
+public class AddressComparer : IEqualityComparer<Address?>
+{
+    public bool Equals(Address? x, Address? y)
+    {
+        if (x is null || y is null) return false;
+        if (x.streetName == y.streetName && x.building == y.building) return true;
+        else return false;
+    }
+
+    public int GetHashCode([DisallowNull] Address? obj)
+    {
+        return (obj.streetName + obj.building).GetHashCode();
+    }
 }

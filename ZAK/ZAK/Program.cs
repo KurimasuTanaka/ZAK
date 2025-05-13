@@ -66,7 +66,7 @@ public class Program
 
         builder.Services.AddTransient<IDao<Coefficient, CoefficientModel>, DAO.Dao<Coefficient, CoefficientModel>>();
         builder.Services.AddTransient<IDao<Application, ApplicationModel>, DAO.Dao<Application, ApplicationModel>>();
-        builder.Services.AddTransient<IDao<District, DistrictModel>, DAO.Dao<District, DistrictModel>>();
+        builder.Services.AddTransient<IDao<District, District>, DAO.Dao<District, District>>();
         builder.Services.AddTransient<IDao<Address, AddressModel>, DAO.Dao<Address, AddressModel>>();
         builder.Services.AddTransient<IDao<AddressPriority, AddressPriority>, DAO.Dao<AddressPriority, AddressPriority>>();
         builder.Services.AddTransient<IDao<AddressCoordinates, AddressCoordinatesModel>, DAO.Dao<AddressCoordinates, AddressCoordinatesModel>>();

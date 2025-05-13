@@ -23,7 +23,7 @@ public class ApplicationsDataAccess(BlazorAppDbContext blazorAppDbContext) : IAp
             } 
             else 
             {
-                DistrictModel? district = await _dbContext.districts.FirstOrDefaultAsync(d => d.name == application.address.district.name);
+                ZAK.Db.Models.DistrictModel? district = await _dbContext.districts.FirstOrDefaultAsync(d => d.name == application.address.district.name);
                 if (district is not null)
                 {
                     application.address.district = district;

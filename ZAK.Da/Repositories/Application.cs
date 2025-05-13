@@ -146,7 +146,7 @@ public class Application : ApplicationModel
     }
 }
 
-class ApplicationComparer : IEqualityComparer<Application?>
+public class ApplicationComparer : IEqualityComparer<Application?>
 {
     public bool Equals(Application? x, Application? y)
     {

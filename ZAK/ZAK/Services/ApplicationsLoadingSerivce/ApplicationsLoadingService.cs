@@ -101,11 +101,11 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
             newAddresses,
             inputProcessQuery: (addresses, dbContext) =>
                 {
-                    List<District> districts = dbContext.Set<DistrictModel>().Select(d => new District(d)).ToList();
+                    List<BlazorApp.DA.District> districts = dbContext.Set<Db.Models.DistrictModel>().Select(d => new BlazorApp.DA.District(d)).ToList();
 
                     foreach (Address add in addresses)
                     {
-                        District? districtFromDb = districts.Find(dist =>
+                        BlazorApp.DA.District? districtFromDb = districts.Find(dist =>
                         {
                             if (add.district is not null && dist.name == add.district.name)
                             {
@@ -120,20 +120,6 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
                             dbContext.Attach(add.district);
                         }
 
-                        // if (districtFromDb is not null)
-                        // {
-                        //     add.district = districtFromDb;
-                        //     if(!dbContext.Set<DistrictModel>().Local.Any(dis => districtFromDb.name == dis.name )) 
-                        //     {
-                        //         dbContext.Attach(add.district);
-                        //     }
-                        // } else if(add.district is not null)
-                        // {
-                        //     dbContext.Add(add.district);
-                        //     dbContext.SaveChanges();
-                        //     districts = dbContext.Set<DistrictModel>().Select(d => new District(d)).ToList();
-
-                        // }
 
                     }
                     return addresses;
@@ -180,34 +166,5 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
     }
 }
 
-class DistrictsComparer : IEqualityComparer<DistrictModel?>
-{
-    public bool Equals(DistrictModel? x, DistrictModel? y)
-    {
-        if (x is null || y is null) return false;
-        if (x.name == y.name) return true;
-        else return false;
-    }
-
-    public int GetHashCode([DisallowNull] DistrictModel obj)
-    {
-        return obj.name.GetHashCode();
-    }
-}
-
-class AddressComparer : IEqualityComparer<Address?>
-{
-    public bool Equals(Address? x, Address? y)
-    {
-        if (x is null || y is null) return false;
-        if (x.streetName == y.streetName && x.building == y.building) return true;
-        else return false;
-    }
-
-    public int GetHashCode([DisallowNull] Address? obj)
-    {
-        return (obj.streetName + obj.building).GetHashCode();
-    }
-}
 
 
