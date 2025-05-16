@@ -1,0 +1,28 @@
+﻿@inject IDao<Application, ApplicationModel> _applicationsDataAccess;
+
+@if (application.applicationWasUpdated)
+{
+    <Tooltip Title="Заявка была изменена" Placement="TooltipPlacement.Top">
+
+        <Button @onclick="UpdateConfirmed">
+            <Icon Name="IconName.ExclamationDiamondFill" Size="IconSize.x3" Color="IconColor.Warning" />
+        </Button>
+    </Tooltip>
+}
+
+@code {
+    [Parameter] public Application application { get; set; } = default!;
+
+    private string _changesReport = String.Empty; 
+    protected override void OnParametersSet()
+    {
+        _changesReport = "Було змінено:";
+        // Check if the application was updated
+    }
+
+    private async Task UpdateConfirmed()
+    {
+        application.applicationWasUpdated = false;
+        await _applicationsDataAccess.Update(application);
+    }
+}
