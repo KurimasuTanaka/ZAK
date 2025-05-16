@@ -79,7 +79,13 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         List<Application> applicationsToUpdate = newApplications.Intersect(oldApplications, new ApplicationComparer()).ToList();
         for (int i = 0; i < applicationsToUpdate.Count; i++)
         {
-            applicationsToUpdate[i].applicationWasUpdated = true;
+            Application newApp = newApplications.Find(app => app.id == applicationsToUpdate[i].id)!;
+
+            if(applicationsToUpdate[i].address != newApp.address) applicationsToUpdate[i].addresWasUpdated = true;      
+            if(applicationsToUpdate[i].operatorComment != newApp.operatorComment) applicationsToUpdate[i].operatorCommentWasUpdated = true;      
+            if(applicationsToUpdate[i].masterComment != newApp.masterComment) applicationsToUpdate[i].masterCommentWasUpdated = true;      
+            if(applicationsToUpdate[i].stretchingStatus != newApp.stretchingStatus) applicationsToUpdate[i].statusWasUpdated = true;      
+            
         }
         await _applicationsDataAccess.UpdateRange(applicationsToUpdate);
         _logger.LogInformation("Old applications updated successfully!");

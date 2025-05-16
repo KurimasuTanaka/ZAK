@@ -1,31 +1,30 @@
 {
   "version": "0.2.0",
+  "workspaceFolder": " D:\\C#_Projects\\ZAK\\ZAK3\\ZAK\\ZAK",
   "configurations": [
     {
+      "name": "Launch ASP.NET Core Blazor Server",
       "type": "coreclr",
       "request": "launch",
-      "name": "Launch .NET Application",
-      "program": "${workspaceFolder}/${input:selectProject}/bin/Debug/net9.0/${workspaceFolderBasename}.dll",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/ZAK/ZAK/bin/Debug/net9.0/ZAK.dll",
+      "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "build"
-    }
-  ],
-  "inputs": [
-    {
-      "type": "pickString",
-      "id": "selectProject",
-      "description": "Select the project to debug",
-      "options": [
-        "ZAK",
-        "ZAK.ApplicationsLoader",
-        "ZAK.ApplicationsScrapper",
-        "ZAK.Da",
-        "ZAK.DAO",
-        "ZAK.Db",
-        "ZAK.Enums",
-        "ZAK.GeoDataFetcher",
-        "ZAK.MapRouter"
-      ]
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      },
+      "launchBrowser": {
+        "enabled": true,
+        "args": "${auto-detect-url}"
+      }
     }
   ]
 }

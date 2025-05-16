@@ -21,14 +21,14 @@
     {
         Coefficient oldCoefficient = await _coefficientsDataAccess.GetById(coefficient.id);
         oldCoefficient.coefficient = coefficient.coefficient; 
-        await _coefficientsDataAccess.Update(oldCoefficient, coefficient.id);
+        await _coefficientsDataAccess.Update(oldCoefficient, findPredicate: x => x.id == coefficient.id);
     }
 
     private async void UpdateInfinityStatus()
     {
         Coefficient oldCoefficient = await _coefficientsDataAccess.GetById(coefficient.id);
         oldCoefficient.infinite = coefficient.infinite; 
-        await _coefficientsDataAccess.Update(oldCoefficient, coefficient.id);
+        await _coefficientsDataAccess.Update(oldCoefficient, findPredicate: x => x.id == coefficient.id);
     }
 
 

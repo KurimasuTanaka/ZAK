@@ -25,7 +25,7 @@ public class MapRoutesManager : IMapRoutesManager
         _logger = logger;
     
         _logger.LogInformation("Loading OSM data...");
-        using (var stream = new FileInfo(@".\..\..\kyiv.osm.pbf").OpenRead())
+        using (var stream = new FileInfo(@"./../../kyiv.osm.pbf").OpenRead())
         {
             _routerDb.LoadOsmData(stream, Itinero.Osm.Vehicles.Vehicle.Car); // create the network for cars only.
         }

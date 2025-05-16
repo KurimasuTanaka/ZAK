@@ -2,10 +2,10 @@
 
 @if (application.applicationWasUpdated)
 {
-    <Tooltip Title="Заявка была изменена" Placement="TooltipPlacement.Top">
+    <Tooltip Title="@_changesReport" IsHtml="true" Placement="TooltipPlacement.Top">
 
         <Button @onclick="UpdateConfirmed">
-            <Icon Name="IconName.ExclamationDiamondFill" Size="IconSize.x3" Color="IconColor.Warning" />
+            <Icon Name="IconName.ExclamationDiamondFill" Size="IconSize.x2" Color="IconColor.Warning" />
         </Button>
     </Tooltip>
 }
@@ -16,13 +16,34 @@
     private string _changesReport = String.Empty; 
     protected override void OnParametersSet()
     {
-        _changesReport = "Було змінено:";
-        // Check if the application was updated
+        _changesReport = "Було змінено: <br>";
+        if(application.operatorCommentWasUpdated)
+        {
+            _changesReport += "- Коментар оператора <br>";
+        }
+        if(application.masterCommentWasUpdated)
+        {
+            _changesReport += "- Коментар майстра <br>";
+        }
+        if(application.statusWasUpdated)
+        {
+            _changesReport += "- Статус заявки <br>";
+        }
+        if(application.addresWasUpdated)
+        {
+            _changesReport += "- Адреса заявки <br>";
+        }
     }
 
     private async Task UpdateConfirmed()
     {
-        application.applicationWasUpdated = false;
-        await _applicationsDataAccess.Update(application);
+        application.operatorCommentWasUpdated = false;
+        application.masterCommentWasUpdated = false;
+        application.statusWasUpdated = false;
+        application.addresWasUpdated = false;
+
+        await _applicationsDataAccess.Update(
+            application, 
+            findPredicate: x => x.id == application.id);
     }
 }

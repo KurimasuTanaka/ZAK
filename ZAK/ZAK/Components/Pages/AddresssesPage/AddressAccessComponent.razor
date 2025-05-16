@@ -21,6 +21,6 @@
 
         await _addressesDataAccess.Update(
         address,
-        address.Id);
+        findPredicate: x => x.Id == addressId);
     }
 }

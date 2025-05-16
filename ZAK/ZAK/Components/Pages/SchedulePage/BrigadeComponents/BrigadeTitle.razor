@@ -72,7 +72,7 @@
 
         Brigade newBrigadeInstance = await _brigadesDataAccess.GetById(brigade.id);
         newBrigadeInstance.brigadeNumber = value;
-        await _brigadesDataAccess.Update(newBrigadeInstance, newBrigadeInstance.id);
+        await _brigadesDataAccess.Update(newBrigadeInstance, findPredicate: x => x.id == brigade.id);
 
         _logger.LogInformation($"Brigade with id {brigade.id} changed number successfully to {value}");
     }

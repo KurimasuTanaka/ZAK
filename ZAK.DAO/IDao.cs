@@ -9,16 +9,14 @@ public interface IDao<TransObjT, EntityT> where TransObjT : class, new() where E
     Task<TransObjT> GetById(int id);
     Task Insert(TransObjT entity,  Func<IQueryable<EntityT>, TransObjT, DbContext, EntityT>? inputProcessQuery = null);
     Task InsertRange(IEnumerable<EntityT> entities, Func<IEnumerable<EntityT>, DbContext, IEnumerable<EntityT>>? inputProcessQuery = null);
-    Task Update(TransObjT entity, int id,
-        Func<EntityT, bool>? findPredicate,
+    Task Update(TransObjT entity,
+        Func<EntityT, bool> findPredicate,
         Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null);
     Task Update(TransObjT entity, int id,
-    Func<EntityT, bool>? findPredicate = null,
+    Func<EntityT, bool> findPredicate,
     Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null,
     Func<TransObjT, DbContext, TransObjT>? inputDataProccessingQuery = null
     );
-
-    Task Update(TransObjT entity);
 
     Task UpdateRange(
         IEnumerable<TransObjT> entities, 

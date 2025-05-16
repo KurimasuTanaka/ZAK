@@ -51,8 +51,11 @@ namespace ZAK.Db.Models;
         //Application can be ignored
         public bool ignored { get; set; } = false;
         //Application was updated in last update
-        public bool applicationWasUpdated { get; set; } = false;
-
+//        public bool applicationWasUpdated { get; set; } = false;
+        public bool addresWasUpdated { get; set; } = false;
+        public bool masterCommentWasUpdated { get; set; } = false;
+        public bool operatorCommentWasUpdated { get; set; } = false;
+        public bool statusWasUpdated { get; set; } = false;
 
 
         public ApplicationModel() { }

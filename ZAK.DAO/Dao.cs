@@ -28,7 +28,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     {
         _logger.LogInformation($"Deleting entity of type {typeof(EntityT)} with id: {id}");
 
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
 
             EntityT? entity = await dbContext.Set<EntityT>().FindAsync(id);
@@ -50,7 +50,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     {
         _logger.LogInformation($"Deleting all entities of type {typeof(EntityT)}");
 
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             dbContext.Set<EntityT>().RemoveRange(dbContext.Set<EntityT>());
             await dbContext.SaveChangesAsync();
@@ -63,7 +63,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     {
         _logger.LogInformation($"Deleting range of entities of type {typeof(EntityT)}");
 
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             dbContext.Set<EntityT>().RemoveRange(entities.Cast<EntityT>());
             await dbContext.SaveChangesAsync();
@@ -75,7 +75,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     {
         _logger.LogInformation($"Getting all entities of type {typeof(EntityT)}");
 
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             if (query is not null) return await query(dbContext.Set<EntityT>()).Select(a => GenericFactory.CreateInstance<TransObjT, EntityT>(a)).ToListAsync();
             else return await dbContext.Set<EntityT>().Select(a => GenericFactory.CreateInstance<TransObjT, EntityT>(a)).ToListAsync();
@@ -84,7 +84,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
 
     public async Task<TransObjT> GetById(int id)
     {
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             EntityT? entity = await dbContext.Set<EntityT>().FindAsync(id);
             if (entity is null)
@@ -103,7 +103,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     public async Task Insert(TransObjT entity, Func<IQueryable<EntityT>, TransObjT, DbContext, EntityT>? inputProcessQuery = null)
     {
         _logger.LogInformation($"Inserting new entity of type {typeof(EntityT)}");
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             EntityT insertedEntity = null;
             if (inputProcessQuery is not null) insertedEntity = inputProcessQuery(dbContext.Set<EntityT>(), entity, dbContext);
@@ -119,7 +119,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
         _logger.LogInformation($"Inserting range of entities of type {typeof(EntityT)}");
 
 
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             if (inputProcessQuery is not null) entities = inputProcessQuery(entities, dbContext);
 
@@ -140,16 +140,12 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     }
 
     public async Task Update(
-        TransObjT entity, int id,
-        Func<EntityT, bool>? findPredicate,
-        Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null
-        )
+        TransObjT entity,
+        Func<EntityT, bool> findPredicate,
+        Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null)
     {
-
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
-
-
             IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>();
 
             if (includeQuery is not null) baseQuery = includeQuery(baseQuery);
@@ -158,33 +154,20 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
 
             if (oldEntity is null)
             {
-                _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {id} not found. Adding new entity...");
+                _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {GetPrimaryKeyValue<EntityT>(dbContext, entity)} not found. Adding new entity...");
                 await dbContext.Set<EntityT>().AddAsync(entity);
             }
             else
             {
-                _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {id} found. Updating...");
+                _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {GetPrimaryKeyValue<EntityT>(dbContext, entity)} found. Updating...");
 
                 foreach (PropertyInfo property in typeof(EntityT).GetProperties().Where(p => p.CanWrite))
                 {
                     property.SetValue(oldEntity, property.GetValue(entity, null), null);
                 }
-
-                dbContext.Update(oldEntity);
             }
             await dbContext.SaveChangesAsync();
 
-        }
-    }
-
-    public async Task Update(TransObjT entity)
-    {
-        _logger.LogInformation($"Updating entity of type {typeof(EntityT)}");
-
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
-        {
-            dbContext.Update(entity);
-            await dbContext.SaveChangesAsync();
         }
     }
 
@@ -283,6 +266,29 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
             dbContext.UpdateRange(entities);
             await dbContext.SaveChangesAsync();
         }
+    }
+
+    private object? GetPrimaryKeyValue<TEntity>(DbContext context, TEntity entity)
+    {
+        var entityType = context.Model.FindEntityType(typeof(TEntity));
+        var key = entityType?.FindPrimaryKey();
+
+        if (key == null)
+            return null;
+
+        if (key.Properties.Count == 1)
+        {
+            // Single key
+            return key.Properties[0].PropertyInfo?.GetValue(entity);
+        }
+
+        // Composite key
+        var keyValues = new Dictionary<string, object?>();
+        foreach (var prop in key.Properties)
+        {
+            keyValues[prop.Name] = prop.PropertyInfo?.GetValue(entity);
+        }
+        return keyValues;
     }
 }
 

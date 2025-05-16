@@ -50,6 +50,14 @@ public class Application : ApplicationModel
         }
     }
 
+    public bool applicationWasUpdated
+    {
+        get
+        {
+            return addresWasUpdated || masterCommentWasUpdated || operatorCommentWasUpdated || statusWasUpdated;
+        }
+    }
+
     public Application() { }
     public Application(ApplicationModel model) : base(model)
     {

@@ -18,7 +18,7 @@
         address.blackoutGroup = group;
         await _addressesDataAccess.Update(
         address,
-        address.Id);
+        findPredicate: x => x.Id == addressId);
 
         _logger.LogInformation($"Blackout group for address with id {addressId} updated to {group} successfully!");
     }

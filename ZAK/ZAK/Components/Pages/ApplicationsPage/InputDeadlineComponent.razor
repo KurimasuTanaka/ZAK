@@ -16,7 +16,7 @@
 
         Application application = await applicationsDataAccess.GetById(applicationId);
         application.maxDaysForConnection = daysForConnection;
-        await applicationsDataAccess.Update(application, application.id);
+        await applicationsDataAccess.Update(application, findPredicate: x => x.id == applicationId);
     }
         
 }
