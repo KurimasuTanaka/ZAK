@@ -1,7 +1,7 @@
 using ApplicationsScrappingModule;
 using BlazorApp;
 using BlazorApp.ApplicationsLoader;
-using BlazorApp.DA;
+using ZAK.DA;
 using BlazorApp.GeoDataManager;
 using Microsoft.EntityFrameworkCore;
 using ZAK.Components;

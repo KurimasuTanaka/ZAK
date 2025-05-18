@@ -1,5 +1,5 @@
 
-using BlazorApp.DA;
+using ZAK.DA;
 
 namespace ApplicationsScrappingModule;
 

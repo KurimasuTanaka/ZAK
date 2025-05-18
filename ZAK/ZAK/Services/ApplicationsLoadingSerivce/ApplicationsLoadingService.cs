@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using ApplicationsScrappingModule;
 using BlazorApp;
-using BlazorApp.DA;
+using ZAK.DA;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
@@ -111,11 +111,11 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
             newAddresses,
             inputProcessQuery: (addresses, dbContext) =>
                 {
-                    List<BlazorApp.DA.District> districts = dbContext.Set<Db.Models.DistrictModel>().Select(d => new BlazorApp.DA.District(d)).ToList();
+                    List<ZAK.DA.District> districts = dbContext.Set<Db.Models.DistrictModel>().Select(d => new ZAK.DA.District(d)).ToList();
 
                     foreach (Address add in addresses)
                     {
-                        BlazorApp.DA.District? districtFromDb = districts.Find(dist =>
+                        ZAK.DA.District? districtFromDb = districts.Find(dist =>
                         {
                             if (add.district is not null && dist.name == add.district.name)
                             {

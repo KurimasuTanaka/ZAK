@@ -3,7 +3,7 @@ using ZAK.Db;
 using ZAK.Db.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlazorApp.DA;
+namespace ZAK.DA;
 
 public class AddressPriorityDataAccess(BlazorAppDbContext blazorAppDbContext) : IAddressPriorityDataAccess
 {

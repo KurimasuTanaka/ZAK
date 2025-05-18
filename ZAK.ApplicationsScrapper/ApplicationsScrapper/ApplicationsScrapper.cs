@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
 
-using BlazorApp.DA;
+using ZAK.DA;
 using BlazorApp.Enums;
 using ApplicationsScrappingModule;
 using Microsoft.Extensions.Logging;

@@ -1,6 +1,6 @@
 using System;
 using ApplicationsScrappingModule;
-using BlazorApp.DA;
+using ZAK.DA;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 

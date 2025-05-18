@@ -2,7 +2,7 @@
 using ZAK.Db;
 using ZAK.Db.Models;
 
-namespace BlazorApp.DA;
+namespace ZAK.DA;
 
 public class District : ZAK.Db.Models.DistrictModel
 {

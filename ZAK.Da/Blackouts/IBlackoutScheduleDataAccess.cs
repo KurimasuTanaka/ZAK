@@ -2,7 +2,7 @@ using System;
 using BlazorApp.Enums;
 using ZAK.Db.Models;
 
-namespace BlazorApp.DA;
+namespace ZAK.DA;
 
 public interface IBlackoutScheduleDataAccess
 {

@@ -1,4 +1,4 @@
-﻿namespace BlazorApp.DA;
+﻿namespace ZAK.DA;
 
 public interface IDistrictDataAccess
 {

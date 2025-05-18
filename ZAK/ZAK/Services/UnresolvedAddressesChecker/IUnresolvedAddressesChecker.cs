@@ -1,5 +1,5 @@
 using System;
-using BlazorApp.DA;
+using ZAK.DA;
 
 namespace ZAK.Services.UnresolvedAddressesChecker;
 

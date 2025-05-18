@@ -1,6 +1,6 @@
 ﻿namespace BlazorApp.ApplicationsLoader;
 
-using BlazorApp.DA;
+using ZAK.DA;
 
 public interface IApplicationsLoader
 {

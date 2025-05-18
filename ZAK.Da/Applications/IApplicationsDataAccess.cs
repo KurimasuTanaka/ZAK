@@ -1,7 +1,7 @@
 ﻿using ZAK.Db.Models;
 using BlazorApp.Enums;
 
-namespace BlazorApp.DA;
+namespace ZAK.DA;
 
 public interface IApplicationsDataAccess
 {

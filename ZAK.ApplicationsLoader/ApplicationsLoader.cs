@@ -1,4 +1,4 @@
-﻿using BlazorApp.DA;
+﻿using ZAK.DA;
 using ApplicationsScrappingModule;
 using ZAK.DAO;
 using ZAK.Db.Models;

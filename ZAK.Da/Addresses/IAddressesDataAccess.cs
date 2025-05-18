@@ -1,7 +1,8 @@
 using System;
 using BlazorApp.Enums;
+using ZAK.DA;
 
-namespace BlazorApp.DA;
+namespace ZAK;
 
 public interface IAddressesDataAccess
 {

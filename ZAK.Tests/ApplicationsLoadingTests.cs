@@ -1,4 +1,4 @@
-using BlazorApp.DA;
+using ZAK.DA;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 using ZAK.Services.ApplicationsLoadingService;

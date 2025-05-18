@@ -1,9 +1,8 @@
-﻿@using BlazorApp.DA
+﻿@using ZAK.DA
 @using ZAK.Components.Pages.ApplicationsPage;
 
 @inject IDao<Application, ApplicationModel> applicationsDataAccess;
 @inject IDao<Coefficient, CoefficientModel> coefficientsDataAccess;
-@inject IDao<Address, AddressModel> addressesDataAccess;
 @inject IBlackoutScheduleDataAccess blackoutScheduleDataAccess;
 
 <Modal @ref=applicationsList Title="Выбрать заявку" Size="ModalSize.ExtraLarge">

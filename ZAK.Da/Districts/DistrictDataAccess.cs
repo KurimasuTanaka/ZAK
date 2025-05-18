@@ -1,4 +1,4 @@
-﻿namespace BlazorApp.DA;
+﻿namespace ZAK.DA;
 
 using System.Collections.Generic;
 using ZAK.Db;

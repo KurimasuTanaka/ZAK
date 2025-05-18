@@ -1,6 +1,6 @@
 ﻿namespace BlazorApp.GeoDataManager;
 
-using BlazorApp.DA;
+using ZAK.DA;
 
 public interface IGeoDataManager
 {

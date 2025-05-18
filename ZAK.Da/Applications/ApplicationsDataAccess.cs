@@ -4,7 +4,7 @@ using ZAK.Db.Models;
 using BlazorApp.Enums;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlazorApp.DA;
+namespace ZAK.DA;
 
 public class ApplicationsDataAccess(BlazorAppDbContext blazorAppDbContext) : IApplicationsDataAccess
 {
