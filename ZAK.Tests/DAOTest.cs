@@ -29,7 +29,7 @@ public class DAOTests : ZakTestBase
         await applicationsDao.Insert(newApplication);
 
         //Assert
-        Assert.Single(await addressesDao.GetAll());
+        Assert.Single(await addressRepository.GetAllAsync());
         Assert.Single(await applicationsDao.GetAll());
     }
 
@@ -43,13 +43,15 @@ public class DAOTests : ZakTestBase
         address.streetName = "вулиця Володимира Івасюка";
         address.building = "54";
 
-        await addressesDao.Insert(address);
+        await addressRepository.CreateAsync(address);
 
-        Address addressToUpdate = (await addressesDao.GetAll()).FirstOrDefault()!;
+        Address addressToUpdate = (await addressRepository.GetAllAsync()).FirstOrDefault()!;
         addressToUpdate.streetName = "проспект Володимира Івасюка";
-        await addressesDao.Update(addressToUpdate, findPredicate: q => q.Id == addressToUpdate.Id);
+        await addressRepository.UpdateAsync(addressToUpdate);
 
-        Address updatedAddress = (await addressesDao.GetAll()).FirstOrDefault()!;
+        Address updatedAddress = (await addressRepository.GetAllAsync()).FirstOrDefault()!;
+
+    
 
         //Assert
         Assert.NotNull(updatedAddress);
@@ -66,32 +68,16 @@ public class DAOTests : ZakTestBase
         address.streetName = "проспект Володимира Івасюка";
         address.building = "54";
 
-        await addressesDao.Insert(address);
+        await addressRepository.CreateAsync(address);
 
-        Address addressToUpdate = (await addressesDao.GetAll()).FirstOrDefault()!;
+        Address addressToUpdate = (await addressRepository.GetAllAsync()).FirstOrDefault()!;
         addressToUpdate.coordinates = new AddressCoordinates();
         addressToUpdate.coordinates.lat = 5000;
         addressToUpdate.coordinates.lon = 5000;
 
-        await addressesDao.Update(
-            addressToUpdate,
-            addressToUpdate.Id, 
-            includeQuery: q => 
-            {
-                return q.Include(e => e.coordinates);
-            },
-            findPredicate: q =>
-            {
-                return q.Id == addressToUpdate.Id;
-            }
-        );
+        await addressRepository.UpdateAsync(addressToUpdate);
 
-        Address updatedAddress = (await addressesDao.GetAll(
-            query: q => {
-                return q.Include(e => e.coordinates);
-            }
-        )).FirstOrDefault()!;
-
+        Address updatedAddress = (await addressRepository.GetAllAsync()).FirstOrDefault()!;
         //Assert
         Assert.NotNull(updatedAddress);
         Assert.NotNull(updatedAddress.coordinates);
@@ -117,7 +103,7 @@ public class DAOTests : ZakTestBase
         Application newApplication = new();
         newApplication.address = sharedAddress;
 
-        Address sharedAddressToEdit = (await addressesDao.GetAll(query: a => a.Include(a => a.applications))).FirstOrDefault()!;
+        Address sharedAddressToEdit = (await addressRepository.GetAllAsync()).FirstOrDefault()!;
 
 
         await applicationsDao.Insert(newApplication,
@@ -130,7 +116,7 @@ public class DAOTests : ZakTestBase
 
         //Assert
         Assert.Equal(2, (await applicationsDao.GetAll()).Count());
-        Assert.Single(await addressesDao.GetAll());
+        Assert.Single(await addressRepository.GetAllAsync());
     }
 
     [Fact]
@@ -214,11 +200,11 @@ public class DAOTests : ZakTestBase
 
         List<Address> addresses = new () {address1, address2, address3};
 
-        await addressesDao.InsertRange(addresses);
+        await addressRepository.CreateRangeAsync(addresses);
 
         //Assert
 
-        List<Address> addressesFromDb = (await addressesDao.GetAll()).ToList();
+        List<Address> addressesFromDb = (await addressRepository.GetAllAsync()).ToList();
         List<District> districtsFromDb = (await districtsDao.GetAll()).ToList();
 
         Assert.Equal(3, addressesFromDb.Count);

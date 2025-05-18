@@ -1,33 +1,28 @@
-﻿@inject IDao<Address, AddressModel> _addressesDataAccess;
+﻿@inject IAddressRepository _addressRepository;
 
 <Button @onclick="DeleteCoordinates">
     <Icon Name="IconName.X" />
 </Button>
 @code {
     [Parameter] public int addressId { get; set; }
-    [Parameter] public EventCallback informationUpdated {get ;set;}
+    [Parameter] public EventCallback informationUpdated { get; set; }
 
     private async void DeleteCoordinates()
     {
-        Address address = (await _addressesDataAccess.GetAll(query => query.Include(x =>  x.coordinates).Where(x => x.Id == addressId))).FirstOrDefault()!;
+        Address address = await _addressRepository.GetByIdAsync(addressId);
 
-        if(address.coordinates is null)
+        if (address.coordinates is null)
         {
             address.coordinates = new AddressCoordinates();
         }
-        else 
+        else
         {
             address.coordinates.lat = 0;
             address.coordinates.lon = 0;
         }
 
-        await _addressesDataAccess.Update(
-            address, 
-            addressId, 
-            findPredicate: a => a.Id == addressId,
-            includeQuery: a => a.Include(x => x.coordinates)
-            );    
-            
-        await informationUpdated.InvokeAsync();        
+        await _addressRepository.UpdateAsync(address);
+
+        await informationUpdated.InvokeAsync();
     }
 }

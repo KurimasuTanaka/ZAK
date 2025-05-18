@@ -2,7 +2,7 @@
 @using ZAK.DA;
 
 
-@inject IDao<Address, AddressModel> addressDataAccess;
+@inject IAddressRepository _addressRepository;
 @inject ILogger<CoordinatesInputComponent> _logger;
 
 <InputNumber TValue="double" @bind-Value="@coordinate" @bind-Value:after="UpdateDbData" />
@@ -21,7 +21,7 @@
     {
         _logger.LogInformation($"Updating coordinates for address with id {addressId} to {coordinate}");
 
-        Address address = (await addressDataAccess.GetAll(query => query.Include(x =>  x.coordinates).Where(x => x.Id == addressId))).FirstOrDefault()!;
+        Address address = (await _addressRepository.GetByIdAsync(addressId));
 
         if(address.coordinates is null)
         {
@@ -37,11 +37,6 @@
             address.coordinates.lon = coordinate;
         }
 
-        await addressDataAccess.Update(
-            address, 
-            addressId, 
-            findPredicate: a => a.Id == addressId,
-            includeQuery: a => a.Include(x => x.coordinates)
-            );
+        await _addressRepository.UpdateAsync(address);
     }
 }  

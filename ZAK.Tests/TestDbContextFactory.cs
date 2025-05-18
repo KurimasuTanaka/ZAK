@@ -14,7 +14,6 @@ public class TestDbContextFactory : IDbContextFactory<ZakDbContext>
         connection.Open();
         
         builder.UseSqlite(connection);
-        builder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
         ZakDbContext ZakDbContext = new(builder.Options);
         ZakDbContext.Database.EnsureDeleted();

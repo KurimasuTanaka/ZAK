@@ -11,7 +11,7 @@ public class ApplicationsLoadingTests : ZakTestBase
     {
         //Arrange
 
-        ApplicationsLoadingService applicationsManagerService = new(applicationsDao, addressesDao, null, null, applicationsManagerLogger);
+        ApplicationsLoadingService applicationsManagerService = new(applicationsDao, addressRepository, null, null, applicationsManagerLogger);
 
 
         //Setup districts
@@ -55,7 +55,7 @@ public class ApplicationsLoadingTests : ZakTestBase
 
         //Assert
         List<Application> addedApplications = (await applicationsDao.GetAll()).ToList();
-        List<Address> addedAddresses = (await addressesDao.GetAll()).ToList();
+        List<Address> addedAddresses = (await addressRepository.GetAllAsync()).ToList();
         List<District> addedDistricts = (await districtsDao.GetAll()).ToList();
 
         Assert.Equal(2, addedAddresses.Count);
@@ -68,7 +68,7 @@ public class ApplicationsLoadingTests : ZakTestBase
     public async void UnploadNewApplicationsToDbWithExistingAddressAndApplications()
     {
         //Arrange
-        ApplicationsLoadingService applicationsManagerService = new(applicationsDao, addressesDao, null, null, applicationsManagerLogger);
+        ApplicationsLoadingService applicationsManagerService = new(applicationsDao, addressRepository, null, null, applicationsManagerLogger);
 
 
         //Setup districts
@@ -144,7 +144,7 @@ public class ApplicationsLoadingTests : ZakTestBase
             query => query.Include(a => a.address)
         )).ToList();
 
-        List<Address> addedAddresses = (await addressesDao.GetAll()).ToList();
+        List<Address> addedAddresses = (await addressRepository.GetAllAsync()).ToList();
         List<District> addedDistricts = (await districtsDao.GetAll()).ToList();
 
         Assert.Equal(3, addedAddresses.Count);

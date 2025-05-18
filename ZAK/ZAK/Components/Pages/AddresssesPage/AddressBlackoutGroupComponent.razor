@@ -1,4 +1,4 @@
-﻿@inject IDao<Address, AddressModel> _addressesDataAccess;
+﻿@inject IAddressRepository _addressRepository;
 @inject ILogger<AddressBlackoutGroupComponent> _logger;
 
 <InputNumber TValue="int" Label="Група" @bind-Value="@group" @bind-Value:after="UpdateDbData" />
@@ -14,11 +14,9 @@
     {
         _logger.LogInformation($"Updating blackout group for address with id {addressId} to {group}...");
 
-        Address address = await _addressesDataAccess.GetById(addressId);
+        Address address = await _addressRepository.GetByIdAsync(addressId);
         address.blackoutGroup = group;
-        await _addressesDataAccess.Update(
-        address,
-        findPredicate: x => x.Id == addressId);
+        await _addressRepository.UpdateAsync(address);
 
         _logger.LogInformation($"Blackout group for address with id {addressId} updated to {group} successfully!");
     }

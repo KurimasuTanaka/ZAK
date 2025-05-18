@@ -13,20 +13,18 @@ namespace BlazorApp.GeoDataManager;
 
 public class GeoDataManager : IGeoDataManager
 {
-    IDao<Address, AddressModel> _addressesDataAccess;
+    IAddressRepository _addressRepository;
     ICoordinatesProvider? _coordinatesProvider = new NominatimCoordinatesProvider();
 
 
-    public GeoDataManager(IDao<Address, AddressModel> addressesDataAccess)
+    public GeoDataManager(IAddressRepository addressRepository)
     {
-        _addressesDataAccess = addressesDataAccess;
+        _addressRepository = addressRepository;
     }
 
     public async Task PopulateApplicationsWithGeoData()
     {
-        List<Address> addresses = (await _addressesDataAccess.GetAll(
-            query: a => a.Include(ad => ad.coordinates).Include(ad => ad.addressAlias)
-        )).Where(a => a.coordinates is null || (a.coordinates.lat == 0 || a.coordinates.lon == 0)).ToList();
+        List<Address> addresses = (await _addressRepository.GetAllAsync()).Where(a => a.coordinates is null || a.coordinates.lat == 0 || a.coordinates.lon == 0).ToList();
 
         foreach (Address address in addresses)
         {
@@ -34,38 +32,7 @@ public class GeoDataManager : IGeoDataManager
             await _coordinatesProvider!.GetCoordinatesForAddress(address);
         }
 
-        await _addressesDataAccess.UpdateRange(
-            addresses,
-            findPredicate: a =>
-            {
-                foreach (Address ad in addresses) if (a.Id == ad.Id) return true;
-                return false;
-            },
-            includeQuery: (baseQuery) =>
-            {
-                return baseQuery.Include(a => a.coordinates);
-
-            },
-            updatingFunction: (oldAddress, newAddress) =>
-            {
-                if (oldAddress.coordinates is null) oldAddress.coordinates = newAddress.coordinates;
-                else
-                {
-                    oldAddress.coordinates.lat = newAddress.coordinates!.lat;
-                    oldAddress.coordinates.lon = newAddress.coordinates!.lon;
-                }
-                return oldAddress;
-            },
-            enitySeach: (entityArray, oldEntity) =>
-            {
-                return entityArray.FirstOrDefault(e => e.Id == oldEntity.Id)!;
-            },
-            attachFunction: (context, entity) =>
-            {
-                if (entity.coordinates is not null) context.Entry(entity).State = EntityState.Modified;
-                return entity;
-            }
-        );
+        await _addressRepository.UpdateRangeAsync(addresses);
     }
 
 }

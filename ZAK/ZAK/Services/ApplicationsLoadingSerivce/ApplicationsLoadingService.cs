@@ -18,11 +18,11 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
     private readonly IApplicationsScrapper _applicationScrapper;
 
     private readonly IDao<Application, ZAK.Db.Models.ApplicationModel> _applicationsDataAccess;
-    private readonly IDao<Address, AddressModel> _addressesDataAccess;
+    private readonly IAddressRepository _addressRepository;
 
     public ApplicationsLoadingService(
         IDao<Application, Db.Models.ApplicationModel> applicationsDataAccess,
-        IDao<Address, AddressModel> addressesDataAccess,
+        IAddressRepository addressRepository,
         IApplicationsScrapper applicationsScrapper,
         IFileLoader fileLoader,
         ILogger<ApplicationsLoadingService> logger)
@@ -31,7 +31,7 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         _logger = logger;
         _applicationScrapper = applicationsScrapper;
         _applicationsDataAccess = applicationsDataAccess;
-        _addressesDataAccess = addressesDataAccess;
+        _addressRepository = addressRepository;
     }
 
     public async Task UpdateApplications(IBrowserFile file)
@@ -101,40 +101,13 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         List<Address> parsedAddresses = parsedApplications.Select(app => new Address(app.address)).ToList();
         parsedAddresses.RemoveAll(address => address is null);
 
-        List<Address> oldAddresses = (await _addressesDataAccess.GetAll()).ToList();
+        List<Address> oldAddresses = (await _addressRepository.GetAllAsync()).ToList();
 
         List<Address> newAddresses = new();
         if(oldAddresses.Count() is not 0) newAddresses = parsedAddresses.Except(oldAddresses, new AddressComparer()).ToList();
         else newAddresses = parsedAddresses;
 
-        await _addressesDataAccess.InsertRange(
-            newAddresses,
-            inputProcessQuery: (addresses, dbContext) =>
-                {
-                    List<ZAK.DA.District> districts = dbContext.Set<Db.Models.DistrictModel>().Select(d => new ZAK.DA.District(d)).ToList();
-
-                    foreach (Address add in addresses)
-                    {
-                        ZAK.DA.District? districtFromDb = districts.Find(dist =>
-                        {
-                            if (add.district is not null && dist.name == add.district.name)
-                            {
-                                return true;
-                            }
-                            return false;
-                        });
-
-                        if (districtFromDb is not null)
-                        {
-                            add.district = districtFromDb;
-                            dbContext.Attach(add.district);
-                        }
-
-
-                    }
-                    return addresses;
-                }
-        );
+        await _addressRepository.CreateRangeAsync(newAddresses);
 
         foreach (Application app in parsedApplications) if (app.address is not null) app.address.district = null;
 
@@ -166,7 +139,10 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
                     if (addressFromDb is not null)
                     {
                         app.address = addressFromDb;
-                        dbContext.Attach(app.address);
+
+                        //var entities = dbContext.Set<AddressModel>().Local.ToList();
+
+                        //dbContext.Attach(app.address);
                     }
 
                 }

@@ -1,4 +1,4 @@
-﻿@inject IDao<Address, AddressModel> _addressesDataAccess;
+﻿@inject IAddressRepository _addressRepository;
 @inject ILogger<AddressAccessComponent> _logger;
 
 <InputSelect @bind-Value="@equipmentAccess" @bind-Value:after="UpdateEquipmentAccess">
@@ -16,11 +16,9 @@
     {
         _logger.LogInformation($"Updating equipment access for address with id {addressId} to {equipmentAccess}");
 
-        Address address = await _addressesDataAccess.GetById(addressId);
+        Address address = await _addressRepository.GetByIdAsync(addressId);
         address.equipmentAccess = equipmentAccess;
 
-        await _addressesDataAccess.Update(
-        address,
-        findPredicate: x => x.Id == addressId);
+        await _addressRepository.UpdateAsync(address);
     }
 }

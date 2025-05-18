@@ -2,7 +2,7 @@
 @using ZAK.DA;
 
 
-@inject IDao<Address, AddressModel> addressDataAccess;
+@inject IAddressRepository _addressRepository;
 @inject ILogger<AliasInputComponent> _logger;
 
 <InputText TValue="double" Label="Укр. назва" @bind-Value="@alias" @bind-Value:after="UpdateDbData" />
@@ -20,7 +20,7 @@
     {
         _logger.LogInformation($"Updating alias for address with id {addressId} to {alias}");
 
-        Address address = (await addressDataAccess.GetAll(query => query.Include(x =>  x.addressAlias).Where(x => x.Id == addressId))).FirstOrDefault()!;
+        Address address = (await _addressRepository.GetByIdAsync(addressId));
 
         if(address.addressAlias is null)
         {
@@ -36,11 +36,6 @@
             address.addressAlias.buildingAlias = alias;
         }
 
-        await addressDataAccess.Update(
-            address, 
-            addressId, 
-            findPredicate: a => a.Id == addressId,
-            includeQuery: a => a.Include(x => x.addressAlias)
-            );
+        await _addressRepository.UpdateAsync(address);
     }
 }  

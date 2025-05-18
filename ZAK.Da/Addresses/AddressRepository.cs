@@ -2,6 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using ZAK.Db;
+using ZAK.Db.Models;
 
 namespace ZAK.DA;
 
@@ -89,6 +90,8 @@ public class AddressRepository : IAddressRepository
                     context.Attach(address.district);
                 }
             }
+
+            await context.addresses.AddRangeAsync(addresses);
             await context.SaveChangesAsync();
         }
     }
@@ -97,16 +100,44 @@ public class AddressRepository : IAddressRepository
     {
         using (ZakDbContext context = _dbContextFactory.CreateDbContext())
         {
-            var existingEntity = await context.addresses.FindAsync(entity.Id);
+            var existingEntity = await context.addresses.Include(a => a.coordinates).Include(a => a.addressAlias).Include(a => a.addressPriority).FirstOrDefaultAsync(a => a.Id == entity.Id);
             if (existingEntity != null)
             {
                 context.Entry(existingEntity).CurrentValues.SetValues(entity);
+                if (entity.coordinates != null) existingEntity.coordinates = entity.coordinates;
+                if (entity.addressAlias != null) existingEntity.addressAlias = entity.addressAlias;
+                if (entity.addressPriority != null) existingEntity.addressPriority = entity.addressPriority;
+
                 await context.SaveChangesAsync();
             }
-            else 
+            else
             {
                 throw new Exception($"Address with id {entity.Id} not found");
             }
+        }
+    }
+
+    public Task UpdateRangeAsync(IEnumerable<Address> addresses)
+    {
+        using (ZakDbContext context = _dbContextFactory.CreateDbContext())
+        {
+            List<AddressModel> existingAddresses = context.addresses.Include(a => a.coordinates).Include(a => a.addressAlias).Include(a => a.addressPriority).ToList();
+            foreach (var address in addresses)
+            {
+                AddressModel? existingEntity = existingAddresses.FirstOrDefault(a => a.Id == address.Id);
+                if (existingEntity == null)
+                {
+                    throw new Exception($"Address with id {address.Id} not found");
+                }
+
+                context.Entry(existingEntity).CurrentValues.SetValues(address);
+
+                if (address.coordinates != null) existingEntity.coordinates = address.coordinates;
+                if (address.addressAlias != null) existingEntity.addressAlias = address.addressAlias;
+                if (address.addressPriority != null) existingEntity.addressPriority = address.addressPriority;
+
+            }
+            return context.SaveChangesAsync();
         }
     }
 }

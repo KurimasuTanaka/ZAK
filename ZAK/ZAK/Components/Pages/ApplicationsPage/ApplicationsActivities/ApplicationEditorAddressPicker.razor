@@ -1,4 +1,4 @@
-﻿@inject IDao<Address, AddressModel> _addressDataAccess;
+﻿@inject IAddressRepository _addressRepository;
 @inject ISnackbar Snackbar;
 
 <MudPopoverProvider />
@@ -102,7 +102,7 @@
 
     private async Task<TableData<Address>> ServerReload(TableState state, CancellationToken token)
     {
-        List<Address> addresses = (await _addressDataAccess.GetAll()).ToList();
+        List<Address> addresses = (await _addressRepository.GetAllAsync()).ToList();
         if (streetNameSearch != "") addresses = addresses.Where(add => add.streetName.Contains(streetNameSearch)).ToList();
         if (buildingNameSearch != "") addresses = addresses.Where(add => add.building.Contains(buildingNameSearch)).ToList();
         addresses = addresses.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
@@ -138,12 +138,12 @@
         newAddress.streetName = newAddressStreetName;
         newAddress.building = newAddressBuildingName;
 
-        List<Address> addresses = (await _addressDataAccess.GetAll()).ToList();
+        List<Address> addresses = (await _addressRepository.GetAllAsync()).ToList();
         if (addresses.Where(add =>
         add.streetName == newAddress.streetName &&
         add.building == newAddress.building).Count() == 0)
         {
-            await _addressDataAccess.Insert(newAddress);
+            await _addressRepository.CreateAsync(newAddress);
             application.address = newAddress;
         }
         else

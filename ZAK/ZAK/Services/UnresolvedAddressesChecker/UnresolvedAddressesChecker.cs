@@ -15,22 +15,18 @@ public class UnresolvedAddressesInfo
 
 public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
 {
-    IDao<Address, AddressModel>  _addressesDataAccess;
+    IAddressRepository _addressRepository;
     IMapRoutesManager _mapRoutesManager;
 
-    public UnresolvedAddressesChecker(IDao<Address, AddressModel> addressesDataAccess, IMapRoutesManager mapRoutesManager)
+    public UnresolvedAddressesChecker(IAddressRepository addressRepository, IMapRoutesManager mapRoutesManager)
     {
-        _addressesDataAccess = addressesDataAccess;
+        _addressRepository = addressRepository;
         _mapRoutesManager = mapRoutesManager;
     }
 
     public async Task<int> GetNumberOfUnresolvedAddresses()
     {
-        List<Address> addresses = (await _addressesDataAccess.GetAll(
-            query: addresses => addresses.
-                Include(add => add.addressAlias).
-                Include(add => add.coordinates)
-        )).ToList();
+        List<Address> addresses = (await _addressRepository.GetAllAsync()).ToList();
 
         foreach (Address address in addresses)
         {
@@ -49,7 +45,7 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
         }
         List<Address> unres = addresses.Select(a => a).Where(a => a.resolved is false).ToList();
 
-        return unres.Count;  
+        return unres.Count;
     }
 
     public async Task<UnresolvedAddressesInfo> GetUnresolvedAddressesInfo()
@@ -63,11 +59,7 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
 
     public async Task<bool> UnresolvedAddressesExist()
     {
-        List<Address> addresses = (await _addressesDataAccess.GetAll(
-            query: addresses => addresses.
-                Include(add => add.addressAlias).
-                Include(add => add.coordinates)
-        )).ToList();
+        List<Address> addresses = (await _addressRepository.GetAllAsync()).ToList();
 
         foreach (Address address in addresses)
         {
@@ -78,4 +70,3 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
         return unres.Count > 0;
     }
 }
- 

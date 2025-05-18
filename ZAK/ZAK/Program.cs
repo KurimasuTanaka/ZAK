@@ -56,14 +56,14 @@ public class Program
 
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 41));
         builder.Services.AddDbContextFactory<ZakDbContext>(options =>
-        options.UseMySql(connectionString, serverVersion).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+        options.UseMySql(connectionString, serverVersion));
 
         builder.Services.AddTransient<IDao<Brigade, BrigadeModel>, DAO.Dao<Brigade, BrigadeModel>>();
 
         builder.Services.AddTransient<IDao<Coefficient, CoefficientModel>, DAO.Dao<Coefficient, CoefficientModel>>();
         builder.Services.AddTransient<IDao<Application, ApplicationModel>, DAO.Dao<Application, ApplicationModel>>();
         builder.Services.AddTransient<IDao<District, District>, DAO.Dao<District, District>>();
-        //builder.Services.AddTransient<IDao<Address, AddressModel>, DAO.Dao<Address, AddressModel>>();
+        //builder.Services.AddTransient<IAddressRepository, DAO.Dao<Address, AddressModel>>();
         builder.Services.AddTransient<IAddressRepository, AddressRepository>();
 
         builder.Services.AddTransient<IDao<AddressCoordinates, AddressCoordinatesModel>, DAO.Dao<AddressCoordinates, AddressCoordinatesModel>>();

@@ -26,7 +26,7 @@ public class ZakTestBase : IDisposable
 
 
 
-    protected IDao<Address, AddressModel> addressesDao;
+    protected IAddressRepository addressRepository;
     protected IDao<AddressCoordinates, AddressCoordinatesModel> addressCoordinatesDao;
     protected IDao<AddressAlias, AddressAliasModel> addressAliasesDao;
     protected IDao<AddressPriority, AddressPriorityModel> addressPrioritiesDao;
@@ -51,7 +51,7 @@ public class ZakTestBase : IDisposable
         scheduleManagerLogger = new NullLogger<ScheduleManager>();
         applicationsManagerLogger = new NullLogger<ApplicationsLoadingService>();
 
-        addressesDao = new Dao<Address, AddressModel>(dbContextFactory, addressesDaoLogger);
+        addressRepository = new AddressRepository(dbContextFactory);
         addressCoordinatesDao = new Dao<AddressCoordinates, AddressCoordinatesModel>(dbContextFactory, addressCooerdinatesDaoLogger);
         addressAliasesDao = new Dao<AddressAlias, AddressAliasModel>(dbContextFactory, addressAliasesDaoLogger);
         addressPrioritiesDao = new Dao<AddressPriority, AddressPriorityModel>(dbContextFactory, addressPrioritiesDaoLogger);
