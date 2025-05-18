@@ -15,10 +15,10 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
                                                 where EntityT : class
                                                 where TransObjT : class, EntityT, new()
 {
-    private IDbContextFactory<BlazorAppDbContext> _dbContextFactory;
+    private IDbContextFactory<ZakDbContext> _dbContextFactory;
     private ILogger<Dao<TransObjT, EntityT>> _logger;
 
-    public Dao(IDbContextFactory<BlazorAppDbContext> dbContextFactory, ILogger<Dao<TransObjT, EntityT>> logger)
+    public Dao(IDbContextFactory<ZakDbContext> dbContextFactory, ILogger<Dao<TransObjT, EntityT>> logger)
     {
         _dbContextFactory = dbContextFactory;
         _logger = logger;
@@ -28,7 +28,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     {
         _logger.LogInformation($"Deleting entity of type {typeof(EntityT)} with id: {id}");
 
-        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
 
             EntityT? entity = await dbContext.Set<EntityT>().FindAsync(id);
@@ -50,7 +50,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     {
         _logger.LogInformation($"Deleting all entities of type {typeof(EntityT)}");
 
-        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             dbContext.Set<EntityT>().RemoveRange(dbContext.Set<EntityT>());
             await dbContext.SaveChangesAsync();
@@ -63,7 +63,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     {
         _logger.LogInformation($"Deleting range of entities of type {typeof(EntityT)}");
 
-        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             dbContext.Set<EntityT>().RemoveRange(entities.Cast<EntityT>());
             await dbContext.SaveChangesAsync();
@@ -75,7 +75,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     {
         _logger.LogInformation($"Getting all entities of type {typeof(EntityT)}");
 
-        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             if (query is not null) return await query(dbContext.Set<EntityT>()).Select(a => GenericFactory.CreateInstance<TransObjT, EntityT>(a)).ToListAsync();
             else return await dbContext.Set<EntityT>().Select(a => GenericFactory.CreateInstance<TransObjT, EntityT>(a)).ToListAsync();
@@ -84,7 +84,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
 
     public async Task<TransObjT> GetById(int id)
     {
-        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             EntityT? entity = await dbContext.Set<EntityT>().FindAsync(id);
             if (entity is null)
@@ -103,7 +103,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     public async Task Insert(TransObjT entity, Func<IQueryable<EntityT>, TransObjT, DbContext, EntityT>? inputProcessQuery = null)
     {
         _logger.LogInformation($"Inserting new entity of type {typeof(EntityT)}");
-        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             EntityT insertedEntity = null;
             if (inputProcessQuery is not null) insertedEntity = inputProcessQuery(dbContext.Set<EntityT>(), entity, dbContext);
@@ -119,7 +119,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
         _logger.LogInformation($"Inserting range of entities of type {typeof(EntityT)}");
 
 
-        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             if (inputProcessQuery is not null) entities = inputProcessQuery(entities, dbContext);
 
@@ -135,7 +135,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
         Func<EntityT, bool> findPredicate,
         Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null)
     {
-        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>().AsTracking();
 
@@ -171,7 +171,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
         Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null,
         Func<TransObjT, DbContext, TransObjT>? inputDataProccessingQuery = null)
     {
-        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             entity = inputDataProccessingQuery is not null ? inputDataProccessingQuery(entity, dbContext) : entity;
 
@@ -220,7 +220,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     {
         _logger.LogInformation($"Updating range of entities of type {typeof(EntityT)}");
 
-        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>().AsTracking();
 
@@ -253,7 +253,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
 
     async Task IDao<TransObjT, EntityT>.UpdateRange(IEnumerable<TransObjT> entities)
     {
-        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
 
             dbContext.UpdateRange(entities);

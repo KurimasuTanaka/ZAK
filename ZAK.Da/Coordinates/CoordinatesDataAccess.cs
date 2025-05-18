@@ -5,18 +5,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ZAK.DA;
 
-public class CoordinatesDataAccess(BlazorAppDbContext blazorAppDbContext) : ICoordinatesDataAccess
+public class CoordinatesDataAccess(ZakDbContext ZakDbContext) : ICoordinatesDataAccess
 {
-    private readonly BlazorAppDbContext _blazorAppDbContext = blazorAppDbContext;
+    private readonly ZakDbContext _ZakDbContext = ZakDbContext;
 
     public async Task<List<AddressCoordinates>> GetCoordinatesAsync()
     {
-        return await _blazorAppDbContext.coordinates.Select(c => new AddressCoordinates(c)).ToListAsync();
+        return await _ZakDbContext.coordinates.Select(c => new AddressCoordinates(c)).ToListAsync();
     }
 
     public async Task<AddressCoordinates> GetCoordinatesByIdAsync(int id)
     {
-        AddressCoordinatesModel addressCoordinatesModel = await _blazorAppDbContext.coordinates.FindAsync(id);
+        AddressCoordinatesModel addressCoordinatesModel = await _ZakDbContext.coordinates.FindAsync(id);
 
         if (addressCoordinatesModel == null)
         {
@@ -30,18 +30,18 @@ public class CoordinatesDataAccess(BlazorAppDbContext blazorAppDbContext) : ICoo
 
     public async Task<AddressCoordinates> AddCoordinatesAsync(AddressCoordinates coordinates)
     {
-        _blazorAppDbContext.coordinates.Add(coordinates);
-        await _blazorAppDbContext.SaveChangesAsync();
+        _ZakDbContext.coordinates.Add(coordinates);
+        await _ZakDbContext.SaveChangesAsync();
         return coordinates;
     }
 
     public async Task UpdateCoordinatesAsync(AddressCoordinates coordinates)
     {
-        if (_blazorAppDbContext.coordinates.Find(coordinates.addressId) == null)
+        if (_ZakDbContext.coordinates.Find(coordinates.addressId) == null)
         {
             try
             {
-                _blazorAppDbContext.coordinates.Add(coordinates);
+                _ZakDbContext.coordinates.Add(coordinates);
 
             }
             catch (Exception e)
@@ -51,11 +51,11 @@ public class CoordinatesDataAccess(BlazorAppDbContext blazorAppDbContext) : ICoo
         }
         else
         {
-            AddressCoordinatesModel coordinatesModel = await _blazorAppDbContext.coordinates.FindAsync(coordinates.addressId);
+            AddressCoordinatesModel coordinatesModel = await _ZakDbContext.coordinates.FindAsync(coordinates.addressId);
             coordinatesModel.lat = coordinates.lat;
             coordinatesModel.lon = coordinates.lon;
         }
 
-        await _blazorAppDbContext.SaveChangesAsync();
+        await _ZakDbContext.SaveChangesAsync();
     }
 }

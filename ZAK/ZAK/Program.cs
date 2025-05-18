@@ -55,7 +55,7 @@ public class Program
         if (String.IsNullOrEmpty(connectionString)) throw new Exception("Connection string is empty");
 
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 41));
-        builder.Services.AddDbContextFactory<BlazorAppDbContext>(options =>
+        builder.Services.AddDbContextFactory<ZakDbContext>(options =>
         options.UseMySql(connectionString, serverVersion).UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
         builder.Services.AddTransient<IDao<Brigade, BrigadeModel>, DAO.Dao<Brigade, BrigadeModel>>();

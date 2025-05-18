@@ -7,9 +7,9 @@ namespace ZAK.DA;
 public class CoefficientsDataAccess : ICoefficientsDataAccess
 {
 
-    private  readonly BlazorAppDbContext _dbContext;
+    private  readonly ZakDbContext _dbContext;
 
-    public CoefficientsDataAccess(BlazorAppDbContext blazorAppDbContext) => _dbContext = blazorAppDbContext;
+    public CoefficientsDataAccess(ZakDbContext ZakDbContext) => _dbContext = ZakDbContext;
 
     public async Task<List<Coefficient>> GetCoefficients()
     {

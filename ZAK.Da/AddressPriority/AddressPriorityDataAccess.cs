@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ZAK.DA;
 
-public class AddressPriorityDataAccess(BlazorAppDbContext blazorAppDbContext) : IAddressPriorityDataAccess
+public class AddressPriorityDataAccess(ZakDbContext ZakDbContext) : IAddressPriorityDataAccess
 {
-    private readonly BlazorAppDbContext _dbContext = blazorAppDbContext;
+    private readonly ZakDbContext _dbContext = ZakDbContext;
 
     public async Task<List<AddressPriority>> GetAddressPriorities()
     {

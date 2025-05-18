@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ZAK.DA;
 
-public class AddressAliasDataAccess(BlazorAppDbContext blazorAppDbContext) : IAddressAliasDataAccess
+public class AddressAliasDataAccess(ZakDbContext ZakDbContext) : IAddressAliasDataAccess
 {
-    BlazorAppDbContext _context = blazorAppDbContext; 
+    ZakDbContext _context = ZakDbContext; 
     public Task AddAddressAlias(AddressAlias addressAlias)
     {
         throw new NotImplementedException();

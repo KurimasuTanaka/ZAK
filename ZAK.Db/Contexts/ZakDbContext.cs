@@ -4,7 +4,7 @@ using ZAK.Db.Models;
 
 namespace ZAK.Db;
 
-public class BlazorAppDbContext : DbContext
+public class ZakDbContext : DbContext
 {
         public virtual DbSet<ApplicationModel> applications {get; set;}
         public virtual DbSet<BrigadeModel> brigades { get; set; }
@@ -20,8 +20,8 @@ public class BlazorAppDbContext : DbContext
 
         public virtual DbSet<BlackoutModel> shutdowns {get; set;}
 
-        public BlazorAppDbContext() {}
-        public BlazorAppDbContext(DbContextOptions optionsBuilder) : base(optionsBuilder) {}
+        public ZakDbContext() {}
+        public ZakDbContext(DbContextOptions optionsBuilder) : base(optionsBuilder) {}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

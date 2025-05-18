@@ -6,9 +6,9 @@ using ZAK.Db.Models;
 
 public class DistrictDataAccess : IDistrictDataAccess
 {
-    private  readonly BlazorAppDbContext _dbContext;
+    private  readonly ZakDbContext _dbContext;
 
-    public DistrictDataAccess(BlazorAppDbContext blazorAppDbContext) => _dbContext = blazorAppDbContext;
+    public DistrictDataAccess(ZakDbContext ZakDbContext) => _dbContext = ZakDbContext;
 
     public District GetDistrict(string districtName)
     {

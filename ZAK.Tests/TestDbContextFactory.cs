@@ -5,9 +5,9 @@ using ZAK.Db;
 
 namespace ZAK.Tests;
 
-public class TestDbContextFactory : IDbContextFactory<BlazorAppDbContext>
+public class TestDbContextFactory : IDbContextFactory<ZakDbContext>
 {
-    DbContextOptionsBuilder<BlazorAppDbContext> builder = new DbContextOptionsBuilder<BlazorAppDbContext>();
+    DbContextOptionsBuilder<ZakDbContext> builder = new DbContextOptionsBuilder<ZakDbContext>();
     public TestDbContextFactory()
     {
         SqliteConnection connection = new ("Data Source=:memory:");
@@ -16,20 +16,20 @@ public class TestDbContextFactory : IDbContextFactory<BlazorAppDbContext>
         builder.UseSqlite(connection);
         builder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
-        BlazorAppDbContext blazorAppDbContext = new(builder.Options);
-        blazorAppDbContext.Database.EnsureDeleted();
-        blazorAppDbContext.Database.EnsureCreated();
+        ZakDbContext ZakDbContext = new(builder.Options);
+        ZakDbContext.Database.EnsureDeleted();
+        ZakDbContext.Database.EnsureCreated();
     }
 
     public void DeleteTestDb()
     {
-        BlazorAppDbContext blazorAppDbContext = new(builder.Options);
-        blazorAppDbContext.Database.EnsureDeleted();
+        ZakDbContext ZakDbContext = new(builder.Options);
+        ZakDbContext.Database.EnsureDeleted();
     }
 
-    public BlazorAppDbContext CreateDbContext()
+    public ZakDbContext CreateDbContext()
     {
 
-        return new BlazorAppDbContext(builder.Options);
+        return new ZakDbContext(builder.Options);
     }
 }

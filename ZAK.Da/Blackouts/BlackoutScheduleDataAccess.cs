@@ -8,9 +8,9 @@ namespace ZAK.DA;
 
 public class BlackoutScheduleDataAccess : IBlackoutScheduleDataAccess
 {
-    BlazorAppDbContext _dbContext;
+    ZakDbContext _dbContext;
     
-    public BlackoutScheduleDataAccess(BlazorAppDbContext dbContext)
+    public BlackoutScheduleDataAccess(ZakDbContext dbContext)
     {
         _dbContext = dbContext;
     }

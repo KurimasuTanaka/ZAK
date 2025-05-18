@@ -6,9 +6,9 @@ using BlazorApp.Enums;
 
 namespace ZAK.DA;
 
-public class AddressesDataAccess(BlazorAppDbContext dbContext) : IAddressesDataAccess
+public class AddressesDataAccess(ZakDbContext dbContext) : IAddressesDataAccess
 {
-    private  readonly BlazorAppDbContext _dbContext = dbContext;
+    private  readonly ZakDbContext _dbContext = dbContext;
 
     public async Task AddAddress(Address address)
     {

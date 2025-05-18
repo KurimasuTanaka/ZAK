@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ZAK.DA;
 
-public class ApplicationsDataAccess(BlazorAppDbContext blazorAppDbContext) : IApplicationsDataAccess
+public class ApplicationsDataAccess(ZakDbContext ZakDbContext) : IApplicationsDataAccess
 {
-    private readonly BlazorAppDbContext _dbContext = blazorAppDbContext;
+    private readonly ZakDbContext _dbContext = ZakDbContext;
 
     public async Task AddApplications(List<Application> applications)
     {
