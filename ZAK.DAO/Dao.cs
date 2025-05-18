@@ -126,16 +126,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
             dbContext.Set<EntityT>().AddRange(entities.Cast<EntityT>());
             string stack = Environment.StackTrace;
 
-            try
-            {
-
-
-                int amount = dbContext.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                int i = 0;
-            }
+            dbContext.SaveChanges();
         }
     }
 
@@ -146,7 +137,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     {
         await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
-            IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>();
+            IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>().AsTracking();
 
             if (includeQuery is not null) baseQuery = includeQuery(baseQuery);
 
@@ -154,18 +145,20 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
 
             if (oldEntity is null)
             {
-                _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {GetPrimaryKeyValue<EntityT>(dbContext, entity)} not found. Adding new entity...");
+               // _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {GetPrimaryKeyValue<EntityT>(dbContext, entity)} not found. Adding new entity...");
                 await dbContext.Set<EntityT>().AddAsync(entity);
             }
             else
             {
-                _logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {GetPrimaryKeyValue<EntityT>(dbContext, entity)} found. Updating...");
+                //_logger.LogWarning($"Entity of type {typeof(EntityT)} with id: {GetPrimaryKeyValue<EntityT>(dbContext, entity)} found. Updating...");
 
                 foreach (PropertyInfo property in typeof(EntityT).GetProperties().Where(p => p.CanWrite))
                 {
                     property.SetValue(oldEntity, property.GetValue(entity, null), null);
                 }
             }
+            var list = dbContext.ChangeTracker.Entries<ApplicationModel>().ToList();
+
             await dbContext.SaveChangesAsync();
 
         }
@@ -178,7 +171,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
         Func<IQueryable<EntityT>, IQueryable<EntityT>>? includeQuery = null,
         Func<TransObjT, DbContext, TransObjT>? inputDataProccessingQuery = null)
     {
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             entity = inputDataProccessingQuery is not null ? inputDataProccessingQuery(entity, dbContext) : entity;
 
@@ -227,7 +220,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
     {
         _logger.LogInformation($"Updating range of entities of type {typeof(EntityT)}");
 
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
             IQueryable<EntityT> baseQuery = dbContext.Set<EntityT>().AsTracking();
 
@@ -260,7 +253,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
 
     async Task IDao<TransObjT, EntityT>.UpdateRange(IEnumerable<TransObjT> entities)
     {
-        using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
+        await using (BlazorAppDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
 
             dbContext.UpdateRange(entities);

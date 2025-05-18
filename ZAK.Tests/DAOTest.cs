@@ -47,7 +47,7 @@ public class DAOTests : ZakTestBase
 
         Address addressToUpdate = (await addressesDao.GetAll()).FirstOrDefault()!;
         addressToUpdate.streetName = "проспект Володимира Івасюка";
-        await addressesDao.Update(addressToUpdate, addressToUpdate.Id);
+        await addressesDao.Update(addressToUpdate, findPredicate: q => q.Id == addressToUpdate.Id);
 
         Address updatedAddress = (await addressesDao.GetAll()).FirstOrDefault()!;
 

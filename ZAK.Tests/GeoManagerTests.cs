@@ -69,7 +69,7 @@ public class GeoDataManagerTests : ZakTestBase
 
         Address addressToUpdate = (await addressDao.GetAll()).FirstOrDefault()!;
         addressToUpdate.streetName = "проспект Володимира Івасюка";
-        await addressDao.Update(addressToUpdate, addressToUpdate.Id);
+        await addressDao.Update(addressToUpdate, findPredicate: a => a.Id == addressToUpdate.Id);
 
         Address addressToUpdate2 = (await addressDao.GetAll()).FirstOrDefault()!;
 

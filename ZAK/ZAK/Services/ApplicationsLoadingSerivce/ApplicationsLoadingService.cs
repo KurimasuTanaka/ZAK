@@ -74,18 +74,19 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
     {
         _logger.LogInformation("Updating old applications...");
 
-        List<Application> oldApplications = (await _applicationsDataAccess.GetAll()).ToList();
+        List<Application> oldApplications = (await _applicationsDataAccess.GetAll(query: query => query.Include(a => a.address))).ToList();
 
         List<Application> applicationsToUpdate = newApplications.Intersect(oldApplications, new ApplicationComparer()).ToList();
+        
         for (int i = 0; i < applicationsToUpdate.Count; i++)
         {
-            Application newApp = newApplications.Find(app => app.id == applicationsToUpdate[i].id)!;
+            Application newApp = oldApplications.Find(app => app.id == applicationsToUpdate[i].id)!;
 
-            if(applicationsToUpdate[i].address != newApp.address) applicationsToUpdate[i].addresWasUpdated = true;      
-            if(applicationsToUpdate[i].operatorComment != newApp.operatorComment) applicationsToUpdate[i].operatorCommentWasUpdated = true;      
-            if(applicationsToUpdate[i].masterComment != newApp.masterComment) applicationsToUpdate[i].masterCommentWasUpdated = true;      
-            if(applicationsToUpdate[i].stretchingStatus != newApp.stretchingStatus) applicationsToUpdate[i].statusWasUpdated = true;      
-            
+            if (applicationsToUpdate[i].address != newApp.address) applicationsToUpdate[i].addresWasUpdated = true;
+            if (applicationsToUpdate[i].operatorComment != newApp.operatorComment) applicationsToUpdate[i].operatorCommentWasUpdated = true;
+            if (applicationsToUpdate[i].masterComment != newApp.masterComment) applicationsToUpdate[i].masterCommentWasUpdated = true;
+            if (applicationsToUpdate[i].stretchingStatus != newApp.stretchingStatus) applicationsToUpdate[i].statusWasUpdated = true;
+
         }
         await _applicationsDataAccess.UpdateRange(applicationsToUpdate);
         _logger.LogInformation("Old applications updated successfully!");

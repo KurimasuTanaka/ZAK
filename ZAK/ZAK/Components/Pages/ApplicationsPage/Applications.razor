@@ -22,14 +22,16 @@
 
 <Card class="my-3">
   <CardBody>
-    <Switch Label="Show ignored" @bind-Value="showIgnored" @bind-Value:after="Redraw" />
+    <Switch Label="Показувати тільки оновлені" @bind-Value="showUpdated" @bind-Value:after="Redraw" />
+    <Switch Label="Показувати ігноровані" @bind-Value="showIgnored" Disabled="@showUpdated"
+      @bind-Value:after="Redraw" />
     <ApplicationsActivities />
   </CardBody>
 </Card>
 
-<Grid @ref="applicationsGrid" TItem="Application" Class="table table-hover table-bordered" DataProvider="ApplicationsDataProvider"
-  AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true" SelectionMode="GridSelectionMode.Multiple"
-  Responsive="true">
+<Grid @ref="applicationsGrid" TItem="Application" Class="table table-hover table-bordered"
+  DataProvider="ApplicationsDataProvider" AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true"
+  SelectionMode="GridSelectionMode.Multiple" Responsive="true">
 
   @*Id column with set of interactive components*@
   <GridColumn TItem="Application" HeaderText="Id" PropertyName="id" SortKeySelector="item => item.id">
@@ -55,16 +57,26 @@
 
   @*Interactivity column*@
   <GridColumn TItem="Application" HeaderText="Параметры">
-    <CheckBoxInputComponent label="Интересовался статусом" applicationId="@context.id" propertyName="statusWasChecked"
-      propertyValue="@((bool)context["statusWasChecked"])" />
-    <CheckBoxInputComponent label="Срочка" applicationId="@context.id" propertyName="urgent"
-      propertyValue="@((bool)context["urgent"])" />
 
-    <CheckBoxInputComponent label="Есть свободный кабель" applicationId="@context.id" propertyName="freeCable"
-      propertyValue="@((bool)context["freeCable"])" />
+    <Switch 
+      Label="Интересовался статусом" 
+      @bind-Value="@context.statusWasChecked" 
+      @bind-Value:after="@(async () => await applicationsDataAccess.Update(context, findPredicate: x => x.id == context.id))" />
 
-    <CheckBoxInputComponent label="Смена тарифа" applicationId="@context.id" propertyName="tarChangeApp"
-      propertyValue="@((bool)context["tarChangeApp"])" />
+    <Switch 
+      Label="Срочка" 
+      @bind-Value="@context.urgent" 
+      @bind-Value:after="@(async () => await applicationsDataAccess.Update(context, findPredicate: x => x.id == context.id))" />
+
+    <Switch 
+      Label="Есть свободный кабель" 
+      @bind-Value="@context.freeCable" 
+      @bind-Value:after="@(async () => await applicationsDataAccess.Update(context, findPredicate: x => x.id == context.id))" />
+
+    <Switch 
+      Label="Смена тарифа" 
+      @bind-Value="@context.tarChangeApp" 
+      @bind-Value:after="@(async () => await applicationsDataAccess.Update(context, findPredicate: x => x.id == context.id))" />
 
     <hr>
 
@@ -118,6 +130,7 @@
   ApplicationAdditionModal applicationAdditionModal = default!;
   ApplicationEditorModal applicationEditorModal = default!;
   private Grid<Application> applicationsGrid = default!;
+  private bool showUpdated = false;
 
   public async Task Redraw()
   {
@@ -131,11 +144,19 @@
   {
     List<Application> applications;
 
-    if (showIgnored) applications = (await applicationsDataAccess.GetAll(query => query.Include(a =>
-    a.address).ThenInclude(ad => ad.district).AsSplitQuery())).ToList();
-    else applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad =>
-    ad.district).AsSplitQuery())).Where(a => a.ignored == false).ToList();
-
+    if (showUpdated)
+    {
+      applications = (await applicationsDataAccess.GetAll(query => query.Include(a =>
+      a.address).ThenInclude(ad => ad.district).AsSplitQuery())).Select(a => new Application(a)).Where(a => a.addresWasUpdated
+      == true).ToList();
+    }
+    else
+    {
+      if (showIgnored) applications = (await applicationsDataAccess.GetAll(query => query.Include(a =>
+      a.address).ThenInclude(ad => ad.district).AsSplitQuery())).ToList();
+      else applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad =>
+      ad.district).AsSplitQuery())).Where(a => a.ignored == false).ToList();
+    }
     return await Task.FromResult(request.ApplyTo(applications));
   }
 

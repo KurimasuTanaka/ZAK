@@ -130,7 +130,7 @@ public class ApplicationsLoadingTests : ZakTestBase
         applicationsToInsert[1].statusWasChecked = true;
         Application applicationToUpdate = applicationsToInsert[1];
         applicationToUpdate.address = null;
-        await applicationsDao.Update(applicationToUpdate);
+        await applicationsDao.Update(applicationToUpdate, findPredicate: a => a.id == applicationToUpdate.id);
 
         applicationsToInsert.Add(application3);
         applicationsToInsert[1].operatorComment = "Applications comment 2 UPDATED";

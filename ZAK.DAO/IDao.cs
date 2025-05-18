@@ -27,7 +27,7 @@ public interface IDao<TransObjT, EntityT> where TransObjT : class, new() where E
         Func<EntityT, EntityT, EntityT>? updatingFunction = null); 
 
     Task UpdateRange(IEnumerable<TransObjT> entities);
-
+    
     Task Delete(int id);
     Task DeleteAll();
     Task DeleteRange(IEnumerable<TransObjT> entities);
