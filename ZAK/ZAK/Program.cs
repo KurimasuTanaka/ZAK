@@ -57,14 +57,10 @@ public class Program
         builder.Services.AddDbContextFactory<ZakDbContext>(options =>
         options.UseMySql(connectionString, serverVersion));
 
-        //builder.Services.AddTransient<IBrigadeRepository, DAO.Dao<Brigade, BrigadeModel>>();
         builder.Services.AddTransient<IBrigadeRepository, BrigadeRepository>();
         builder.Services.AddTransient<IApplicationReporisory, ApplicationRepository>();
         builder.Services.AddTransient<IAddressRepository, AddressRepository>();
         builder.Services.AddTransient<ICoefficientRepository, CoefficientRepository>();
-
-        builder.Services.AddTransient<IDao<AddressCoordinates, AddressCoordinatesModel>, DAO.Dao<AddressCoordinates, AddressCoordinatesModel>>();
-        builder.Services.AddTransient<IDao<AddressAlias, AddressAliasModel>, DAO.Dao<AddressAlias, AddressAliasModel>>();
 
         builder.Services.AddTransient<IBlackoutScheduleDataAccess, BlackoutScheduleDataAccess>();
 

@@ -9,7 +9,7 @@ using ZAK.Db.Models;
 
 namespace ZAK.Tests;
 
-public class DAOTests : ZakTestBase
+public class DataAccessTests : ZakTestBase
 {
 
     [Fact]
