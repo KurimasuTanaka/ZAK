@@ -8,18 +8,17 @@ namespace ZAK.Services.ScheduleManagerService;
 
 public class ScheduleManager : IScheduleManager
 {
-    IDao<Brigade, BrigadeModel> _brigadeDataAccess;
+    IBrigadeRepository _brigadeRepository;
     ILogger<ScheduleManager> _logger;
-    public ScheduleManager(IDao<Brigade, BrigadeModel> brigadeDataAccess, ILogger<ScheduleManager> logger)
+    public ScheduleManager(IBrigadeRepository brigadeRepository, ILogger<ScheduleManager> logger)
     {
-        _brigadeDataAccess = brigadeDataAccess;
+        _brigadeRepository = brigadeRepository;
         _logger = logger;
     }
 
     private async Task<Brigade> GetBrigadeById(int brigadeId)
     {
-        Brigade? brigade = (await _brigadeDataAccess.GetAll(query => query.Include(b => b.scheduledApplications).ThenInclude(sa =>
-        sa.application))).FirstOrDefault(b => b.id == brigadeId);
+        Brigade? brigade = await _brigadeRepository.GetByIdAsync(brigadeId);
         if (brigade is null) throw new Exception("New brigade not found");
 
         return brigade;
@@ -28,22 +27,24 @@ public class ScheduleManager : IScheduleManager
     {
         _logger.LogInformation($"Updating brigade {brigade.id}...");
 
-        await _brigadeDataAccess.Update(
-        brigade,
-        brigade.id,
-        includeQuery: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application),
-        findPredicate: b => b.id == brigade.id,
-        inputDataProccessingQuery: (b, context) =>
-        {
-            foreach (var schedule in brigade.scheduledApplications)
-            {
-                if (schedule.application != null)
-                {
-                    context.Attach(schedule.application);
-                }
-            }
-            return b;
-        });
+        // await _brigadeDataAccess.Update(
+        // brigade,
+        // brigade.id,
+        // includeQuery: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application),
+        // findPredicate: b => b.id == brigade.id,
+        // inputDataProccessingQuery: (b, context) =>
+        // {
+        //     foreach (var schedule in brigade.scheduledApplications)
+        //     {
+        //         if (schedule.application != null)
+        //         {
+        //             context.Attach(schedule.application);
+        //         }
+        //     }
+        //     return b;
+        // });
+
+        await _brigadeRepository.UpdateAsync(brigade);
 
         _logger.LogInformation($"Brigade {brigade.id} updated!");
     }

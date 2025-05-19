@@ -3,7 +3,7 @@
 @using MudBlazor
 @using ZAK.Services.ScheduleManagerService
 
-@inject IDao<Brigade, BrigadeModel> brigadesDataAccess;
+@inject IBrigadeRepository _brigadeRepository;
 @inject IScheduleManager _brigadesManager;
 @inject ILogger<BrigadeList> _logger;
 
@@ -153,11 +153,7 @@
     {
         _logger.LogInformation("Getting all brigades...");
 
-        brigades = (
-        await brigadesDataAccess.GetAll(
-        query => query.
-        Include(b => b.scheduledApplications).
-        ThenInclude(sa => sa.application).ThenInclude(app => app.address))).ToList();
+        brigades = (await _brigadeRepository.GetAllAsync()).ToList();
 
         if (applications.Count == 0)
         {
@@ -173,11 +169,7 @@
     {
         _logger.LogInformation("Getting all brigades...");
 
-        brigades = (
-        await brigadesDataAccess.GetAll(
-        query => query.
-        Include(b => b.scheduledApplications).
-        ThenInclude(sa => sa.application).ThenInclude(app => app.address))).ToList();
+        brigades = (await _brigadeRepository.GetAllAsync()).ToList();
 
         applications.Clear();
 

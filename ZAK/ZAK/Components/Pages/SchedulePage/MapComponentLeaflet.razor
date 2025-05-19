@@ -12,7 +12,7 @@
 
 @inject IMapRoutesManager mapRoutesManager
 @inject IDao<Application, ApplicationModel> applicationsDataAccess;
-@inject IDao<Brigade, BrigadeModel> brigadesDataAccess;
+@inject IBrigadeRepository _brigadeRepository;
 
 @inject ILogger<MapComponentLeaflet> _logger;
 
@@ -110,7 +110,7 @@
 
         try
         {
-            List<List<Vector2>> routes = await mapRoutesManager.GetRoutesAsync(brigadesDataAccess, applicationsDataAccess);
+            List<List<Vector2>> routes = await mapRoutesManager.GetRoutesAsync(_brigadeRepository, applicationsDataAccess);
             for (int i = 0; i < routes.Count; i++)
             {
                 await DrawPath(routes[i], i);

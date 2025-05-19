@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using ZAK.DA;
 using ZAK.Db;
+using ZAK.Db.Models;
 
-namespace ZAK.Da.Brigades;
+namespace ZAK.DA;
 
 public class BrigadeRepository : IBrigadeRepository
 {
@@ -63,7 +65,7 @@ public class BrigadeRepository : IBrigadeRepository
     {
         using (ZakDbContext context = _dbContextFactory.CreateDbContext())
         {
-            var brigade = await context.brigades.FindAsync(id);
+            var brigade = await context.brigades.Include(a => a.scheduledApplications).FirstOrDefaultAsync(b => b.id == id);
 
             if (brigade is not null)
             {
@@ -76,12 +78,52 @@ public class BrigadeRepository : IBrigadeRepository
         }
     }
 
-    public Task UpdateAsync(Brigade entity)
+    public async Task UpdateAsync(Brigade entity)
     {
         using (ZakDbContext context = _dbContextFactory.CreateDbContext())
         {
-            context.brigades.Update(entity);
-            return context.SaveChangesAsync();
+            BrigadeModel? brigade = await context.brigades.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application).FirstOrDefaultAsync(b => b.id == entity.id);
+
+            if (brigade == null)
+            {
+                throw new Exception($"Brigade with id {entity.id} not found");
+            }
+            else
+            {
+                context.Entry(brigade).CurrentValues.SetValues(entity);
+
+                if (entity.scheduledApplications != null)
+                {
+                    foreach (var scheduledApplication in brigade.scheduledApplications.Except(entity.scheduledApplications, new ScheduledApplicationModelComparer()))
+                    {
+                        context.Entry(scheduledApplication).State = EntityState.Deleted;
+                    }
+
+                    foreach (var scheduledApplication in entity.scheduledApplications.Except(brigade.scheduledApplications, new ScheduledApplicationModelComparer()))
+                    {
+                        brigade.scheduledApplications.Add(scheduledApplication);
+                    }
+                }
+            }
+            await context.SaveChangesAsync();
         }
+    }
+}
+
+internal class ScheduledApplicationModelComparer : IEqualityComparer<ScheduledApplicationModel>
+{
+    public bool Equals(ScheduledApplicationModel? x, ScheduledApplicationModel? y)
+    {
+        if (x is null && y is null) return true;
+        if (x is null || y is null) return false;
+
+        return x.applicationId == y.applicationId && x.scheduledTime == y.scheduledTime && x.brigadeId == y.brigadeId;
+    }
+
+    public int GetHashCode([DisallowNull] ScheduledApplicationModel obj)
+    {
+        if (obj is null) throw new ArgumentNullException(nameof(obj));
+
+        return HashCode.Combine(obj.applicationId, obj.scheduledTime, obj.brigadeId);
     }
 }

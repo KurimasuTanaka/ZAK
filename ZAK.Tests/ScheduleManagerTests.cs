@@ -17,10 +17,10 @@ public class ScheduleManagerTests : ZakTestBase
     public async void InsertNewApplicationToEmptySchedule()
     {
         //Arrange
-        ScheduleManager scheduleManager = new(brigadesDao, scheduleManagerLogger);
+        ScheduleManager scheduleManager = new(brigadeRepository, scheduleManagerLogger);
 
         Brigade emptyBrigade = new();
-        await brigadesDao.Insert(emptyBrigade);
+        await brigadeRepository.CreateAsync(emptyBrigade);
 
 
         //Adding new application to the Db
@@ -33,16 +33,14 @@ public class ScheduleManagerTests : ZakTestBase
         //Act 
 
         Application applicationToAddToSchedule = (await applicationsDao.GetAll()).First();
-        Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
+        Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
         await scheduleManager.ScheduleApplication(applicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleApplication);
 
 
         //Assert
 
-        Brigade editedBrigade = (await brigadesDao.GetAll(
-            query: b => b.Include(b => b.scheduledApplications).ThenInclude(b => b.application)
-        )).First();
+        Brigade editedBrigade = (await brigadeRepository.GetAllWithScheduledApplicationInfoAsync()).First();
 
         Assert.Equal<int>(timeToScheduleApplication, editedBrigade.GetApplicationScheduledOn(3).applicationScheduledTime);
         Assert.Equal<int>(applicationToAddToSchedule.id, editedBrigade.GetApplications().ElementAt(timeToScheduleApplication).id);
@@ -52,10 +50,10 @@ public class ScheduleManagerTests : ZakTestBase
     public async void InsertNewApplicationToScheduleBeforePreviouslyScheduledApplication()
     {
         //Arrange
-        ScheduleManager brigadesManager = new(brigadesDao, scheduleManagerLogger);
+        ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
 
         Brigade emptyBrigade = new();
-        await brigadesDao.Insert(emptyBrigade);
+        await brigadeRepository.CreateAsync(emptyBrigade);
 
         Application newApplication1 = new();
         newApplication1.operatorComment = "First application";
@@ -74,7 +72,7 @@ public class ScheduleManagerTests : ZakTestBase
         Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
         Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
 
-        Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
+        Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
         await brigadesManager.ScheduleApplication(firstApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleFirstApplication);
 
@@ -85,9 +83,7 @@ public class ScheduleManagerTests : ZakTestBase
 
         //Assert
 
-        Brigade editedBrigade = (await brigadesDao.GetAll(
-            query: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application)
-        )).First();
+        Brigade editedBrigade = (await brigadeRepository.GetAllWithScheduledApplicationInfoAsync()).First();
 
         editedBrigade.scheduledApplications.OrderBy(sa => sa.scheduledTime);
 
@@ -101,10 +97,10 @@ public class ScheduleManagerTests : ZakTestBase
     public async void InsertNewApplicationToScheduleAfterPreviouslyScheduledApplication()
     {
         //Arrange
-        ScheduleManager brigadesManager = new(brigadesDao, scheduleManagerLogger);
+        ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
 
         Brigade emptyBrigade = new();
-        await brigadesDao.Insert(emptyBrigade);
+        await brigadeRepository.CreateAsync(emptyBrigade);
 
         Application newApplication1 = new();
         newApplication1.operatorComment = "First application";
@@ -123,7 +119,7 @@ public class ScheduleManagerTests : ZakTestBase
         Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
         Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
 
-        Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
+        Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
         await brigadesManager.ScheduleApplication(firstApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleFirstApplication);
 
@@ -134,9 +130,7 @@ public class ScheduleManagerTests : ZakTestBase
 
         //Assert
 
-        Brigade editedBrigade = (await brigadesDao.GetAll(
-            query: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application)
-        )).First();
+        Brigade editedBrigade = (await brigadeRepository.GetAllWithScheduledApplicationInfoAsync()).First();
 
         editedBrigade.scheduledApplications.OrderBy(sa => sa.scheduledTime);
 
@@ -152,10 +146,10 @@ public class ScheduleManagerTests : ZakTestBase
     public async void ScheduleApplicationOnTimeWhereApplicationAlreadyExist()
     {
         //Arrange
-        ScheduleManager brigadesManager = new(brigadesDao, scheduleManagerLogger);
+        ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
 
         Brigade emptyBrigade = new();
-        await brigadesDao.Insert(emptyBrigade);
+        await brigadeRepository.CreateAsync(emptyBrigade);
 
         Application newApplication1 = new();
         newApplication1.operatorComment = "First application";
@@ -173,7 +167,7 @@ public class ScheduleManagerTests : ZakTestBase
         Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
         Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
 
-        Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
+        Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
         await brigadesManager.ScheduleApplication(firstApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleApplication);
 
@@ -184,9 +178,7 @@ public class ScheduleManagerTests : ZakTestBase
 
         //Assert
 
-        Brigade editedBrigade = (await brigadesDao.GetAll(
-            query: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application)
-        )).First();
+        Brigade editedBrigade = (await brigadeRepository.GetAllWithScheduledApplicationInfoAsync()).First();
 
         editedBrigade.scheduledApplications.OrderBy(sa => sa.scheduledTime);
 
@@ -199,13 +191,13 @@ public class ScheduleManagerTests : ZakTestBase
     public async void MoveScheduledApplicationFromOneBrigadeToAnother()
     {
         //Arrange
-        ScheduleManager brigadesManager = new(brigadesDao, scheduleManagerLogger);
+        ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
 
         Brigade brigade1 = new();
         Brigade brigade2 = new();
 
-        await brigadesDao.Insert(brigade1);
-        await brigadesDao.Insert(brigade2);
+        await brigadeRepository.CreateAsync(brigade1);
+        await brigadeRepository.CreateAsync(brigade2);
 
         Application newApplication1 = new();
         newApplication1.operatorComment = "First application";
@@ -236,8 +228,8 @@ public class ScheduleManagerTests : ZakTestBase
         Application thirdApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
         Application forthApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
 
-        Brigade brigadeToEdit1 = (await brigadesDao.GetAll()).ElementAt(0);
-        Brigade brigadeToEdit2 = (await brigadesDao.GetAll()).ElementAt(1);
+        Brigade brigadeToEdit1 = (await brigadeRepository.GetAllAsync()).ElementAt(0);
+        Brigade brigadeToEdit2 = (await brigadeRepository.GetAllAsync()).ElementAt(1);
 
         await brigadesManager.ScheduleApplication(firstApplicationToAddToSchedule.id, brigadeToEdit2.id, timeToScheduleFirstApplication);
         await brigadesManager.ScheduleApplication(secondApplicationToAddToSchedule.id, brigadeToEdit2.id, timeToScheduleSecondApplication);
@@ -255,9 +247,7 @@ public class ScheduleManagerTests : ZakTestBase
 
         //Assert
 
-        Brigade editedBrigade = (await brigadesDao.GetAll(
-            query: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application)
-        )).ElementAt(1);
+        Brigade editedBrigade = (await brigadeRepository.GetAllWithScheduledApplicationInfoAsync()).ElementAt(1);
 
         editedBrigade.scheduledApplications.OrderBy(sa => sa.scheduledTime);
 
@@ -274,10 +264,10 @@ public class ScheduleManagerTests : ZakTestBase
     public async void DeleteScheduledApplicationFromSchedule()
     {
         //Arrange
-        ScheduleManager brigadesManager = new(brigadesDao, scheduleManagerLogger);
+        ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
 
         Brigade emptyBrigade = new();
-        await brigadesDao.Insert(emptyBrigade);
+        await brigadeRepository.CreateAsync(emptyBrigade);
 
         Application newApplication = new();
         newApplication.operatorComment = "First application";
@@ -290,7 +280,7 @@ public class ScheduleManagerTests : ZakTestBase
 
         Application applicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
 
-        Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
+        Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
         await brigadesManager.ScheduleApplication(applicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleApplication);
 
@@ -300,9 +290,7 @@ public class ScheduleManagerTests : ZakTestBase
 
         //Assert
 
-        Brigade editedBrigade = (await brigadesDao.GetAll(
-            query: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application)
-        )).First();
+        Brigade editedBrigade = (await brigadeRepository.GetAllWithScheduledApplicationInfoAsync()).First();
 
         editedBrigade.scheduledApplications.OrderBy(sa => sa.scheduledTime);
 
@@ -313,11 +301,11 @@ public class ScheduleManagerTests : ZakTestBase
     public async void MoveScheduledApplicationFromOneTimeToAnother()
     {
         //Arrange
-        ScheduleManager brigadesManager = new(brigadesDao, scheduleManagerLogger);
+        ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
 
         Brigade brigade = new();
 
-        await brigadesDao.Insert(brigade);
+        await brigadeRepository.CreateAsync(brigade);
 
         Application newApplication1 = new();
         newApplication1.operatorComment = "First application";
@@ -349,7 +337,7 @@ public class ScheduleManagerTests : ZakTestBase
         Application thirdApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
         Application forthApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(3);
 
-        Brigade brigadeToEdit = (await brigadesDao.GetAll()).ElementAt(0);
+        Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).ElementAt(0);
 
         await brigadesManager.ScheduleApplication(firstApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleFirstApplication);
         await brigadesManager.ScheduleApplication(secondApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleSecondApplication);
@@ -365,9 +353,7 @@ public class ScheduleManagerTests : ZakTestBase
 
         //Assert
 
-        Brigade editedBrigade = (await brigadesDao.GetAll(
-            query: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application)
-        )).ElementAt(0);
+        Brigade editedBrigade = (await brigadeRepository.GetAllWithScheduledApplicationInfoAsync()).First();
 
         editedBrigade.scheduledApplications.OrderBy(sa => sa.scheduledTime);
 
@@ -388,11 +374,11 @@ public class ScheduleManagerTests : ZakTestBase
     public async void MoveEmptyTimeslotFromOneTimeToAnother()
     {
         //Arrange
-        ScheduleManager brigadesManager = new(brigadesDao, scheduleManagerLogger);
+        ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
 
         Brigade brigade = new();
 
-        await brigadesDao.Insert(brigade);
+        await brigadeRepository.CreateAsync(brigade);
 
         Application newApplication1 = new();
         newApplication1.operatorComment = "First application";
@@ -420,7 +406,7 @@ public class ScheduleManagerTests : ZakTestBase
         Application thirdApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
         Application forthApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
 
-        Brigade brigadeToEdit = (await brigadesDao.GetAll()).First();
+        Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
         await brigadesManager.ScheduleApplication(firstApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleFirstApplication);
         await brigadesManager.ScheduleApplication(thirdApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleThirdApplication);
@@ -434,9 +420,7 @@ public class ScheduleManagerTests : ZakTestBase
 
         //Assert
 
-        Brigade editedBrigade = (await brigadesDao.GetAll(
-            query: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application)
-        )).ElementAt(0);
+        Brigade editedBrigade = (await brigadeRepository.GetAllWithScheduledApplicationInfoAsync()).First();
 
         editedBrigade.scheduledApplications.OrderBy(sa => sa.scheduledTime);
 
@@ -455,13 +439,13 @@ public class ScheduleManagerTests : ZakTestBase
     public async void MoveEmptyTimeSlotFromOneBrigadeToAnother()
     {
         //Arrange
-        ScheduleManager brigadesManager = new(brigadesDao, scheduleManagerLogger);
+        ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
 
         Brigade brigade1 = new();
         Brigade brigade2 = new();
 
-        await brigadesDao.Insert(brigade1);
-        await brigadesDao.Insert(brigade2);
+        await brigadeRepository.CreateAsync(brigade1);
+        await brigadeRepository.CreateAsync(brigade2);
 
         Application newApplication1 = new();
         newApplication1.operatorComment = "First application";
@@ -487,8 +471,8 @@ public class ScheduleManagerTests : ZakTestBase
         Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
         Application forthApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
 
-        Brigade brigadeToEdit1 = (await brigadesDao.GetAll()).ElementAt(0);
-        Brigade brigadeToEdit2 = (await brigadesDao.GetAll()).ElementAt(1);
+        Brigade brigadeToEdit1 = (await brigadeRepository.GetAllAsync()).ElementAt(0);
+        Brigade brigadeToEdit2 = (await brigadeRepository.GetAllAsync()).ElementAt(1);
 
         await brigadesManager.ScheduleApplication(firstApplicationToAddToSchedule.id, brigadeToEdit2.id, timeToScheduleFirstApplication);
         await brigadesManager.ScheduleApplication(secondApplicationToAddToSchedule.id, brigadeToEdit2.id, timeToScheduleSecondApplication);
@@ -504,9 +488,7 @@ public class ScheduleManagerTests : ZakTestBase
 
         //Assert
 
-        Brigade editedBrigade = (await brigadesDao.GetAll(
-            query: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application)
-        )).ElementAt(1);
+        Brigade editedBrigade = (await brigadeRepository.GetAllWithScheduledApplicationInfoAsync()).ElementAt(1);
 
         editedBrigade.scheduledApplications.OrderBy(sa => sa.scheduledTime);
 

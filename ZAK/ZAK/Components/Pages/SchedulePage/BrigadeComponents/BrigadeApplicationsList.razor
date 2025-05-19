@@ -2,7 +2,7 @@
 
 @rendermode InteractiveAuto
 
-@inject IDao<Brigade, BrigadeModel> _brigadeDataAccess;
+@inject IBrigadeRepository _brigadeRepository;
 @inject ILogger<BrigadeApplicationsList> _logger;
 
 <MudExpansionPanels MultiExpansion="true">
@@ -42,9 +42,7 @@
 
 
         //Get brigade with scheduled applications
-        Brigade? brigadeToUpdate = (await _brigadeDataAccess.GetAll(
-        query => query.Include(b => b.scheduledApplications)
-        )).FirstOrDefault(b => b.id == brigade.id);
+        Brigade? brigadeToUpdate = await _brigadeRepository.GetByIdAsync(brigade.id);
 
         if (brigadeToUpdate == null) throw new ArgumentNullException(nameof(brigadeToUpdate));
 
@@ -66,11 +64,7 @@
         }
 
         //update brigade
-        await _brigadeDataAccess.Update(
-        brigadeToUpdate,
-        brigadeToUpdate.id,
-        includeQuery: b => b.Include(b => b.scheduledApplications),
-        findPredicate: b => b.id == brigade.id);
+        await _brigadeRepository.UpdateAsync(brigadeToUpdate);
 
         //Update view
         StateHasChanged();
@@ -95,15 +89,9 @@
         scheduledApplication.applicationId = applicationId;
         scheduledApplication.brigadeId = brigade.id;
 
-        Brigade newBrigadeInstance = (await _brigadeDataAccess.GetAll(
-        query => query.Include(b => b.scheduledApplications)
-        )).FirstOrDefault(b => b.id == brigade.id);
+        Brigade newBrigadeInstance = await _brigadeRepository.GetByIdAsync(brigade.id);
 
-        newBrigadeInstance.scheduledApplications.Add(scheduledApplication);
-        await _brigadeDataAccess.Update(
-        newBrigadeInstance,
-        brigade.id,
-        includeQuery: b => b.Include(b => b.scheduledApplications),
-        findPredicate: b => b.id == brigade.id);
+        newBrigadeInstance!.scheduledApplications.Add(scheduledApplication);
+        await _brigadeRepository.UpdateAsync(newBrigadeInstance);
     }
 }

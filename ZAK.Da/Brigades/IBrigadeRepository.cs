@@ -1,7 +1,7 @@
 using System;
 using ZAK.DA;
 
-namespace ZAK.Da.Brigades;
+namespace ZAK.DA;
 
 public interface IBrigadeRepository : IRepository<Brigade, int>
 {

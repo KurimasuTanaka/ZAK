@@ -1,7 +1,7 @@
 ﻿@using ZAK.DA;
 @using MudBlazor;
 
-@inject IDao<Brigade, BrigadeModel> brigadesDataAccess;
+@inject IBrigadeRepository _brigadeRepository;
 @inject ILogger<SchedulePart> _logger
 
 <div style="width: 50%">
@@ -25,7 +25,7 @@
     {
         _logger.LogInformation("Adding new brigade");
 
-        await brigadesDataAccess.Insert(new Brigade());
+        await _brigadeRepository.CreateAsync(new Brigade());
         await brigadeList.ReuploadApplications();
     }
 

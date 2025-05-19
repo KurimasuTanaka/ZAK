@@ -58,7 +58,8 @@ public class Program
         builder.Services.AddDbContextFactory<ZakDbContext>(options =>
         options.UseMySql(connectionString, serverVersion));
 
-        builder.Services.AddTransient<IDao<Brigade, BrigadeModel>, DAO.Dao<Brigade, BrigadeModel>>();
+        //builder.Services.AddTransient<IBrigadeRepository, DAO.Dao<Brigade, BrigadeModel>>();
+        builder.Services.AddTransient<IBrigadeRepository, BrigadeRepository>();
 
         builder.Services.AddTransient<IDao<Coefficient, CoefficientModel>, DAO.Dao<Coefficient, CoefficientModel>>();
         builder.Services.AddTransient<IDao<Application, ApplicationModel>, DAO.Dao<Application, ApplicationModel>>();

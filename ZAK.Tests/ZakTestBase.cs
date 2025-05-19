@@ -27,11 +27,12 @@ public class ZakTestBase : IDisposable
 
 
     protected IAddressRepository addressRepository;
+    protected IBrigadeRepository brigadeRepository;
     protected IDao<AddressCoordinates, AddressCoordinatesModel> addressCoordinatesDao;
     protected IDao<AddressAlias, AddressAliasModel> addressAliasesDao;
     protected IDao<AddressPriority, AddressPriorityModel> addressPrioritiesDao;
     protected IDao<Application, ApplicationModel> applicationsDao;
-    protected IDao<Brigade, BrigadeModel> brigadesDao;
+    protected IBrigadeRepository brigadesDao;
     protected IDao<Coefficient, CoefficientModel> coefficientsDao;
     protected IDao<ZAK.DA.District, Db.Models.DistrictModel> districtsDao;
 
@@ -47,18 +48,18 @@ public class ZakTestBase : IDisposable
         applicationsDaoLogger = new NullLogger<Dao<Application, ApplicationModel>>();
         brigadesDaoLogger = new NullLogger<Dao<Brigade, BrigadeModel>>();
         coeficientsDaoLogger = new NullLogger<Dao<Coefficient, CoefficientModel>>();
-        districtsDaoLogger = new NullLogger<Dao<ZAK.DA.District, Db.Models.DistrictModel>>();
+        districtsDaoLogger = new NullLogger<Dao<District, DistrictModel>>();
         scheduleManagerLogger = new NullLogger<ScheduleManager>();
         applicationsManagerLogger = new NullLogger<ApplicationsLoadingService>();
 
         addressRepository = new AddressRepository(dbContextFactory);
+        brigadeRepository = new BrigadeRepository(dbContextFactory);
         addressCoordinatesDao = new Dao<AddressCoordinates, AddressCoordinatesModel>(dbContextFactory, addressCooerdinatesDaoLogger);
         addressAliasesDao = new Dao<AddressAlias, AddressAliasModel>(dbContextFactory, addressAliasesDaoLogger);
         addressPrioritiesDao = new Dao<AddressPriority, AddressPriorityModel>(dbContextFactory, addressPrioritiesDaoLogger);
         applicationsDao = new Dao<Application, ApplicationModel>(dbContextFactory, applicationsDaoLogger);
-        brigadesDao = new Dao<Brigade, BrigadeModel>(dbContextFactory, brigadesDaoLogger);
         coefficientsDao = new Dao<Coefficient, CoefficientModel>(dbContextFactory, coeficientsDaoLogger);
-        districtsDao = new Dao<ZAK.DA.District, Db.Models.DistrictModel>(dbContextFactory, districtsDaoLogger);
+        districtsDao = new Dao<District, DistrictModel>(dbContextFactory, districtsDaoLogger);
     }
 
     public void Dispose()

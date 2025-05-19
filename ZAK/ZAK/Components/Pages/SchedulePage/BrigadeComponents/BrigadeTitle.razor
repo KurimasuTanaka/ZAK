@@ -1,6 +1,6 @@
 @inject IJSRuntime Js
 
-@inject IDao<Brigade, BrigadeModel> _brigadesDataAccess;
+@inject IBrigadeRepository _brigadeRepository;
 @inject ILogger<BrigadeTitle> _logger;
 
 
@@ -29,7 +29,7 @@
     {
         _logger.LogInformation($"Deleting brigade with id {brigade.id}...");
 
-        await _brigadesDataAccess.Delete(brigade.id);
+        await _brigadeRepository.DeleteAsync(brigade.id);
 
         _logger.LogInformation($"Brigade with id {brigade.id} deleted successfully");
     }
@@ -70,9 +70,9 @@
     {
         _logger.LogInformation($"Brigade with id {brigade.id} changing number to {value}...");
 
-        Brigade newBrigadeInstance = await _brigadesDataAccess.GetById(brigade.id);
+        Brigade newBrigadeInstance = await _brigadeRepository.GetByIdAsync(brigade.id);
         newBrigadeInstance.brigadeNumber = value;
-        await _brigadesDataAccess.Update(newBrigadeInstance, findPredicate: x => x.id == brigade.id);
+        await _brigadeRepository.UpdateAsync(newBrigadeInstance);
 
         _logger.LogInformation($"Brigade with id {brigade.id} changed number successfully to {value}");
     }

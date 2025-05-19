@@ -1,4 +1,4 @@
-﻿@inject IDao<Brigade, BrigadeModel> brigadesDataAccess;
+﻿@inject IBrigadeRepository _brigadeRepository;
 
 <Dropdown Color="DropdownColor.Secondary" OnShown="UploadBrigades">
     <DropdownToggleButton>Видалити бригаду</DropdownToggleButton>
@@ -20,13 +20,13 @@
 
     public async Task UploadBrigades()
     {
-        brigades = (await brigadesDataAccess.GetAll()).ToList();
+        brigades = (await _brigadeRepository.GetAllAsync()).ToList();
         brigades.Order();
     }
 
     public async Task DeleteBrigade(int brigadeNumber)
     {
-        await brigadesDataAccess.Delete(brigades[brigadeNumber].id);
+        await _brigadeRepository.DeleteAsync(brigades[brigadeNumber].id);
         await brigadeWasDeleted.InvokeAsync();
     }
 }

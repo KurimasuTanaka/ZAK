@@ -33,18 +33,12 @@ public class MapRoutesManager : IMapRoutesManager
 
     }
 
-    public async Task<List<List<Vector2>>> GetRoutesAsync(IDao<Brigade, BrigadeModel> brigadesDataAccess, IDao<Application,ApplicationModel> applicationsDataAccess)
+    public async Task<List<List<Vector2>>> GetRoutesAsync(IBrigadeRepository brigadesDataAccess, IDao<Application,ApplicationModel> applicationsDataAccess)
     {
 
         _logger.LogInformation("Populationg brigades with applications");
         //Populate brigades with applications
-        List<Brigade> brigades =  (await brigadesDataAccess.GetAll(
-            query: brigades => 
-                brigades.Include(b => b.scheduledApplications).
-                    ThenInclude(sa => sa.application).
-                    ThenInclude(app => app.address).
-                    ThenInclude(add => add.coordinates)
-        )).ToList();
+        List<Brigade> brigades =  (await brigadesDataAccess.GetAllAsync()).ToList();
         
         _logger.LogInformation("Removing empty adresses and creating lists of scheduled addresses...");
 
