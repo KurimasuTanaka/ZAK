@@ -60,12 +60,8 @@ public class Program
         //builder.Services.AddTransient<IBrigadeRepository, DAO.Dao<Brigade, BrigadeModel>>();
         builder.Services.AddTransient<IBrigadeRepository, BrigadeRepository>();
         builder.Services.AddTransient<IApplicationReporisory, ApplicationRepository>();
-
-        builder.Services.AddTransient<IDao<Coefficient, CoefficientModel>, DAO.Dao<Coefficient, CoefficientModel>>();
-    
-        builder.Services.AddTransient<IDao<District, District>, DAO.Dao<District, District>>();
-        //builder.Services.AddTransient<IAddressRepository, DAO.Dao<Address, AddressModel>>();
         builder.Services.AddTransient<IAddressRepository, AddressRepository>();
+        builder.Services.AddTransient<ICoefficientRepository, CoefficientRepository>();
 
         builder.Services.AddTransient<IDao<AddressCoordinates, AddressCoordinatesModel>, DAO.Dao<AddressCoordinates, AddressCoordinatesModel>>();
         builder.Services.AddTransient<IDao<AddressAlias, AddressAliasModel>, DAO.Dao<AddressAlias, AddressAliasModel>>();

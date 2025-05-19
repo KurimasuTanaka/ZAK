@@ -33,7 +33,6 @@ public class ZakTestBase : IDisposable
     protected IDao<AddressAlias, AddressAliasModel> addressAliasesDao;
     protected IDao<AddressPriority, AddressPriorityModel> addressPrioritiesDao;
     protected IBrigadeRepository brigadesDao;
-    protected IDao<Coefficient, CoefficientModel> coefficientsDao;
     protected IDao<ZAK.DA.District, Db.Models.DistrictModel> districtsDao;
 
 
@@ -59,7 +58,6 @@ public class ZakTestBase : IDisposable
         addressCoordinatesDao = new Dao<AddressCoordinates, AddressCoordinatesModel>(dbContextFactory, addressCooerdinatesDaoLogger);
         addressAliasesDao = new Dao<AddressAlias, AddressAliasModel>(dbContextFactory, addressAliasesDaoLogger);
         addressPrioritiesDao = new Dao<AddressPriority, AddressPriorityModel>(dbContextFactory, addressPrioritiesDaoLogger);
-        coefficientsDao = new Dao<Coefficient, CoefficientModel>(dbContextFactory, coeficientsDaoLogger);
         districtsDao = new Dao<District, DistrictModel>(dbContextFactory, districtsDaoLogger);
     }
 

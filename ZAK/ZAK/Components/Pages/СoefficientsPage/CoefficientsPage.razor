@@ -5,7 +5,7 @@
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
 
-@inject IDao<Coefficient, CoefficientModel> _coefficientsDataAccess; 
+@inject ICoefficientRepository _coefficientRepository; 
 
 <table>
         @foreach(Coefficient coefficient in coefficients)
@@ -21,6 +21,6 @@
 
     override async protected Task OnParametersSetAsync()
     {
-        coefficients =  (await _coefficientsDataAccess.GetAll()).ToList();
+        coefficients =  (await _coefficientRepository.GetAllAsync()).ToList();
     }
 }

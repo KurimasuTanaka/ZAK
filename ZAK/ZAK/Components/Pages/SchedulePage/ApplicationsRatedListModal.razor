@@ -2,7 +2,7 @@
 @using ZAK.Components.Pages.ApplicationsPage;
 
 @inject IApplicationReporisory _applicationRepository;
-@inject IDao<Coefficient, CoefficientModel> coefficientsDataAccess;
+@inject ICoefficientRepository _coefficientRepository;
 @inject IBlackoutScheduleDataAccess blackoutScheduleDataAccess;
 
 <Modal @ref=applicationsList Title="Выбрать заявку" Size="ModalSize.ExtraLarge">
@@ -131,7 +131,7 @@
         applications = applications.Where(x => !scheduledApplications.Select(a => a.id).Contains(x.id)).ToList();
 
         //Get priorities from db
-        Dictionary<string, double> priorities = (await coefficientsDataAccess.GetAll()).ToDictionary(x => x.parameter, x => x.coefficient);
+        Dictionary<string, double> priorities = (await _coefficientRepository.GetAllAsync()).ToDictionary(x => x.parameter, x => x.coefficient);
 
         //Calculate priority for all applications
         for (int i = 0; i < applications.Count; i++) applications[i].CalculateApplicationPriorityLevel(priorities,
