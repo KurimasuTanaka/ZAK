@@ -1,7 +1,7 @@
 ﻿@using ZAK.DA;
 
-@inject IDao<Application, ApplicationModel> applicationsDataAccess;
-
+@inject IApplicationReporisory _applicationRepository;
+@inject IAddressRepository _addressRepository;
 
 <Modal @ref="modal" Title="Додавання нової заявки" Size="ModalSize.Large">
     <BodyTemplate>
@@ -20,27 +20,19 @@
 
     async void FormSubmitted()
     {
-        await applicationsDataAccess.Insert(
-        application,
-        inputProcessQuery: (query, newApplication, dbContext) =>
+        if(application.address is not null)
         {
-            if (newApplication.address is not null)
+            var applicationAddress = (await _addressRepository.GetAllAsync()).
+                FirstOrDefault(add => (application.address.building == add.building) && (application.address.streetName == add.streetName));
+            if(applicationAddress is null)
             {
-
-                Address? address = dbContext.Set<AddressModel>()!.
-                    Where(add => add.streetName == newApplication.address.streetName && add.building == newApplication.address.building).
-                    Select(add => new Address(add)).FirstOrDefault();
-
-                if (address is null)
-                {
-                    newApplication.address = dbContext.Set<AddressModel>().Add(newApplication.address).Entity;
-                }
-                dbContext.Attach<AddressModel>(newApplication.address);
-
+                await _addressRepository.CreateAsync(new Address(application.address));
             }
 
-            return newApplication;
-        });
+        }
+
+        await _applicationRepository.CreateAsync(
+        application);
 
         await modal.HideAsync();
         await ApplicationsInformationWasChanged.InvokeAsync();

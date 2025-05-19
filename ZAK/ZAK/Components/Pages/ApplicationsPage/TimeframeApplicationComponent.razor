@@ -1,6 +1,6 @@
 ﻿@using ZAK.DA;
 
-@inject IDao<Application, ApplicationModel> applicationsDataAccess;
+@inject IApplicationReporisory _applicationRepository;
 
 <Card>
     <ul class="list-group list-group-flush">
@@ -64,34 +64,34 @@
 
     private async Task UpdateStrartHour()
     {
-        Application application = await applicationsDataAccess.GetById(applicationId);
+        Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.startHour = startHour;
-        await applicationsDataAccess.Update(application, findPredicate: x => x.id == applicationId);
+        await _applicationRepository.UpdateAsync(application);
 
         result = $"С {startHour} до {endHour}";
     }
 
     private async Task UpdateEndHour()
     {
-        Application application = await applicationsDataAccess.GetById(applicationId);
+        Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.endHour = endHour;
-        await applicationsDataAccess.Update(application, findPredicate: x => x.id == applicationId);
+        await _applicationRepository.UpdateAsync(application);
 
         result = $"С {startHour} до {endHour}";
     }
 
     private async Task UpdateFirstPartTimeframe()
     {
-        Application application = await applicationsDataAccess.GetById(applicationId);
+        Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.firstPart = true;
-        await applicationsDataAccess.Update(application, findPredicate: x => x.id == applicationId);
+        await _applicationRepository.UpdateAsync(application);
         result = "В первой половине";
     }
     private async Task UpdateSecondPartTimeframe()
     {
-        Application application = await applicationsDataAccess.GetById(applicationId);
+        Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.secondPart = true;
-        await applicationsDataAccess.Update(application, findPredicate: x => x.id == applicationId);
+        await _applicationRepository.UpdateAsync(application);
         result = "Во второй половине";
     }
 }

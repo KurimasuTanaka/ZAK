@@ -1,4 +1,4 @@
-﻿@inject IDao<Application, ApplicationModel> _applicationsDataAccess;
+﻿@inject IApplicationReporisory _applicationRepository;
 
 @if (application.applicationWasUpdated)
 {
@@ -42,8 +42,7 @@
         application.statusWasUpdated = false;
         application.addresWasUpdated = false;
 
-        await _applicationsDataAccess.Update(
-            application, 
-            findPredicate: x => x.id == application.id);
+        await _applicationRepository.UpdateAsync(
+            application);
     }
 }

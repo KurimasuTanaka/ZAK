@@ -1,6 +1,5 @@
 using ApplicationsScrappingModule;
 using BlazorApp;
-using BlazorApp.ApplicationsLoader;
 using ZAK.DA;
 using BlazorApp.GeoDataManager;
 using Microsoft.EntityFrameworkCore;
@@ -60,9 +59,10 @@ public class Program
 
         //builder.Services.AddTransient<IBrigadeRepository, DAO.Dao<Brigade, BrigadeModel>>();
         builder.Services.AddTransient<IBrigadeRepository, BrigadeRepository>();
+        builder.Services.AddTransient<IApplicationReporisory, ApplicationRepository>();
 
         builder.Services.AddTransient<IDao<Coefficient, CoefficientModel>, DAO.Dao<Coefficient, CoefficientModel>>();
-        builder.Services.AddTransient<IDao<Application, ApplicationModel>, DAO.Dao<Application, ApplicationModel>>();
+    
         builder.Services.AddTransient<IDao<District, District>, DAO.Dao<District, District>>();
         //builder.Services.AddTransient<IAddressRepository, DAO.Dao<Address, AddressModel>>();
         builder.Services.AddTransient<IAddressRepository, AddressRepository>();
@@ -75,7 +75,6 @@ public class Program
         builder.Services.AddScoped<IFileLoader, FileLoader>();
         builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
-        builder.Services.AddScoped<IApplicationsLoader, ApplicationsLoader>();
         
         builder.Services.AddTransient<IApplicationsLoadingService, ApplicationsLoadingService>();
         builder.Services.AddTransient<IScheduleManager, ScheduleManager>();

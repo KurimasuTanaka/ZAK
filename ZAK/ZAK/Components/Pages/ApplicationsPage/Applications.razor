@@ -11,7 +11,7 @@
 @using ZAK.Components.Pages.ApplicationsPage.ApplicationsActivities;
 
 @using System.Diagnostics;
-@inject IDao<Application, ApplicationModel> applicationsDataAccess;
+@inject IApplicationReporisory _applicationRepository;
 @inject IWebHostEnvironment enviroment;
 
 @inject ILogger<Applications> _logger;
@@ -58,25 +58,17 @@
   @*Interactivity column*@
   <GridColumn TItem="Application" HeaderText="Параметры">
 
-    <Switch 
-      Label="Интересовался статусом" 
-      @bind-Value="@context.statusWasChecked" 
-      @bind-Value:after="@(async () => await applicationsDataAccess.Update(context, findPredicate: x => x.id == context.id))" />
+    <Switch Label="Интересовался статусом" @bind-Value="@context.statusWasChecked"
+      @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
-    <Switch 
-      Label="Срочка" 
-      @bind-Value="@context.urgent" 
-      @bind-Value:after="@(async () => await applicationsDataAccess.Update(context, findPredicate: x => x.id == context.id))" />
+    <Switch Label="Срочка" @bind-Value="@context.urgent"
+      @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
-    <Switch 
-      Label="Есть свободный кабель" 
-      @bind-Value="@context.freeCable" 
-      @bind-Value:after="@(async () => await applicationsDataAccess.Update(context, findPredicate: x => x.id == context.id))" />
+    <Switch Label="Есть свободный кабель" @bind-Value="@context.freeCable"
+      @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
-    <Switch 
-      Label="Смена тарифа" 
-      @bind-Value="@context.tarChangeApp" 
-      @bind-Value:after="@(async () => await applicationsDataAccess.Update(context, findPredicate: x => x.id == context.id))" />
+    <Switch Label="Смена тарифа" @bind-Value="@context.tarChangeApp"
+      @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
     <hr>
 
@@ -146,16 +138,15 @@
 
     if (showUpdated)
     {
-      applications = (await applicationsDataAccess.GetAll(query => query.Include(a =>
-      a.address).ThenInclude(ad => ad.district).AsSplitQuery())).Select(a => new Application(a)).Where(a => a.addresWasUpdated
-      == true).ToList();
+      applications = (await _applicationRepository.GetAllUpdatedAsync()).ToList();
     }
     else
     {
-      if (showIgnored) applications = (await applicationsDataAccess.GetAll(query => query.Include(a =>
-      a.address).ThenInclude(ad => ad.district).AsSplitQuery())).ToList();
-      else applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad =>
-      ad.district).AsSplitQuery())).Where(a => a.ignored == false).ToList();
+      if (showIgnored) applications = (await _applicationRepository.GetAllAsync()).ToList();
+      else
+      {
+        applications = (await _applicationRepository.GetAllWithIgnoringAsync()).ToList();
+      }
     }
     return await Task.FromResult(request.ApplyTo(applications));
   }

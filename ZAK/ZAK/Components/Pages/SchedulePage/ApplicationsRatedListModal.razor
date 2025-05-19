@@ -1,7 +1,7 @@
 ﻿@using ZAK.DA
 @using ZAK.Components.Pages.ApplicationsPage;
 
-@inject IDao<Application, ApplicationModel> applicationsDataAccess;
+@inject IApplicationReporisory _applicationRepository;
 @inject IDao<Coefficient, CoefficientModel> coefficientsDataAccess;
 @inject IBlackoutScheduleDataAccess blackoutScheduleDataAccess;
 
@@ -114,7 +114,7 @@
         scheduledTime = scheduledApplication.applicationScheduledTime;
         scheduledBrigadeId = scheduledApplication.brigadeId;
 
-        applications  =  (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(ad => ad.district))).Where(a => a.ignored == false).ToList();
+        applications  =  (await _applicationRepository.GetAllWithIgnoringAsync()).ToList();
         
         //this.applicationWasChosen = applicationWasChosen;
 

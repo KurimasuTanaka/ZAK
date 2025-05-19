@@ -1,7 +1,7 @@
 ﻿@using System.ComponentModel.DataAnnotations;
 @using ZAK.DA;
 
-@inject IDao<Application, ApplicationModel> applicationsDataAccess;
+@inject IApplicationReporisory _applicationRepository;
 
 <span>Кількість днів для підключення</span>
 <InputNumber @bind-Value="daysForConnection" @bind-Value:after="UpdateDbData" />
@@ -14,9 +14,9 @@
 
     private async Task UpdateDbData() {
 
-        Application application = await applicationsDataAccess.GetById(applicationId);
+        Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.maxDaysForConnection = daysForConnection;
-        await applicationsDataAccess.Update(application, findPredicate: x => x.id == applicationId);
+        await _applicationRepository.UpdateAsync(application);
     }
         
 }

@@ -26,11 +26,11 @@ public class DAOTests : ZakTestBase
         Application newApplication = new();
         newApplication.address = newAddress;
 
-        await applicationsDao.Insert(newApplication);
+        await applicationRepository.CreateAsync(newApplication);
 
         //Assert
         Assert.Single(await addressRepository.GetAllAsync());
-        Assert.Single(await applicationsDao.GetAll());
+        Assert.Single(await applicationRepository.GetAllAsync());
     }
 
     [Fact]
@@ -96,26 +96,17 @@ public class DAOTests : ZakTestBase
         Application oldApplication = new();
         oldApplication.address = sharedAddress;
 
-        await applicationsDao.Insert(oldApplication);
+        await applicationRepository.CreateAsync(oldApplication);
 
         //Act
 
         Application newApplication = new();
         newApplication.address = sharedAddress;
 
-        Address sharedAddressToEdit = (await addressRepository.GetAllAsync()).FirstOrDefault()!;
-
-
-        await applicationsDao.Insert(newApplication,
-            inputProcessQuery: (query, newApplication, dbContext) =>
-            {
-                dbContext.Attach(newApplication.address);
-                return newApplication;
-            }
-        );
+        await applicationRepository.CreateAsync(newApplication);
 
         //Assert
-        Assert.Equal(2, (await applicationsDao.GetAll()).Count());
+        Assert.Equal(2, (await applicationRepository.GetAllAsync()).Count());
         Assert.Single(await addressRepository.GetAllAsync());
     }
 
@@ -136,33 +127,19 @@ public class DAOTests : ZakTestBase
 
         List<Application> applications = new([application1, application2, application3]);
 
-        await applicationsDao.InsertRange(applications);
+        await applicationRepository.CreateRangeAsync(applications);
 
-        List<Application> applicationsFromDb = (await applicationsDao.GetAll()).ToList();
+        List<Application> applicationsFromDb = (await applicationRepository.GetAllAsync()).ToList();
 
         applicationsFromDb.RemoveAt(1);
 
         applicationsFromDb.ElementAt(0).operatorComment = "Comment 1 Edited";
         applicationsFromDb.ElementAt(1).operatorComment = "Comment 3 Edited";
 
-        await applicationsDao.UpdateRange(
-            applicationsFromDb,
-            findPredicate: a =>
-            {
-                foreach (Application ad in applicationsFromDb) if (a.id == ad.id) return true;
-                return false;
-            },
-            updatingFunction: (oldApplication, newApplication) =>
-            {
-                oldApplication.operatorComment = newApplication.operatorComment;
-                return oldApplication;
-            },
-            enitySeach: (entityArray, oldEntity) =>
-            {
-                return entityArray.FirstOrDefault(e => e.id == oldEntity.id)!;
-            });
+        await applicationRepository.UpdateRangeAsync(
+            applicationsFromDb);
 
-        applicationsFromDb = (await applicationsDao.GetAll()).ToList();
+        applicationsFromDb = (await applicationRepository.GetAllAsync()).ToList();
 
         //Assert
         Assert.Equal(3, applicationsFromDb.Count());

@@ -19,11 +19,15 @@ public class MapRoutesManager : IMapRoutesManager
     private Router _router;
 
     private ILogger<MapRoutesManager> _logger;
+    private readonly IBrigadeRepository _brigadeRepository;
+    private readonly IApplicationReporisory _applicationRepository;
 
-    public MapRoutesManager(ILogger<MapRoutesManager> logger)
+    public MapRoutesManager(ILogger<MapRoutesManager> logger, IBrigadeRepository brigadeRepository, IApplicationReporisory applicationReporisory)
     {
         _logger = logger;
-    
+        _brigadeRepository = brigadeRepository;
+        _applicationRepository = applicationReporisory;
+
         _logger.LogInformation("Loading OSM data...");
         using (var stream = new FileInfo(@"./../../kyiv.osm.pbf").OpenRead())
         {
@@ -33,12 +37,12 @@ public class MapRoutesManager : IMapRoutesManager
 
     }
 
-    public async Task<List<List<Vector2>>> GetRoutesAsync(IBrigadeRepository brigadesDataAccess, IDao<Application,ApplicationModel> applicationsDataAccess)
+    public async Task<List<List<Vector2>>> GetRoutesAsync()
     {
 
         _logger.LogInformation("Populationg brigades with applications");
         //Populate brigades with applications
-        List<Brigade> brigades =  (await brigadesDataAccess.GetAllAsync()).ToList();
+        List<Brigade> brigades =  (await _brigadeRepository.GetAllAsync()).ToList();
         
         _logger.LogInformation("Removing empty adresses and creating lists of scheduled addresses...");
 

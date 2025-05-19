@@ -17,11 +17,11 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
     private readonly IFileLoader _fileLoader;
     private readonly IApplicationsScrapper _applicationScrapper;
 
-    private readonly IDao<Application, ZAK.Db.Models.ApplicationModel> _applicationsDataAccess;
+    private readonly IApplicationReporisory _applicationRepository;
     private readonly IAddressRepository _addressRepository;
 
     public ApplicationsLoadingService(
-        IDao<Application, Db.Models.ApplicationModel> applicationsDataAccess,
+        IApplicationReporisory applicationReporisory,
         IAddressRepository addressRepository,
         IApplicationsScrapper applicationsScrapper,
         IFileLoader fileLoader,
@@ -30,7 +30,7 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         _fileLoader = fileLoader;
         _logger = logger;
         _applicationScrapper = applicationsScrapper;
-        _applicationsDataAccess = applicationsDataAccess;
+        _applicationRepository = applicationReporisory;
         _addressRepository = addressRepository;
     }
 
@@ -61,11 +61,11 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
     {
         _logger.LogInformation("Deleting old applications...");
 
-        List<Application> oldApplications = (await _applicationsDataAccess.GetAll()).ToList();
+        List<Application> oldApplications = (await _applicationRepository.GetAllAsync()).ToList();
 
         List<Application> applicationsToDelete = oldApplications.Except(newApplications, new ApplicationComparer()).ToList();
 
-        await _applicationsDataAccess.DeleteRange(applicationsToDelete);
+        await _applicationRepository.DeleteRangeAsync(applicationsToDelete);
 
         _logger.LogInformation("Old applications deleted successfully!");
     }
@@ -74,7 +74,7 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
     {
         _logger.LogInformation("Updating old applications...");
 
-        List<Application> oldApplications = (await _applicationsDataAccess.GetAll(query: query => query.Include(a => a.address))).ToList();
+        List<Application> oldApplications = (await _applicationRepository.GetAllAsync()).ToList();
 
         List<Application> applicationsToUpdate = newApplications.Intersect(oldApplications, new ApplicationComparer()).ToList();
         
@@ -88,7 +88,7 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
             if (applicationsToUpdate[i].stretchingStatus != newApp.stretchingStatus) applicationsToUpdate[i].statusWasUpdated = true;
 
         }
-        await _applicationsDataAccess.UpdateRange(applicationsToUpdate);
+        await _applicationRepository.UpdateRangeAsync(applicationsToUpdate);
         _logger.LogInformation("Old applications updated successfully!");
     }
 
@@ -113,42 +113,44 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
 
         //Insert applications with addresses
 
-        List<Application> oldApplications = (await _applicationsDataAccess.GetAll()).ToList();
+        List<Application> oldApplications = (await _applicationRepository.GetAllAsync()).ToList();
 
         List<Application> newApplications = new List<Application>();
         if (oldApplications.Count() is not 0) newApplications = parsedApplications.Except(oldApplications, new ApplicationComparer()).ToList();
         else newApplications = parsedApplications;
 
-        await _applicationsDataAccess.InsertRange(
-            newApplications,
-            inputProcessQuery: (applications, dbContext) =>
-            {
-                List<Address> addresses = dbContext.Set<AddressModel>().Select(a => new Address(a)).ToList();
+        // await _applicationsDataAccess.InsertRange(
+        //     newApplications,
+        //     inputProcessQuery: (applications, dbContext) =>
+        //     {
+        //         List<Address> addresses = dbContext.Set<AddressModel>().Select(a => new Address(a)).ToList();
 
-                foreach (Application app in applications)
-                {
-                    Address? addressFromDb = addresses.Find(add =>
-                    {
-                        if (app.address.streetName == add.streetName && app.address.building == add.building)
-                        {
-                            return true;
-                        }
-                        return false;
-                    });
+        //         foreach (Application app in applications)
+        //         {
+        //             Address? addressFromDb = addresses.Find(add =>
+        //             {
+        //                 if (app.address.streetName == add.streetName && app.address.building == add.building)
+        //                 {
+        //                     return true;
+        //                 }
+        //                 return false;
+        //             });
 
-                    if (addressFromDb is not null)
-                    {
-                        app.address = addressFromDb;
+        //             if (addressFromDb is not null)
+        //             {
+        //                 app.address = addressFromDb;
 
-                        //var entities = dbContext.Set<AddressModel>().Local.ToList();
+        //                 //var entities = dbContext.Set<AddressModel>().Local.ToList();
 
-                        //dbContext.Attach(app.address);
-                    }
+        //                 //dbContext.Attach(app.address);
+        //             }
 
-                }
-                return applications;
-            }
-        );
+        //         }
+        //         return applications;
+        //     }
+        // );
+
+        await _applicationRepository.CreateRangeAsync(newApplications);
 
         _logger.LogInformation("New applications added successfully!");
     }

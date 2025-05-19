@@ -27,12 +27,12 @@ public class ScheduleManagerTests : ZakTestBase
 
         Application newApplication = new();
 
-        await applicationsDao.Insert(newApplication);
+        await applicationRepository.CreateAsync(newApplication);
 
         int timeToScheduleApplication = 3;
         //Act 
 
-        Application applicationToAddToSchedule = (await applicationsDao.GetAll()).First();
+        Application applicationToAddToSchedule = (await applicationRepository.GetAllAsync()).First();
         Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
         await scheduleManager.ScheduleApplication(applicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleApplication);
@@ -61,16 +61,16 @@ public class ScheduleManagerTests : ZakTestBase
         Application newApplication2 = new();
         newApplication2.operatorComment = "Second application";
 
-        await applicationsDao.Insert(newApplication1);
-        await applicationsDao.Insert(newApplication2);
+        await applicationRepository.CreateAsync(newApplication1);
+        await applicationRepository.CreateAsync(newApplication2);
 
         int timeToScheduleFirstApplication = 3;
         int timeToScheduleSecondApplication = 2;
 
         //Act 
 
-        Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
-        Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
+        Application firstApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(0);
+        Application secondApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(1);
 
         Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
@@ -108,16 +108,16 @@ public class ScheduleManagerTests : ZakTestBase
         Application newApplication2 = new();
         newApplication2.operatorComment = "Second application";
 
-        await applicationsDao.Insert(newApplication1);
-        await applicationsDao.Insert(newApplication2);
+        await applicationRepository.CreateAsync(newApplication1);
+        await applicationRepository.CreateAsync(newApplication2);
 
         int timeToScheduleFirstApplication = 3;
         int timeToScheduleSecondApplication = 4;
 
         //Act 
 
-        Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
-        Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
+        Application firstApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(0);
+        Application secondApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(1);
 
         Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
@@ -157,15 +157,15 @@ public class ScheduleManagerTests : ZakTestBase
         Application newApplication2 = new();
         newApplication2.operatorComment = "Second application";
 
-        await applicationsDao.Insert(newApplication1);
-        await applicationsDao.Insert(newApplication2);
+        await applicationRepository.CreateAsync(newApplication1);
+        await applicationRepository.CreateAsync(newApplication2);
 
         int timeToScheduleApplication = 3;
 
         //Act 
 
-        Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
-        Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
+        Application firstApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(0);
+        Application secondApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(1);
 
         Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
@@ -212,10 +212,10 @@ public class ScheduleManagerTests : ZakTestBase
         newApplication3.operatorComment = "Forth application";
 
 
-        await applicationsDao.Insert(newApplication1);
-        await applicationsDao.Insert(newApplication2);
-        await applicationsDao.Insert(newApplication3);
-        await applicationsDao.Insert(newApplication4);
+        await applicationRepository.CreateAsync(newApplication1);
+        await applicationRepository.CreateAsync(newApplication2);
+        await applicationRepository.CreateAsync(newApplication3);
+        await applicationRepository.CreateAsync(newApplication4);
 
         int timeToScheduleFirstApplication = 1;
         int timeToScheduleSecondApplication = 9;
@@ -223,10 +223,10 @@ public class ScheduleManagerTests : ZakTestBase
         int timeToScheduleForthApplication = 7;
 
 
-        Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
-        Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
-        Application thirdApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
-        Application forthApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
+        Application firstApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(0);
+        Application secondApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(1);
+        Application thirdApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(2);
+        Application forthApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(2);
 
         Brigade brigadeToEdit1 = (await brigadeRepository.GetAllAsync()).ElementAt(0);
         Brigade brigadeToEdit2 = (await brigadeRepository.GetAllAsync()).ElementAt(1);
@@ -272,13 +272,13 @@ public class ScheduleManagerTests : ZakTestBase
         Application newApplication = new();
         newApplication.operatorComment = "First application";
 
-        await applicationsDao.Insert(newApplication);
+        await applicationRepository.CreateAsync(newApplication);
 
         int timeToScheduleApplication = 3;
 
         //Act 
 
-        Application applicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
+        Application applicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(0);
 
         Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
@@ -320,10 +320,10 @@ public class ScheduleManagerTests : ZakTestBase
         newApplication4.operatorComment = "Forth application";
 
 
-        await applicationsDao.Insert(newApplication1);
-        await applicationsDao.Insert(newApplication2);
-        await applicationsDao.Insert(newApplication3);
-        await applicationsDao.Insert(newApplication4);
+        await applicationRepository.CreateAsync(newApplication1);
+        await applicationRepository.CreateAsync(newApplication2);
+        await applicationRepository.CreateAsync(newApplication3);
+        await applicationRepository.CreateAsync(newApplication4);
 
         int timeToScheduleFirstApplication = 1;
         int timeToScheduleSecondApplication = 2;
@@ -332,10 +332,10 @@ public class ScheduleManagerTests : ZakTestBase
 
         int timeToMoveApplication = 5;
 
-        Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
-        Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
-        Application thirdApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
-        Application forthApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(3);
+        Application firstApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(0);
+        Application secondApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(1);
+        Application thirdApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(2);
+        Application forthApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(3);
 
         Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).ElementAt(0);
 
@@ -391,9 +391,9 @@ public class ScheduleManagerTests : ZakTestBase
         newApplication2.operatorComment = "Third application";
 
 
-        await applicationsDao.Insert(newApplication1);
-        await applicationsDao.Insert(newApplication2);
-        await applicationsDao.Insert(newApplication3);
+        await applicationRepository.CreateAsync(newApplication1);
+        await applicationRepository.CreateAsync(newApplication2);
+        await applicationRepository.CreateAsync(newApplication3);
 
         int timeToScheduleFirstApplication = 1;
         int timeToScheduleSecondApplication = 2;
@@ -402,9 +402,9 @@ public class ScheduleManagerTests : ZakTestBase
 
         int timeToMoveEmptySlot = 7;
 
-        Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
-        Application thirdApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
-        Application forthApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
+        Application firstApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(0);
+        Application thirdApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(1);
+        Application forthApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(2);
 
         Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
 
@@ -457,9 +457,9 @@ public class ScheduleManagerTests : ZakTestBase
         newApplication3.operatorComment = "Third application";
 
 
-        await applicationsDao.Insert(newApplication1);
-        await applicationsDao.Insert(newApplication2);
-        await applicationsDao.Insert(newApplication3);
+        await applicationRepository.CreateAsync(newApplication1);
+        await applicationRepository.CreateAsync(newApplication2);
+        await applicationRepository.CreateAsync(newApplication3);
 
         int timeToScheduleFirstApplication = 1;
         int timeToScheduleSecondApplication = 9;
@@ -467,9 +467,9 @@ public class ScheduleManagerTests : ZakTestBase
         int timeToScheduleThirdApplication = 7;
 
 
-        Application firstApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(0);
-        Application secondApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(1);
-        Application forthApplicationToAddToSchedule = (await applicationsDao.GetAll()).ElementAt(2);
+        Application firstApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(0);
+        Application secondApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(1);
+        Application forthApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(2);
 
         Brigade brigadeToEdit1 = (await brigadeRepository.GetAllAsync()).ElementAt(0);
         Brigade brigadeToEdit2 = (await brigadeRepository.GetAllAsync()).ElementAt(1);

@@ -11,7 +11,7 @@
 @inject IJSRuntime Js
 
 @inject IMapRoutesManager mapRoutesManager
-@inject IDao<Application, ApplicationModel> applicationsDataAccess;
+@inject IApplicationReporisory _applicationRepository;
 @inject IBrigadeRepository _brigadeRepository;
 
 @inject ILogger<MapComponentLeaflet> _logger;
@@ -83,7 +83,7 @@
         _logger.LogInformation("MapComponentLeaflet is drawing markers");
 
 
-        List<Application> applications = (await applicationsDataAccess.GetAll(query => query.Include(a => a.address).ThenInclude(a => a.coordinates))).ToList();
+        List<Application> applications = (await _applicationRepository.GetAllWithIgnoringAsync()).ToList();
 
         foreach (var application in applications)
         {
@@ -110,7 +110,7 @@
 
         try
         {
-            List<List<Vector2>> routes = await mapRoutesManager.GetRoutesAsync(_brigadeRepository, applicationsDataAccess);
+            List<List<Vector2>> routes = await mapRoutesManager.GetRoutesAsync();
             for (int i = 0; i < routes.Count; i++)
             {
                 await DrawPath(routes[i], i);

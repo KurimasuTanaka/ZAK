@@ -11,7 +11,7 @@ public class ApplicationsLoadingTests : ZakTestBase
     {
         //Arrange
 
-        ApplicationsLoadingService applicationsManagerService = new(applicationsDao, addressRepository, null, null, applicationsManagerLogger);
+        ApplicationsLoadingService applicationsManagerService = new(applicationRepository, addressRepository, null, null, applicationsManagerLogger);
 
 
         //Setup districts
@@ -54,7 +54,7 @@ public class ApplicationsLoadingTests : ZakTestBase
         await applicationsManagerService.ProceedApplications(applicationsToInsert);
 
         //Assert
-        List<Application> addedApplications = (await applicationsDao.GetAll()).ToList();
+        List<Application> addedApplications = (await applicationRepository.GetAllAsync()).ToList();
         List<Address> addedAddresses = (await addressRepository.GetAllAsync()).ToList();
         List<District> addedDistricts = (await districtsDao.GetAll()).ToList();
 
@@ -68,7 +68,7 @@ public class ApplicationsLoadingTests : ZakTestBase
     public async void UnploadNewApplicationsToDbWithExistingAddressAndApplications()
     {
         //Arrange
-        ApplicationsLoadingService applicationsManagerService = new(applicationsDao, addressRepository, null, null, applicationsManagerLogger);
+        ApplicationsLoadingService applicationsManagerService = new(applicationRepository, addressRepository, null, null, applicationsManagerLogger);
 
 
         //Setup districts
@@ -130,7 +130,7 @@ public class ApplicationsLoadingTests : ZakTestBase
         applicationsToInsert[1].statusWasChecked = true;
         Application applicationToUpdate = applicationsToInsert[1];
         applicationToUpdate.address = null;
-        await applicationsDao.Update(applicationToUpdate, findPredicate: a => a.id == applicationToUpdate.id);
+        await applicationRepository.UpdateAsync(applicationToUpdate);
 
         applicationsToInsert.Add(application3);
         applicationsToInsert[1].operatorComment = "Applications comment 2 UPDATED";
@@ -140,8 +140,7 @@ public class ApplicationsLoadingTests : ZakTestBase
         await applicationsManagerService.ProceedApplications(applicationsToInsert);
 
         //Assert
-        List<Application> addedApplications = (await applicationsDao.GetAll(
-            query => query.Include(a => a.address)
+        List<Application> addedApplications = (await applicationRepository.GetAllAsync(
         )).ToList();
 
         List<Address> addedAddresses = (await addressRepository.GetAllAsync()).ToList();
