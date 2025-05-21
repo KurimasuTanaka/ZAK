@@ -86,6 +86,9 @@
         }
     </MudCardContent>
 </MudCard>
+
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopLeft" />
+
 @code {
     [Parameter] public Application application { get; set; } = new();
     [Parameter] public EventCallback<Address> addressChanged { get; set; }
@@ -148,9 +151,21 @@
         }
         else
         {
-            Snackbar.Add("Така адреса вже існує!");
+            ShowToast();
         }
 
+    }
+    List<ToastMessage> messages = [];
+    private void ShowToast()
+    {
+        messages.Add(
+        new ToastMessage
+        {
+            Type = ToastType.Warning,
+            Title = "Оновлення адреси!",
+            Message = "Така адреса вже існує!",
+            AutoHide = true,
+        });
     }
 
 }

@@ -25,7 +25,7 @@ public class Address : AddressModel
         }
     }
 
-    public string streetAlias 
+    public string streetNameAlias 
     {
         get 
         {
@@ -42,7 +42,7 @@ public class Address : AddressModel
         }
     }
 
-    public string building 
+    public string buildingAlias 
     {
         get 
         {

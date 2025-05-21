@@ -44,8 +44,6 @@ public class MapRoutesManagerTests : ZakTestBase
         await brigadeRepository.CreateAsync(brigade1);
         await brigadeRepository.CreateAsync(brigade2);
 
-        List<Brigade> brigades = (await brigadeRepository.GetAllAsync()).ToList();
-
         //Act
         List<List<Vector2>> routes = await _mapRoutesManager.GetRoutesAsync();
 

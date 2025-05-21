@@ -1,0 +1,67 @@
+﻿@inject IAddressRepository _addressRepository;
+@inject ISnackbar Snackbar;
+@inject ILogger<AddressEditingModal> _logger;
+
+<Modal @ref="modal" Title="Редагування адреси" Size="ModalSize.Regular">
+    <BodyTemplate>
+
+        <MudStack Spacing="1">
+            <MudTextField @bind-Value="address.streetName" Label="Вулиця" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="address.building" Label="Будинок" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="address.streetNameAlias" Label="Альт. вулиця" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="address.buildingAlias" Label="Альт. будинок" Variant="Variant.Outlined" />
+            <MudNumericField @bind-Value="address.Latitude" Label="Широта" Variant="Variant.Outlined" />
+            <MudNumericField @bind-Value="address.Longtitude" Label="Долгота" Variant="Variant.Outlined" />
+        </MudStack>
+        <MudButton @onclick="SaveChanges" Variant="Variant.Filled" Color="Color.Primary">Зберегти зміни</MudButton>
+    </BodyTemplate>
+</Modal>
+
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopLeft" />
+
+
+@code {
+    private Address address = new();
+    [Parameter] public EventCallback UpdateTable { get; set; }
+    Modal modal = default!;
+
+    public async Task ShowModal(Address address)
+    {
+        this.address = new(address);
+        await modal.ShowAsync();
+    }
+    public async Task SaveChanges()
+    {
+        _logger.LogInformation("Saving address changes: {StreetName} {Building}", address.streetName, address.building);
+        List<Address> addresses = (await _addressRepository.GetAllAsync()).ToList();
+        if (addresses.Any(a => a.streetName == address.streetName && a.building == address.building && a.Id != address.Id))
+        {
+            _logger.LogWarning("Address already exists: {StreetName} {Building}", address.streetName, address.building);
+
+            ShowToast();
+            return;
+        }
+        else
+        {
+            await _addressRepository.UpdateAsync(address);
+            _logger.LogInformation("Address updated: {StreetName} {Building}", address.streetName, address.building);
+
+            await UpdateTable.InvokeAsync();
+            await modal.HideAsync();
+        }
+    }
+
+    List<ToastMessage> messages = [];
+    private void ShowToast()
+    {
+        messages.Add(
+        new ToastMessage
+        {
+            Type = ToastType.Warning,
+            Title = "Оновлення адреси!",
+            Message = "Така адреса вже існує!",
+            AutoHide = true,
+        });
+    }
+
+}

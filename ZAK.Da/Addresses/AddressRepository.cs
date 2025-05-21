@@ -98,19 +98,19 @@ public class AddressRepository : IAddressRepository
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                Address? address = await context.addresses
+                var address = await context.addresses
                                                 .Include(a => a.addressAlias)
                                                 .Include(a => a.addressPriority)
                                                 .Include(a => a.coordinates)
-                                                .Select(a => new Address(a))
                                                 .FirstOrDefaultAsync(a => a.Id == id);
+                                                
                 if (address == null)
                 {
                     _logger.LogWarning("Address with id {Id} not found", id);
                     throw new Exception($"Address with id {id} not found");
                 }
                 _logger.LogInformation("Address retrieved: {@Address}", address);
-                return address;
+                return new Address(address);
             }
         }
         catch (Exception ex)
