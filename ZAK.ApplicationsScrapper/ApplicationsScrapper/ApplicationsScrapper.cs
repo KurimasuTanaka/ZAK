@@ -9,12 +9,10 @@ namespace ApplicationsScrappingModule;
 
 public class ApplicationsScrapper : ApplicationsScrapperBase
 {
-    IApplicationsDataAccess _databaseModule;
     IDistrictDataAccess _districtDataAccess;
 
-    public ApplicationsScrapper(ILogger<ApplicationsScrapper> logger, IApplicationsDataAccess databaseModule, IDistrictDataAccess districtDataAccess) : base(logger)
+    public ApplicationsScrapper(ILogger<ApplicationsScrapper> logger, IDistrictDataAccess districtDataAccess) : base(logger)
     {
-        _databaseModule = databaseModule;
         _districtDataAccess = districtDataAccess;
     }
 

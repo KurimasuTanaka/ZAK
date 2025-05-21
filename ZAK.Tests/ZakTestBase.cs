@@ -24,7 +24,9 @@ public class ZakTestBase : IDisposable
     protected ILogger<ScheduleManager> scheduleManagerLogger;
     protected ILogger<ApplicationsLoadingService> applicationsManagerLogger;
 
-
+    protected ILogger<AddressRepository> addressRepositoryLogger;
+    protected ILogger<BrigadeRepository> brigadeRepositoryLogger;
+    protected ILogger<ApplicationRepository> applicationRepositoryLogger;
 
     protected IAddressRepository addressRepository;
     protected IBrigadeRepository brigadeRepository;
@@ -34,7 +36,6 @@ public class ZakTestBase : IDisposable
     protected IDao<AddressPriority, AddressPriorityModel> addressPrioritiesDao;
     protected IBrigadeRepository brigadesDao;
     protected IDao<ZAK.DA.District, Db.Models.DistrictModel> districtsDao;
-
 
     public ZakTestBase()
     {
@@ -51,9 +52,13 @@ public class ZakTestBase : IDisposable
         scheduleManagerLogger = new NullLogger<ScheduleManager>();
         applicationsManagerLogger = new NullLogger<ApplicationsLoadingService>();
 
-        addressRepository = new AddressRepository(dbContextFactory);
-        brigadeRepository = new BrigadeRepository(dbContextFactory);
-        applicationRepository = new ApplicationRepository(dbContextFactory);
+        addressRepositoryLogger = new NullLogger<AddressRepository>();
+        brigadeRepositoryLogger = new NullLogger<BrigadeRepository>();
+        applicationRepositoryLogger = new NullLogger<ApplicationRepository>();
+
+        addressRepository = new AddressRepository(dbContextFactory, addressRepositoryLogger);
+        brigadeRepository = new BrigadeRepository(dbContextFactory, brigadeRepositoryLogger);
+        applicationRepository = new ApplicationRepository(dbContextFactory, applicationRepositoryLogger);
 
         addressCoordinatesDao = new Dao<AddressCoordinates, AddressCoordinatesModel>(dbContextFactory, addressCooerdinatesDaoLogger);
         addressAliasesDao = new Dao<AddressAlias, AddressAliasModel>(dbContextFactory, addressAliasesDaoLogger);

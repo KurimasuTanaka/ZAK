@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ZAK.DA;
 using ZAK.Db;
 using ZAK.Db.Models;
@@ -10,102 +11,178 @@ namespace ZAK.DA;
 public class BrigadeRepository : IBrigadeRepository
 {
     private readonly IDbContextFactory<ZakDbContext> _dbContextFactory;
+    private readonly ILogger<BrigadeRepository> _logger;
 
-    public BrigadeRepository(IDbContextFactory<ZakDbContext> dbContextFactory)
+    public BrigadeRepository(IDbContextFactory<ZakDbContext> dbContextFactory, ILogger<BrigadeRepository> logger)
     {
+        _logger = logger;
         _dbContextFactory = dbContextFactory;
     }
 
     public async Task CreateAsync(Brigade entity)
     {
-        using (ZakDbContext context = _dbContextFactory.CreateDbContext())
+        _logger.LogInformation("Creating brigade: {@Brigade}", entity);
+
+        try
         {
-            context.brigades.Add(entity);
-            await context.SaveChangesAsync();
+            using (ZakDbContext context = _dbContextFactory.CreateDbContext())
+            {
+                context.brigades.Add(entity);
+                await context.SaveChangesAsync();
+            }
+            _logger.LogInformation("Brigade created successfully: {@Brigade}", entity);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating brigade: {@Brigade}", entity);
+            throw;
         }
     }
 
     public async Task DeleteAsync(int id)
     {
-        using (ZakDbContext context = _dbContextFactory.CreateDbContext())
+        _logger.LogInformation("Deleting brigade with id: {Id}", id);
+
+        try
         {
-            var entity = context.brigades.Find(id);
-            if (entity != null)
+            using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                context.brigades.Remove(entity);
-                await context.SaveChangesAsync();
+                var entity = context.brigades.Find(id);
+                if (entity != null)
+                {
+                    context.brigades.Remove(entity);
+                    await context.SaveChangesAsync();
+                    _logger.LogInformation("Brigade deleted successfully: {Id}", id);
+                }
+                else
+                {
+                    _logger.LogWarning("Brigade with id {Id} not found for deletion", id);
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting brigade with id: {Id}", id);
+            throw;
         }
     }
 
     public async Task<IEnumerable<Brigade>> GetAllAsync()
     {
-        using (ZakDbContext context = _dbContextFactory.CreateDbContext())
+        _logger.LogInformation("Getting all brigades");
+
+        try
         {
-            return await context.brigades
-                .Include(b => b.scheduledApplications)
-                .Select(b => new Brigade(b))
-                .ToListAsync();
+            using (ZakDbContext context = _dbContextFactory.CreateDbContext())
+            {
+                var result = await context.brigades.AsNoTracking()
+                    .Include(b => b.scheduledApplications)
+                    .Select(b => new Brigade(b))
+                    .ToListAsync();
+                _logger.LogInformation("Retrieved {Count} brigades", result.Count);
+                return result;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting all brigades");
+            throw;
         }
     }
 
     public async Task<IEnumerable<Brigade>> GetAllWithScheduledApplicationInfoAsync()
     {
-        using (ZakDbContext context = _dbContextFactory.CreateDbContext())
+        _logger.LogInformation("Getting all brigades with scheduled application info");
+
+        try
         {
-            return await context.brigades
-                .Include(b => b.scheduledApplications)
-                .ThenInclude(sa => sa.application).ThenInclude(a => a.address).ThenInclude(a => a.coordinates)
-                .Select(b => new Brigade(b))
-                .ToListAsync();
+            using (ZakDbContext context = _dbContextFactory.CreateDbContext())
+            {
+                var result = await context.brigades.AsNoTracking()
+                    .Include(b => b.scheduledApplications)
+                    .ThenInclude(sa => sa.application).ThenInclude(a => a.address).ThenInclude(a => a.coordinates)
+                    .Select(b => new Brigade(b))
+                    .ToListAsync();
+                _logger.LogInformation("Retrieved {Count} brigades with scheduled application info", result.Count);
+                return result;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting all brigades with scheduled application info");
+            throw;
         }
     }
 
     public async Task<Brigade> GetByIdAsync(int id)
     {
-        using (ZakDbContext context = _dbContextFactory.CreateDbContext())
-        {
-            var brigade = await context.brigades.Include(a => a.scheduledApplications).FirstOrDefaultAsync(b => b.id == id);
+        _logger.LogInformation("Getting brigade by id: {Id}", id);
 
-            if (brigade is not null)
+        try
+        {
+            using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                return new Brigade(brigade);
+                var brigade = await context.brigades.AsNoTracking().Include(a => a.scheduledApplications).FirstOrDefaultAsync(b => b.id == id);
+
+                if (brigade is not null)
+                {
+                    _logger.LogInformation("Brigade retrieved: {@Brigade}", brigade);
+                    return new Brigade(brigade);
+                }
+                else
+                {
+                    _logger.LogWarning("Brigade with id {Id} not found", id);
+                    throw new Exception($"Brigade with id {id} not found");
+                }
             }
-            else
-            {
-                throw new Exception($"Brigade with id {id} not found");
-            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting brigade by id: {Id}", id);
+            throw;
         }
     }
 
     public async Task UpdateAsync(Brigade entity)
     {
-        using (ZakDbContext context = _dbContextFactory.CreateDbContext())
+        _logger.LogInformation("Updating brigade: {@Brigade}", entity);
+
+        try
         {
-            BrigadeModel? brigade = await context.brigades.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application).FirstOrDefaultAsync(b => b.id == entity.id);
-
-            if (brigade == null)
+            using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                throw new Exception($"Brigade with id {entity.id} not found");
-            }
-            else
-            {
-                context.Entry(brigade).CurrentValues.SetValues(entity);
+                BrigadeModel? brigade = await context.brigades.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application).FirstOrDefaultAsync(b => b.id == entity.id);
 
-                if (entity.scheduledApplications != null)
+                if (brigade == null)
                 {
-                    foreach (var scheduledApplication in brigade.scheduledApplications.Except(entity.scheduledApplications, new ScheduledApplicationModelComparer()))
-                    {
-                        context.Entry(scheduledApplication).State = EntityState.Deleted;
-                    }
+                    _logger.LogWarning("Brigade with id {Id} not found for update", entity.id);
+                    throw new Exception($"Brigade with id {entity.id} not found");
+                }
+                else
+                {
+                    context.Entry(brigade).CurrentValues.SetValues(entity);
 
-                    foreach (var scheduledApplication in entity.scheduledApplications.Except(brigade.scheduledApplications, new ScheduledApplicationModelComparer()))
+                    if (entity.scheduledApplications != null)
                     {
-                        brigade.scheduledApplications.Add(scheduledApplication);
+                        foreach (var scheduledApplication in brigade.scheduledApplications.Except(entity.scheduledApplications, new ScheduledApplicationModelComparer()))
+                        {
+                            context.Entry(scheduledApplication).State = EntityState.Deleted;
+                        }
+
+                        foreach (var scheduledApplication in entity.scheduledApplications.Except(brigade.scheduledApplications, new ScheduledApplicationModelComparer()))
+                        {
+                            brigade.scheduledApplications.Add(scheduledApplication);
+                        }
                     }
+                    await context.SaveChangesAsync();
+                    _logger.LogInformation("Brigade updated successfully: {@Brigade}", entity);
                 }
             }
-            await context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating brigade: {@Brigade}", entity);
+            throw;
         }
     }
 }
