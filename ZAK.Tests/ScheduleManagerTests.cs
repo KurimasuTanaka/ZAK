@@ -14,7 +14,7 @@ public class ScheduleManagerTests : ZakTestBase
 
 
     [Fact]
-    public async void InsertNewApplicationToEmptySchedule()
+    public async Task InsertNewApplicationToEmptySchedule()
     {
         //Arrange
         ScheduleManager scheduleManager = new(brigadeRepository, scheduleManagerLogger);
@@ -47,7 +47,7 @@ public class ScheduleManagerTests : ZakTestBase
     }
 
     [Fact]
-    public async void InsertNewApplicationToScheduleBeforePreviouslyScheduledApplication()
+    public async Task InsertNewApplicationToScheduleBeforePreviouslyScheduledApplication()
     {
         //Arrange
         ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
@@ -94,7 +94,7 @@ public class ScheduleManagerTests : ZakTestBase
         Assert.Equal(timeToScheduleFirstApplication, editedBrigade.scheduledApplications[1].scheduledTime);
     }
     [Fact]
-    public async void InsertNewApplicationToScheduleAfterPreviouslyScheduledApplication()
+    public async Task InsertNewApplicationToScheduleAfterPreviouslyScheduledApplication()
     {
         //Arrange
         ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
@@ -143,7 +143,7 @@ public class ScheduleManagerTests : ZakTestBase
     }
 
     [Fact]
-    public async void ScheduleApplicationOnTimeWhereApplicationAlreadyExist()
+    public async Task ScheduleApplicationOnTimeWhereApplicationAlreadyExist()
     {
         //Arrange
         ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
@@ -188,7 +188,7 @@ public class ScheduleManagerTests : ZakTestBase
     }
 
     [Fact]
-    public async void MoveScheduledApplicationFromOneBrigadeToAnother()
+    public async Task MoveScheduledApplicationFromOneBrigadeToAnother()
     {
         //Arrange
         ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
@@ -261,7 +261,7 @@ public class ScheduleManagerTests : ZakTestBase
     }
 
     [Fact]
-    public async void DeleteScheduledApplicationFromSchedule()
+    public async Task DeleteScheduledApplicationFromSchedule()
     {
         //Arrange
         ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
@@ -298,7 +298,7 @@ public class ScheduleManagerTests : ZakTestBase
     }
 
     [Fact]
-    public async void MoveScheduledApplicationFromOneTimeToAnother()
+    public async Task MoveScheduledApplicationFromOneTimeToAnother()
     {
         //Arrange
         ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
@@ -371,7 +371,7 @@ public class ScheduleManagerTests : ZakTestBase
     }
 
     [Fact]
-    public async void MoveEmptyTimeslotFromOneTimeToAnother()
+    public async Task MoveEmptyTimeslotFromOneTimeToAnother()
     {
         //Arrange
         ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
@@ -436,7 +436,7 @@ public class ScheduleManagerTests : ZakTestBase
     }
 
     [Fact]
-    public async void MoveEmptyTimeSlotFromOneBrigadeToAnother()
+    public async Task MoveEmptyTimeSlotFromOneBrigadeToAnother()
     {
         //Arrange
         ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);

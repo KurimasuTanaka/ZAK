@@ -7,7 +7,7 @@ namespace ZAK.Tests;
 public class ApplicationsLoadingTests : ZakTestBase
 {
     [Fact]
-    public async void UploadNewApplicationsToDb()
+    public async Task UploadNewApplicationsToDb()
     {
         //Arrange
 
@@ -65,7 +65,7 @@ public class ApplicationsLoadingTests : ZakTestBase
 
 
     [Fact]
-    public async void UnploadNewApplicationsToDbWithExistingAddressAndApplications()
+    public async Task UnploadNewApplicationsToDbWithExistingAddressAndApplications()
     {
         //Arrange
         ApplicationsLoadingService applicationsManagerService = new(applicationRepository, addressRepository, null, null, applicationsManagerLogger);

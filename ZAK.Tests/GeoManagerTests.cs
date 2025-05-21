@@ -12,7 +12,7 @@ namespace ZAK.Tests;
 public class GeoDataManagerTests : ZakTestBase
 {
     [Fact]
-    public async void CoordinatesLoadingTest()
+    public async Task CoordinatesLoadingTest()
     {
         //Arrange
         Address address1 = new();
@@ -47,7 +47,7 @@ public class GeoDataManagerTests : ZakTestBase
     }
 
     [Fact]
-    public async void UpdatingExistedCoordinates()
+    public async Task UpdatingExistedCoordinates()
     {
         //Arrange
         Address address = new();

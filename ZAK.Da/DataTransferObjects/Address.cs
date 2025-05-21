@@ -42,7 +42,7 @@ public class Address : AddressModel
         }
     }
 
-    public string buildingAlias 
+    public string building 
     {
         get 
         {

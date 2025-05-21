@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using ZAK.DA;
 using ZAK.Db;
 using ZAK.Db.Models;
@@ -28,6 +29,24 @@ public class BrigadeRepository : IBrigadeRepository
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
                 context.brigades.Add(entity);
+
+                if (!entity.scheduledApplications.IsNullOrEmpty())
+                {
+                    List<Application> scheduledApplications = new List<Application>();
+
+                    foreach (var scheduledApplication in entity.scheduledApplications)
+                    {
+                        if (scheduledApplications.Contains(scheduledApplication.application))
+                        {
+                            context.Attach(scheduledApplication.application);
+                        }
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning("No scheduled applications provided for brigade creation");
+                }
+
                 await context.SaveChangesAsync();
             }
             _logger.LogInformation("Brigade created successfully: {@Brigade}", entity);

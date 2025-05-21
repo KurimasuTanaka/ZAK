@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
-using Xunit.Abstractions;
 using ZAK.DAO;
 using ZAK.Db.Models;
 
@@ -13,7 +12,7 @@ public class DataAccessTests : ZakTestBase
 {
 
     [Fact]
-    public async void InsertNewApplicationToTheEmptyDb()
+    public async Task InsertNewApplicationToTheEmptyDb()
     {
         //Arrange
 
@@ -34,7 +33,7 @@ public class DataAccessTests : ZakTestBase
     }
 
     [Fact]
-    public async void InsertNewAddressAndUpdateItWithoutTracking()
+    public async Task InsertNewAddressAndUpdateItWithoutTracking()
     {
         //Arrange
 
@@ -59,7 +58,7 @@ public class DataAccessTests : ZakTestBase
     }
 
     [Fact]
-    public async void InsertNewAddressAndUpdateRelatedEntityUsingInclueQuery()
+    public async Task InsertNewAddressAndUpdateRelatedEntityUsingInclueQuery()
     {
         //Arrange
 
@@ -86,7 +85,7 @@ public class DataAccessTests : ZakTestBase
     }
 
     [Fact]
-    public async void InsertNewApplicationWithTheAlreadyExistedAddress()
+    public async Task InsertNewApplicationWithTheAlreadyExistedAddress()
     {
         //Arrange
         Address sharedAddress = new();
@@ -111,7 +110,7 @@ public class DataAccessTests : ZakTestBase
     }
 
     [Fact]
-    public async void InsertRangeOfApplicationsAndUpdateRangeOfApplicationsInBulk()
+    public async Task InsertRangeOfApplicationsAndUpdateRangeOfApplicationsInBulk()
     {
         //Arrange
         Application application1 = new Application();
@@ -149,7 +148,7 @@ public class DataAccessTests : ZakTestBase
     }
 
     [Fact]
-    public async void InsertNewAddressesWithInsertRange()
+    public async Task InsertNewAddressesWithInsertRange()
     {
         //Arrange
 
