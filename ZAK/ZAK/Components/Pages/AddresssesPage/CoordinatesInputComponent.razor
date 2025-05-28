@@ -1,24 +1,30 @@
 ﻿@using System.ComponentModel.DataAnnotations;
 @using ZAK.DA;
 
-
 @inject IAddressRepository _addressRepository;
 @inject ILogger<CoordinatesInputComponent> _logger;
 
-<NumberInput TValue="double" @bind-Value="@coordinate" @bind-Value:after="UpdateDbData" />
-
-
+<InputNumber TValue="double" @bind-Value="@coordinate" @bind-Value:after="UpdateDbData" />
 
 @code {
     [Parameter] public int addressId { get; set; }
 
     [Parameter] public double coordinate { get; set; } = 0.0;
- 
+
     [Parameter] public bool Lat { get; set; } = false;
     [Parameter] public bool Lon { get; set; } = false;
 
+    private bool _initialized = false;
+
+
     private async Task UpdateDbData()
     {
+        if (!_initialized)
+        {
+            _initialized = true;
+            return;
+        }
+
         _logger.LogInformation($"Updating coordinates for address with id {addressId} to {coordinate}");
 
         Address address = (await _addressRepository.GetByIdAsync(addressId));
@@ -39,4 +45,4 @@
 
         await _addressRepository.UpdateAsync(address);
     }
-}  
+}

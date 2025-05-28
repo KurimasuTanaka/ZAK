@@ -7,6 +7,15 @@
 
 @inject ICoefficientRepository _coefficientRepository; 
 
+
+<Callout Color="CalloutColor.Info" style="mt-1">
+    <p>Ця сторінка дозволяє налаштувати коефіцієнти, які використовуються для розрахунку пріорітетності заявки, що відображається під час вибору заявки на сторінці формування графіку.</p>
+    <p>Чим вищий коефіцієнт - тим вище буде пріорітет заявки та тим вище вона буде в списку </p>    
+    <p>Включання "максимального пріорітету" переносить заявки певних категорій одразу на вершину списку </p>    
+</Callout>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+
 <table>
         @foreach(Coefficient coefficient in coefficients)
         {
@@ -16,6 +25,8 @@
         }
     
 </table>
+</MudContainer>
+
 @code {
     private List<Coefficient> coefficients = new();
 

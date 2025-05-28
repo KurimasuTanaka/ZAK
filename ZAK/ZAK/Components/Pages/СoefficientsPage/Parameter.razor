@@ -2,32 +2,41 @@
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
 
-@inject ICoefficientRepository  _coefficientRepository; 
+@inject ICoefficientRepository _coefficientRepository;
 
-
-<td><span>@coefficient.parameterAlias</span></td>
-<td>
-    <Switch @bind-Value="coefficient.infinite" Label="Максимальный приоритет"   @bind-Value:after="UpdateInfinityStatus" />
+<td class="pr-4">
+    <h6>@coefficient.parameterAlias</h6>
 </td>
-<td>
-    <InputNumber TValue="double" @bind-Value="@coefficient.coefficient"  @bind-Value:after="UpdateParameterValue" />
+<td style="display: flex; flex-direction: column;">
+    <NumberInput TValue="double" @bind-Value="@coefficient.coefficient" @bind-Value:after="UpdateParameterValue" />
+    <div style="display: flex; flex-direction: row;">
+        <Switch @bind-Value="coefficient.infinite" @bind-Value:after="UpdateInfinityStatus" />
+        <small>Максимальний пріорітет</small>
+    </div>
 </td>
-
 
 @code {
     [Parameter] public Coefficient coefficient { get; set; } = new Coefficient();
 
+    private bool _initialized = false;
+
     private async void UpdateParameterValue()
     {
+        if (!_initialized)
+        {
+            _initialized = true;
+            return;
+        }
+
         Coefficient oldCoefficient = await _coefficientRepository.GetByIdAsync(coefficient.id);
-        oldCoefficient.coefficient = coefficient.coefficient; 
+        oldCoefficient.coefficient = coefficient.coefficient;
         await _coefficientRepository.UpdateAsync(oldCoefficient);
     }
 
     private async void UpdateInfinityStatus()
     {
         Coefficient oldCoefficient = await _coefficientRepository.GetByIdAsync(coefficient.id);
-        oldCoefficient.infinite = coefficient.infinite; 
+        oldCoefficient.infinite = coefficient.infinite;
         await _coefficientRepository.UpdateAsync(oldCoefficient);
     }
 

@@ -1,27 +1,37 @@
 ﻿@using System.ComponentModel.DataAnnotations;
 @using ZAK.DA;
 
-
 @inject IAddressRepository _addressRepository;
 @inject ILogger<PriorityInputComponent> _logger;
 
-
 <NumberInput TValue="double" Label="Приорітет" @bind-Value="@priority" @bind-Value:after="UpdateDbData" />
 
-
-
 @code {
-    [Parameter] public int addressId {get; set;}
+    [Parameter] public int addressId { get; set; }
     [Parameter] public double priority { get; set; }
- 
+
+    private bool _initialized = false;
+
     private async Task UpdateDbData()
     {
+        if (!_initialized) 
+        {
+            _initialized = true;
+            return;
+        }
+
         _logger.LogInformation($"Updating priority for address with id {addressId} to {priority}");
 
-        Address address = (await _addressRepository.GetByIdAsync(addressId));
+        Address address = await _addressRepository.GetByIdAsync(addressId);
 
-        address.priority = priority;    
-
-        await _addressRepository.UpdateAsync(address);
+        if (address != null)
+        {
+            address.priority = priority;
+            await _addressRepository.UpdateAsync(address);
+        }
+        else
+        {
+            _logger.LogWarning($"Address with id {addressId} not found.");
+        }
     }
 }

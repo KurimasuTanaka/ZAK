@@ -45,13 +45,13 @@ public class ZakDbContext : DbContext
             OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<CoefficientModel>().HasData([
-            new CoefficientModel() { id = 1, parameter = "housePriority", coefficient = 1},
-                new CoefficientModel() { id = 2, parameter = "distance", coefficient = 1},
-                new CoefficientModel() { id = 3, parameter = "urgency", coefficient = 1},
-                new CoefficientModel() { id = 4, parameter = "statusCheck", coefficient = 1},
-                new CoefficientModel() { id = 5, parameter = "freeCable", coefficient = 1},
-                new CoefficientModel() { id = 6, parameter = "tarrifeChangeApplication", coefficient = 1},
-                new CoefficientModel() { id = 7, parameter = "deadline", coefficient = 1}
+            new CoefficientModel() { id = 1, parameter = "housePriority", parameterAlias="Пріорітетність адреси", coefficient = 1},
+                new CoefficientModel() { id = 2, parameter = "distance", parameterAlias="Відстань між адресами",  coefficient = 1},
+                new CoefficientModel() { id = 3, parameter = "urgency", parameterAlias="Терміновість", coefficient = 1},
+                new CoefficientModel() { id = 4, parameter = "statusCheck", parameterAlias="Цікавилися статусом заявки", coefficient = 1},
+                new CoefficientModel() { id = 5, parameter = "freeCable", parameterAlias="Є наявний кабель", coefficient = 1},
+                new CoefficientModel() { id = 6, parameter = "tarrifeChangeApplication", parameterAlias="Заявка на зміну тарифу", coefficient = 1},
+                new CoefficientModel() { id = 7, parameter = "deadline", parameterAlias="Час до дедлайну", coefficient = 1}
         ]);
     }
 

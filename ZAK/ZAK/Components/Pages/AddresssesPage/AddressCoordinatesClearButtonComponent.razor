@@ -1,4 +1,5 @@
 ﻿@inject IAddressRepository _addressRepository;
+@inject ILogger<AddressCoordinatesClearButtonComponent> _logger;
 
 <Button @onclick="DeleteCoordinates">
     <Icon Name="IconName.X" />
@@ -9,6 +10,8 @@
 
     private async void DeleteCoordinates()
     {
+        _logger.LogInformation("Clearing coordinates for address with ID: {AddressId}", addressId);
+
         Address address = await _addressRepository.GetByIdAsync(addressId);
 
         if (address.coordinates is null)
