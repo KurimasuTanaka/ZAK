@@ -1,7 +1,7 @@
 ﻿@inject IAddressRepository _addressRepository;
 @inject ILogger<AddressBlackoutGroupComponent> _logger;
 
-<InputNumber TValue="int" Label="Група" @bind-Value="@group" @bind-Value:after="UpdateDbData" />
+<NumberInput TValue="int" Label="Група" @bind-Value="@group" @bind-Value:after="UpdateDbData" />
 
 
 

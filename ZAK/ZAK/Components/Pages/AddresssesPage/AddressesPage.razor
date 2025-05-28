@@ -9,6 +9,15 @@
 @inject IUnresolvedAddressesChecker unresolvedAddressesChecker;
 @inject ILogger<AddressesPage> _logger;
 
+<style>
+    .W10 {
+        width: 10%;
+    }
+
+    .W5 {
+        width: 5%;
+    }
+</style>
 
 <Button @ref="loadCoordinatesButton" Color="ButtonColor.Primary" @onclick="LoadCoordinatesData"> Подтянуть координаты
 </Button>
@@ -25,27 +34,27 @@
 
     <GridColumns>
 
-        <GridColumn TItem="Address" HeaderText="-" PropertyName="Id">
+        <GridColumn TItem="Address" HeaderText="-" Filterable="false" Sortable="false">
             <Button @onclick="@(mouseArg => addressEditingModal.ShowModal(context))">
                 <Icon Name="IconName.Pencil" />
             </Button>
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName" FilterTextboxWidth="200"
-            SortKeySelector="item => item.streetName">
+        <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName" FilterTextboxWidth="200" TextAlignment="Alignment.Center"
+            SortKeySelector="item => item.streetName" ColumnClass="@(x => "W10")">
             @context.streetName
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Будинок" PropertyName="building"
-            SortKeySelector="item => item.building">
+        <GridColumn TItem="Address" HeaderText="Будинок" PropertyName="building" TextAlignment="Alignment.Center"
+            SortKeySelector="item => item.building" ColumnClass="@(x => "W5")">
             @context.building
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority">
-            <PriorityInputComponent addressId="context.Id" priority="context.priority" />
+        <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority" ColumnClass="@(x => "W5")">
+            <PriorityInputComponent addressId="context.Id" priority="context.priority"  />
         </GridColumn>
 
         <GridColumn TItem="Address" HeaderText="Альт. вулиця" PropertyName="streetNameAlias">
             <AliasInputComponent addressId="context.Id" alias="@context.streetNameAlias" streetAlias="@true" />
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias">
+        <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias" ColumnClass="@(x => "W5")">
             <AliasInputComponent addressId="context.Id" alias="@context.buildingAlias" streetAlias="@false" />
         </GridColumn>
 
@@ -55,16 +64,11 @@
             <CoordinatesBoxComponent context="context" informationUpdated="UpdateTable" />
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" SortKeySelector="item => item.resolved">
-            <AddressResolvedComponent resolved="context.resolved" />
+        <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" SortKeySelector="item => item.resolved" TextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W5")">
+            <AddressResolvedComponent resolved="context.resolved"  />
         </GridColumn>
 
-
-        <GridColumn TItem="Address" HeaderText="Група" PropertyName="blackoutGroup">
-            <AddressBlackoutGroupComponent addressId="context.Id" group="@context.blackoutGroup" />
-        </GridColumn>
-
-        <GridColumn TItem="Address" HeaderText="Доступ">
+        <GridColumn TItem="Address" HeaderText="Доступ" ColumnClass="@(x => "W10")">
             <AddressAccessComponent addressId="context.Id" equipmentAccess="@context.equipmentAccess" />
         </GridColumn>
     </GridColumns>

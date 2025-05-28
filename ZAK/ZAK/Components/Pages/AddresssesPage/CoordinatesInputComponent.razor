@@ -5,7 +5,7 @@
 @inject IAddressRepository _addressRepository;
 @inject ILogger<CoordinatesInputComponent> _logger;
 
-<InputNumber TValue="double" @bind-Value="@coordinate" @bind-Value:after="UpdateDbData" />
+<NumberInput TValue="double" @bind-Value="@coordinate" @bind-Value:after="UpdateDbData" />
 
 
 
