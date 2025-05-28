@@ -72,7 +72,8 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
     private Application ScrapApplicationDistrict(Application application, HtmlNode applicationNode)
     {
         //application.address.district.name = applicationNode.SelectSingleNode("td[2]/b").InnerHtml;
-        application.districtName = applicationNode.SelectSingleNode("td[2]/b").InnerHtml;
+
+        application.address!.district!.name = applicationNode.SelectSingleNode("td[2]/b").InnerHtml;
         return application;
     }
     private Application ScrapApplicationStreetName(Application application, HtmlNode applicationNode)

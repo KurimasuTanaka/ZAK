@@ -42,13 +42,21 @@ public class Application : ApplicationModel
     {
         get
         {
+            if (address is null || address.district is null) return "";
             return address.district.name ?? "";
         }
-        set
+    }
+
+    public string districtColor
+    {
+        get
         {
-            address.district.name = value;
+            
+            if (address is null || address.district is null) return "";
+            return address.district.color ?? "";
         }
     }
+
 
     public bool applicationWasUpdated
     {

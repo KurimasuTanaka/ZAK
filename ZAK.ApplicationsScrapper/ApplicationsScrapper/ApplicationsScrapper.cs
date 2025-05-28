@@ -48,7 +48,7 @@ public class ApplicationsScrapper : ApplicationsScrapperBase
             application.id = Int32.Parse(dataNode1.SelectSingleNode("./td[1]/b/a").InnerHtml);
 
             //Scrapping district
-            application.districtName = dataNode1.SelectSingleNode("./td[2]/b/font").InnerHtml;
+            application.address!.district!.name = dataNode1.SelectSingleNode("./td[2]/b/font").InnerHtml;
 
             application.streetName = dataNode1.SelectSingleNode("./td[3]/b/font").InnerHtml;
             application.building = dataNode1.SelectSingleNode("./td[4]/b/font").InnerHtml;
