@@ -245,8 +245,7 @@ public class ApplicationRepository : IApplicationReporisory
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
                 var application = await context.applications
-                    .Include(a => a.address).ThenInclude(a => a.district)
-                    .Include(a => a.address.coordinates)
+                    .Include(a => a.address)
                     .FirstOrDefaultAsync(a => a.id == entity.id);
 
                 if (application == null)
@@ -257,9 +256,17 @@ public class ApplicationRepository : IApplicationReporisory
                 else
                 {
                     context.Entry(application).CurrentValues.SetValues(entity);
-                    if (entity.address != null)
+                    if (entity.address is not null)
                     {
-                        application.address = entity.address;
+                        if (application.address is null)
+                        {
+                            application.address = entity.address;
+                            context.Entry(application.address).State = EntityState.Added;
+                        }
+                        else
+                        {
+                            context.Entry(application.address).CurrentValues.SetValues(entity.address);
+                        }
                     }
                     await context.SaveChangesAsync();
                     _logger.LogInformation("Application updated successfully: {@Application}", entity);
