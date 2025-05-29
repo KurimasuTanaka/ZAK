@@ -1,5 +1,4 @@
 ﻿@using ZAK.DA;
-@using ZAK.Components.Pages.SchedulePage.BrigadeComponents
 @using MudBlazor
 @using ZAK.Services.ScheduleManagerService
 
@@ -70,6 +69,12 @@
 
     private async Task ItemDroppedHandler(MudItemDropInfo<ApplicationScheduled> dropItem)
     {
+        if(dropItem == null || dropItem.Item == null || dropItem.DropzoneIdentifier == null)
+        {
+            _logger.LogWarning("Drop item or its properties are null. Cannot process the drop.");
+            return;
+        }
+
         if(dropItem.Item.id == 0)
         {
             if(dropItem.Item.brigadeId == Int32.Parse(dropItem.DropzoneIdentifier))

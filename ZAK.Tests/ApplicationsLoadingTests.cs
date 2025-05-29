@@ -151,7 +151,7 @@ public class ApplicationsLoadingTests : ZakTestBase
         Assert.True(addedApplications.Where(a => a.operatorComment == "Applications comment 2 UPDATED").First().statusWasChecked);
         Assert.Equal(2, addedDistricts.Count);
         Assert.Equal(2, addedApplications.Count);
-        Assert.Single(addedApplications.Where(a => a.applicationWasUpdated is true));
+        Assert.Single(addedApplications, a => a.applicationWasUpdated is true);
         Assert.Equal("Application comment 3", addedApplications.Last().operatorComment);
     }
 }

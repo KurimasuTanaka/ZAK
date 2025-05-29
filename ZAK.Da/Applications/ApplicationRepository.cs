@@ -138,8 +138,8 @@ public class ApplicationRepository : IApplicationReporisory
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
                 var result = await context.applications.AsNoTracking()
-                    .Include(a => a.address).ThenInclude(a => a.district)
-                    .Include(a => a.address.coordinates)
+                    .Include(a => a.address).ThenInclude(a => a!.district)
+                    .Include(a => a.address!.coordinates)
                     .Select(a => new Application(a))
                     .ToListAsync();
                 _logger.LogInformation("Retrieved {Count} applications", result.Count);
@@ -161,12 +161,13 @@ public class ApplicationRepository : IApplicationReporisory
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                var result = context.applications.AsNoTracking()
-                    .Include(a => a.address).ThenInclude(a => a.district)
-                    .Include(a => a.address.coordinates)
+                var result = await context.applications.AsNoTracking()
+                    .Include(a => a.address).ThenInclude(a => a!.district)
+                    .Include(a => a.address!.coordinates)
                     .Select(a => new Application(a))
-                    .ToList()
-                    .Where(a => a.applicationWasUpdated).ToList();
+                    .ToListAsync();
+
+                result = result.Where(a => a.applicationWasUpdated).ToList();
                 _logger.LogInformation("Retrieved {Count} updated applications", result.Count);
                 return result;
             }
@@ -186,12 +187,13 @@ public class ApplicationRepository : IApplicationReporisory
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                var result = context.applications.AsNoTracking()
-                    .Include(a => a.address).ThenInclude(a => a.district)
-                    .Include(a => a.address.coordinates)
-                    .Select(a => new Application(a)).ToList()
-                    .Where(a => !a.ignored)
-                    .ToList();
+                var result = await context.applications.AsNoTracking()
+                    .Include(a => a.address).ThenInclude(a => a!.district)
+                    .Include(a => a.address!.coordinates)
+                    .Select(a => new Application(a)).ToListAsync();
+
+                result = result.Where(a => !a.ignored).ToList();
+
                 _logger.LogInformation("Retrieved {Count} applications (not ignored)", result.Count);
                 return result;
             }
@@ -212,8 +214,8 @@ public class ApplicationRepository : IApplicationReporisory
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
                 var application = await context.applications.AsNoTracking()
-                    .Include(a => a.address).ThenInclude(a => a.district)
-                    .Include(a => a.address.coordinates)
+                    .Include(a => a.address).ThenInclude(a => a!.district)
+                    .Include(a => a.address!.coordinates)
                     .Select(a => new Application(a))
                     .FirstOrDefaultAsync(a => a.id == id);
 

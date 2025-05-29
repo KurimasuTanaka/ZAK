@@ -120,19 +120,6 @@ public class Application : ApplicationModel
         daysToDeadline = (dateTime.AddDays(maxDaysForConnection) - DateTime.Today).Days;
 
     }
-
-    public void SetupBlackoutZones(List<BlackoutModel> blackoutModels, int day, int time)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            BlackoutZone blackoutZone = blackoutModels.FirstOrDefault(b =>
-                b.group == this.address.blackoutGroup &&
-                b.day == day && b.time == time + 10 + i)?.zone ?? BlackoutZone.Unknown;
-
-            blackoutZones[i] = blackoutZone;
-        }
-    }
-
     public void CalculateApplicationPriorityLevel(Dictionary<string, double> coefficients, List<Application> nearApplications)
     {
         //Return if calculation of distance is impossible 

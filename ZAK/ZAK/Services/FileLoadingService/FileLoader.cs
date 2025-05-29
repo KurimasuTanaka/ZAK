@@ -16,10 +16,6 @@ public class FileLoader : IFileLoader
         _logger = logger;
     }
 
-    public FileLoader()
-    {
-    }
-
     public void DeleteTempFiles()
     {    
         foreach(string tempFile in tempFiles)

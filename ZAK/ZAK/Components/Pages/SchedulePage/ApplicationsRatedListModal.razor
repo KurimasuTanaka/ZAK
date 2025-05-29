@@ -3,15 +3,15 @@
 
 @inject IApplicationReporisory _applicationRepository;
 @inject ICoefficientRepository _coefficientRepository;
-@inject IBlackoutScheduleDataAccess blackoutScheduleDataAccess;
 
 <Modal @ref=applicationsList Title="Выбрать заявку" Size="ModalSize.ExtraLarge">
     <BodyTemplate>
-        <Button Color="ButtonColor.Light" @onclick="LeaveChosenTimeEmpty">Залишити час пустим</Button> 
+        <Button Color="ButtonColor.Light" @onclick="LeaveChosenTimeEmpty">Залишити час пустим</Button>
 
         <Grid TItem="Application" Class="table table-hover table-bordered" Data="applications" AllowDetailView="true"
-            AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true" OnRowDoubleClick="AddApplicationToSchedule"
-            AllowRowClick="true" style="width: 100%; height: 100%; border-collapse: collapse;">
+            AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true"
+            OnRowDoubleClick="AddApplicationToSchedule" AllowRowClick="true"
+            style="width: 100%; height: 100%; border-collapse: collapse;">
             <GridColumns>
                 @*Id column with set of interactive components*@
                 <GridColumn TItem="Application" HeaderText="Id" PropertyName="id">
@@ -53,7 +53,8 @@
                     <span>@context.year.@context.month.@context.day</span>
                 </GridColumn>
 
-                <GridColumn TItem="Application" HeaderText="Приоритет" SortKeySelector="item=> item.priority" IsDefaultSortColumn="true" SortDirection="BlazorBootstrap.SortDirection.Descending">
+                <GridColumn TItem="Application" HeaderText="Приоритет" SortKeySelector="item => item.priority"
+                    IsDefaultSortColumn="true" SortDirection="BlazorBootstrap.SortDirection.Descending">
                     <span>@context.priority</span>
                 </GridColumn>
 
@@ -78,7 +79,14 @@
                 </GridColumn>
 
                 <GridColumn TItem="Application" HeaderText="Доступ">
-                    @(context.address.equipmentAccess.GetDisplayName())
+                    @if (context.address is not null)
+                    {
+                        context.address.equipmentAccess.GetDisplayName();
+                    }
+                    else 
+                    {
+                        <span>Немає інформації по доступу</span>
+                    }
                 </GridColumn>
 
             </GridColumns>
@@ -87,7 +95,8 @@
             <GridDetailView TItem="Application">
                 <div class="row">
                     <div class="col">
-                        <CommentComponent masterComment="@context.masterComment" operatorComment="@context.operatorComment" />
+                        <CommentComponent masterComment="@context.masterComment"
+                            operatorComment="@context.operatorComment" />
                     </div>
                 </div>
 
@@ -114,13 +123,15 @@
         scheduledTime = scheduledApplication.applicationScheduledTime;
         scheduledBrigadeId = scheduledApplication.brigadeId;
 
-        applications  =  (await _applicationRepository.GetAllWithIgnoringAsync()).ToList();
-        
+        applications = (await _applicationRepository.GetAllWithIgnoringAsync()).ToList();
+
         //this.applicationWasChosen = applicationWasChosen;
 
         //Find near applications
-        Application? newApplication1 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications, scheduledTime, -1));
-        Application? newApplication2 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications, scheduledTime, 1));
+        Application? newApplication1 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications,
+        scheduledTime, -1));
+        Application? newApplication2 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications,
+        scheduledTime, 1));
 
         List<Application> nearApplications = new List<Application>();
         if (newApplication1 != null) nearApplications.Add(newApplication1);
@@ -131,47 +142,12 @@
         applications = applications.Where(x => !scheduledApplications.Select(a => a.id).Contains(x.id)).ToList();
 
         //Get priorities from db
-        Dictionary<string, double> priorities = (await _coefficientRepository.GetAllAsync()).ToDictionary(x => x.parameter, x => x.coefficient);
+        Dictionary<string, double> priorities = (await _coefficientRepository.GetAllAsync()).ToDictionary(x => x.parameter, x =>
+        x.coefficient);
 
         //Calculate priority for all applications
         for (int i = 0; i < applications.Count; i++) applications[i].CalculateApplicationPriorityLevel(priorities,
         nearApplications);
-
-        //Find new zones for applications
-        List<BlackoutModel> blackoutZones = await blackoutScheduleDataAccess.GetBlackouts();
-
-        DateTime tomorrow = DateTime.Today.AddDays(1);
-        int day = 0;
-        switch (tomorrow.DayOfWeek)
-        {
-            case DayOfWeek.Monday:
-                day = 1;
-                break;
-            case DayOfWeek.Tuesday:
-                day = 2;
-                break;
-            case DayOfWeek.Wednesday:
-                day = 3;
-                break;
-            case DayOfWeek.Thursday:
-                day = 4;
-                break;
-            case DayOfWeek.Friday:
-                day = 5;
-                break;
-            case DayOfWeek.Saturday:
-                day = 6;
-                break;
-            case DayOfWeek.Sunday:
-                day = 7;
-                break;
-        }
-
-
-        foreach (var application in applications)
-        {
-            application.SetupBlackoutZones(blackoutZones, day, scheduledTime);
-        }
 
         await applicationsList.ShowAsync();
     }

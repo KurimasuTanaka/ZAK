@@ -9,9 +9,7 @@ public class AddressAliasModel
 {
     [Key]
     public int addressId { get; set; }
-
-    //[ForeignKey ("addressId")]
-    public AddressModel address { get; set; }
+    public AddressModel address { get; set; } = new AddressModel();
 
     public string streetAlias { get; set; } = String.Empty;
     public string buildingAlias { get; set; } = String.Empty;

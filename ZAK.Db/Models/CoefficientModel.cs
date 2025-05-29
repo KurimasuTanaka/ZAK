@@ -9,7 +9,7 @@ public class CoefficientModel
     [Key]
     public int id { get; set; }
     
-    public string parameter { get; set; }
+    public string parameter { get; set; } = String.Empty;
     public string parameterAlias { get; set; } = String.Empty;
 
     public double coefficient { get; set; } = 1;

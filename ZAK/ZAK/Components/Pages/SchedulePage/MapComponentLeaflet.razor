@@ -83,14 +83,15 @@
         _logger.LogInformation("MapComponentLeaflet is drawing markers");
 
 
-        List<Application> applications = (await _applicationRepository.GetAllWithIgnoringAsync()).ToList();
+        List<Application> applications = (await _applicationRepository.GetAllWithIgnoringAsync()).
+            Where(a => a.address is not null && a.address.coordinates is not null).
+            ToList();
 
         foreach (var application in applications)
         {
-
             var temp = new
             {
-                lat = application.address.coordinates.lat,
+                lat = application.address!.coordinates!.lat,
                 lon = application.address.coordinates.lon,
                 id = application.id,
                 stretchingStatus = application.stretchingStatus,

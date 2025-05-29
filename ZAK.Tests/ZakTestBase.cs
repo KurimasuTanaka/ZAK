@@ -34,7 +34,6 @@ public class ZakTestBase : IDisposable
     protected IDao<AddressCoordinates, AddressCoordinatesModel> addressCoordinatesDao;
     protected IDao<AddressAlias, AddressAliasModel> addressAliasesDao;
     protected IDao<AddressPriority, AddressPriorityModel> addressPrioritiesDao;
-    protected IBrigadeRepository brigadesDao;
     protected IDao<ZAK.DA.District, Db.Models.DistrictModel> districtsDao;
 
     public ZakTestBase()

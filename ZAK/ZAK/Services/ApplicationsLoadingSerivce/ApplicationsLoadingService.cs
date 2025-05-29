@@ -14,8 +14,10 @@ namespace ZAK.Services.ApplicationsLoadingService;
 public class ApplicationsLoadingService : IApplicationsLoadingService
 {
     private readonly ILogger<ApplicationsLoadingService> _logger;
-    private readonly IFileLoader _fileLoader;
-    private readonly IApplicationsScrapper _applicationScrapper;
+
+    // File loader and scrapper are optional dependencies for testing purposes.
+    private readonly IFileLoader? _fileLoader;
+    private readonly IApplicationsScrapper? _applicationScrapper;
 
     private readonly IApplicationReporisory _applicationRepository;
     private readonly IAddressRepository _addressRepository;
@@ -23,8 +25,8 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
     public ApplicationsLoadingService(
         IApplicationReporisory applicationReporisory,
         IAddressRepository addressRepository,
-        IApplicationsScrapper applicationsScrapper,
-        IFileLoader fileLoader,
+        IApplicationsScrapper? applicationsScrapper,
+        IFileLoader? fileLoader,
         ILogger<ApplicationsLoadingService> logger)
     {
         _fileLoader = fileLoader;
@@ -38,9 +40,9 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
     {
         _logger.LogInformation("Updating applications...");
 
-        await _fileLoader.LoadFile(file);
+        await _fileLoader!.LoadFile(file);
 
-        List<Application> parsedApplications = await _applicationScrapper.ScrapApplicationData(_fileLoader.GetLastLoadedFile());
+        List<Application> parsedApplications = await _applicationScrapper!.ScrapApplicationData(_fileLoader.GetLastLoadedFile());
 
         //Updating application list in DB
         await ProceedApplications(parsedApplications);
@@ -98,7 +100,7 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
 
         //Insert addresses with districts
 
-        List<Address> parsedAddresses = parsedApplications.Select(app => new Address(app.address)).ToList();
+        List<Address> parsedAddresses = parsedApplications.Where(app => app.address is not null).Select(app => new Address(app.address!)).ToList();
         parsedAddresses.RemoveAll(address => address is null);
 
         List<Address> oldAddresses = (await _addressRepository.GetAllAsync()).ToList();

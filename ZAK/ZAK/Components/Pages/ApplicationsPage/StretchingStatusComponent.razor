@@ -37,16 +37,6 @@
     [Parameter] public StretchingStatus stretchingStatus {get;set;}
     [Parameter] public int applicationId {get;set;}
 
-    private string color = "White";
-
-    protected override void OnParametersSet()
-    {
-        if(stretchingStatus == StretchingStatus.DoNotStrech) color = "#add8e6";
-        if(stretchingStatus == StretchingStatus.Streched) color = "#90ee90";
-        if(stretchingStatus == StretchingStatus.NotSctreched) color = "White";
-        if(stretchingStatus == StretchingStatus.WillBeStreched) color = "#d3d3d3";
-    }
-
     public static string GetStrechingStatusClass(StretchingStatus s)
     {
         if(s == StretchingStatus.DoNotStrech) return "statusDoNotStrech";

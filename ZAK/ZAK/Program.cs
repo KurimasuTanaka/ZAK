@@ -62,8 +62,6 @@ public class Program
         builder.Services.AddTransient<IAddressRepository, AddressRepository>();
         builder.Services.AddTransient<ICoefficientRepository, CoefficientRepository>();
 
-        builder.Services.AddTransient<IBlackoutScheduleDataAccess, BlackoutScheduleDataAccess>();
-
         builder.Services.AddScoped<IFileLoader, FileLoader>();
         builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();

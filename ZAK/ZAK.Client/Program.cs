@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Syncfusion.Blazor;
 namespace ZAK.Client;
 
 class Program
@@ -8,7 +7,6 @@ class Program
     {
         var builder = WebAssemblyHostBuilder.CreateDefault(args);
         builder.Services.AddBlazorBootstrap();
-        builder.Services.AddSyncfusionBlazor();
         await builder.Build().RunAsync();
     }
 }
