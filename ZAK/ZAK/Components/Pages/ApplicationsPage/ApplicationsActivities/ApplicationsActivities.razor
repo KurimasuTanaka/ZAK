@@ -1,11 +1,10 @@
 ﻿<ApplicationAdditionModal @ref="applicatonAdditionModal" ApplicationsInformationWasChanged="ApplicationsInformationWasChanged" />
 
-<Card class="my-3">
-  <CardBody class="gap-3" style="display:flex; flex-direction:row">
+  <div class="gap-3 my-3" style="display:flex; flex-direction:row">
     <ApplicationsFileLoader ApplicationsInformationWasChanged="ApplicationsInformationWasChanged" />
     <Button @onclick="@(async () => await applicatonAdditionModal.ShowModal())" Color="ButtonColor.Info">Додати нову заявку</Button>
-  </CardBody>
-</Card>
+  </div>
+
 
 @code {
   [Parameter]

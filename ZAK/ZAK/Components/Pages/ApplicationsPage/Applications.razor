@@ -16,16 +16,19 @@
 
 @inject ILogger<Applications> _logger;
 
+<PageTitle>Заявки</PageTitle>
+
+
 <ApplicationEditorModal @ref="applicationEditorModal" />
 
 
 
 <Card class="my-3">
   <CardBody>
+    <ApplicationsActivities />
     <Switch Label="Показувати тільки оновлені" @bind-Value="showUpdated" @bind-Value:after="Redraw" />
     <Switch Label="Показувати ігноровані" @bind-Value="showIgnored" Disabled="@showUpdated"
       @bind-Value:after="Redraw" />
-    <ApplicationsActivities />
   </CardBody>
 </Card>
 
@@ -34,7 +37,7 @@
   SelectionMode="GridSelectionMode.Multiple" Responsive="true">
 
   @*Id column with set of interactive components*@
-  <GridColumn TItem="Application" HeaderText="Id" PropertyName="id" SortKeySelector="item => item.id">
+  <GridColumn TItem="Application" HeaderText="№" PropertyName="id" SortKeySelector="item => item.id">
     <div>
       @context.id
       <Button @onclick="@(mouseArg => applicationEditorModal.ShowModal(context))">
@@ -56,18 +59,18 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
   @*Interactivity column*@
-  <GridColumn TItem="Application" HeaderText="Параметры">
+  <GridColumn TItem="Application" HeaderText="Параметри">
 
-    <Switch Label="Интересовался статусом" @bind-Value="@context.statusWasChecked"
+    <Switch Label="Цікавився статусом" @bind-Value="@context.statusWasChecked"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
     <Switch Label="Срочка" @bind-Value="@context.urgent"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
-    <Switch Label="Есть свободный кабель" @bind-Value="@context.freeCable"
+    <Switch Label="Є вільний кабель" @bind-Value="@context.freeCable"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
-    <Switch Label="Смена тарифа" @bind-Value="@context.tarChangeApp"
+    <Switch Label="Зміна тарифу" @bind-Value="@context.tarChangeApp"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
     <hr>
@@ -78,20 +81,21 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
 
-  @*Column with name of the district *@
-  <GridColumn TItem="Application" HeaderText="District" PropertyName="districtName" style="width: 5%;"
+  @*Column with name of the district 
+  <GridColumn TItem="Application" HeaderText="Район" PropertyName="districtName" style="width: 5%;" TextAlignment="Alignment.Center"
     SortKeySelector="item => item.districtName">
     @context.districtName
   </GridColumn>
-
+*@
   @*Column name with name of the street*@
-  <GridColumn TItem="Application" HeaderText="Street" PropertyName="streetName"
-    SortKeySelector="item => item.streetName">
-    @(context.streetName + " " + context.building);
+  <GridColumn TItem="Application" HeaderText="Адреса" PropertyName="streetName"
+    SortKeySelector="item => item.streetName" TextAlignment="Alignment.Center">
+    <h6>@(context.districtName)</h6><br>
+    @(context.representableAddress);
   </GridColumn>
 
   @*Column with stretching status ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-  <GridColumn style="width: 10%;" TItem="Application" HeaderText="Stretching" PropertyName="stretchingStatus"
+  <GridColumn style="width: 10%;" TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus"
     SortKeySelector="item => item.stretchingStatus"
     ColumnClass="@(x => StretchingStatusComponent.GetStrechingStatusClass(x.stretchingStatus))">
 
@@ -100,13 +104,13 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
   @*Column for comments section*@
-  <GridColumn TItem="Application" HeaderText="Comment" PropertyName="operatorComment">
+  <GridColumn TItem="Application" HeaderText="Коментар" PropertyName="operatorComment">
     <CommentComponent operatorComment="@context.operatorComment" masterComment="@context.masterComment">
     </CommentComponent>
   </GridColumn>
 
   @*Column for date*@
-  <GridColumn TItem="Application" HeaderText="Date" style="width: 15%;">
+  <GridColumn TItem="Application" HeaderText="Дата" style="width: 15%;">
     <span>@context.year.@context.month.@context.day</span>
     <span>
       <h6>Дней к дедлайну: </h6> @context.daysToDeadline
@@ -117,9 +121,6 @@
 @code {
   private bool showIgnored = true;
 
-  //Make this thing async
-
-  ApplicationAdditionModal applicationAdditionModal = default!;
   ApplicationEditorModal applicationEditorModal = default!;
   private Grid<Application> applicationsGrid = default!;
   private bool showUpdated = false;

@@ -66,6 +66,21 @@ public class Application : ApplicationModel
         }
     }
 
+    public string representableAddress
+    {
+        get
+        {
+            if (address is null) return "";
+            int bracketIndex = address.streetName.IndexOf('(');
+            if (bracketIndex != -1)
+            {
+                // If there is a bracket, return the part before it
+                return address.streetName.Substring(0, bracketIndex).Trim() + " " + address.building;
+            }
+            return address.streetName + " " + address.building;
+        }
+    }
+
     public Application() { }
     public Application(ApplicationModel model) : base(model)
     {

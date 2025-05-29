@@ -42,6 +42,7 @@
         var newUser = new ClaimsPrincipal(identity);
 
         await context!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, newUser);
+        NavigationManager.NavigateTo("/applications");
     }
 
 
