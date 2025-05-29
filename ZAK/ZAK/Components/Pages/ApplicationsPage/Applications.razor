@@ -80,17 +80,10 @@
 
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
-
-  @*Column with name of the district 
-  <GridColumn TItem="Application" HeaderText="Район" PropertyName="districtName" style="width: 5%;" TextAlignment="Alignment.Center"
-    SortKeySelector="item => item.districtName">
-    @context.districtName
-  </GridColumn>
-*@
   @*Column name with name of the street*@
   <GridColumn TItem="Application" HeaderText="Адреса" PropertyName="streetName"
-    SortKeySelector="item => item.streetName" TextAlignment="Alignment.Center">
-    <h6>@(context.districtName)</h6><br>
+    SortKeySelector="item => item.address!.streetName" TextAlignment="Alignment.Center">
+    <h6>@(context.address!.district!.name)</h6><br>
     @(context.representableAddress);
   </GridColumn>
 

@@ -5,10 +5,10 @@
                 <AddressCoordinatesClearButtonComponent addressId="@context.Id" informationUpdated="informationUpdated" />
             </td>
             <td>
-                <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Latitude" Lat="@true" />
+                <CoordinatesInputComponent addressId="context.Id" coordinate="@context.coordinates!.lat" Lat="@true" />
             </td>
             <td>
-                <CoordinatesInputComponent addressId="context.Id" coordinate="@context.Longtitude" Lon="@true" />
+                <CoordinatesInputComponent addressId="context.Id" coordinate="@context.coordinates!.lat" Lon="@true" />
             </td>
         </tr>
     </table>

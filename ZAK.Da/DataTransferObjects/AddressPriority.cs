@@ -7,31 +7,6 @@ namespace ZAK.DA;
 
 public class AddressPriority : AddressPriorityModel
 {
-    public string streetName
-    {
-        get
-        {
-            return address.streetName;
-        }
-        set
-        {
-            address.streetName = value;
-        }
-    }
-
-    public string building
-    {
-        get
-        {
-            return address.building;
-        }
-        set
-        {
-            address.building = value;
-        }
-
-
-    }
 
     public AddressPriority() { }
     public AddressPriority(AddressPriorityModel model) : base(model) { }

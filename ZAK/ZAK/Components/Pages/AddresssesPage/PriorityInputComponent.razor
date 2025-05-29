@@ -26,7 +26,7 @@
 
         if (address != null)
         {
-            address.priority = priority;
+            address.addressPriority!.priority = priority;
             await _addressRepository.UpdateAsync(address);
         }
         else

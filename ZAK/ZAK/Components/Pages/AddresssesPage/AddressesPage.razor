@@ -36,7 +36,7 @@
 
     <GridColumns>
 
-        <GridColumn TItem="Address" HeaderText="-" Filterable="false" Sortable="false">
+        <GridColumn TItem="Address" HeaderText="-" Filterable="false" Sortable="false" TextAlignment="Alignment.Center" >
             <Button @onclick="@(mouseArg => addressEditingModal.ShowModal(context))">
                 <Icon Name="IconName.Pencil" />
             </Button>
@@ -50,14 +50,14 @@
             @context.building
         </GridColumn>
         <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority" ColumnClass="@(x => "W5")">
-            <PriorityInputComponent addressId="context.Id" priority="context.priority"  />
+            <PriorityInputComponent addressId="context.Id" priority="context.addressPriority!.priority"  />
         </GridColumn>
 
         <GridColumn TItem="Address" HeaderText="Альт. вулиця" PropertyName="streetNameAlias">
-            <AliasInputComponent addressId="context.Id" alias="@context.streetNameAlias" streetAlias="@true" />
+            <AliasInputComponent addressId="context.Id" alias="@(context.addressAlias is not null ? context.addressAlias!.streetAlias : "")" streetAlias="@true" />
         </GridColumn>
         <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias" ColumnClass="@(x => "W5")">
-            <AliasInputComponent addressId="context.Id" alias="@context.buildingAlias" streetAlias="@false" />
+            <AliasInputComponent addressId="context.Id" alias="@(context.addressAlias is not null ? context.addressAlias!.buildingAlias : "")" streetAlias="@false" />
         </GridColumn>
 
 

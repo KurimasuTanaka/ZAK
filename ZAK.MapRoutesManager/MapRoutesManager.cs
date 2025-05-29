@@ -92,7 +92,9 @@ public class MapRoutesManager : IMapRoutesManager
         foreach (Brigade brigade in brigades)
         {
             addresses.Add(new List<Address>());
-            addresses.Last().AddRange(brigade.scheduledApplications.Select(a => a.application).Select(a => new Address(a.address)).ToList());
+            addresses.Last().AddRange(brigade.scheduledApplications.Select(a => a.application).
+                Where(a => a.address is not null).Select(a => new Address(a.address!)).
+                ToList());
         }
 
         return addresses;
@@ -106,8 +108,8 @@ public class MapRoutesManager : IMapRoutesManager
 
         for (int i = 0; i < addressList.Count - 1; i++)
         {
-            var start = _router.TryResolve(vehicle, (float)addressList[i].Latitude, (float)addressList[i].Longtitude, 150);
-            var end = _router.TryResolve(vehicle, (float)addressList[i + 1].Latitude, (float)addressList[i + 1].Longtitude, 150);
+            var start = _router.TryResolve(vehicle, (float)addressList[i].coordinates!.lat, (float)addressList[i].coordinates!.lon, 150);
+            var end = _router.TryResolve(vehicle, (float)addressList[i + 1].coordinates!.lat, (float)addressList[i + 1].coordinates!.lon, 150);
             if (start.IsError || end.IsError)
             {
                 throw new Exception("Error while resolving address");
@@ -116,8 +118,8 @@ public class MapRoutesManager : IMapRoutesManager
             var route = _router.TryCalculate(vehicle, start.Value, end.Value);
             if (route.IsError)
             {
-                path.Add(new Vector2((float)addressList[i].Latitude, (float)addressList[i].Longtitude));
-                path.Add(new Vector2((float)addressList[i + 1].Latitude, (float)addressList[i + 1].Longtitude));
+                path.Add(new Vector2((float)addressList[i].coordinates!.lat, (float)addressList[i].coordinates!.lon));
+                path.Add(new Vector2((float)addressList[i + 1].coordinates!.lat, (float)addressList[i + 1].coordinates!.lon));
             }
             else path.AddRange(route.Value.Shape.Select(s => new Vector2(s.Latitude, s.Longitude)));
         }
@@ -141,7 +143,7 @@ public class MapRoutesManager : IMapRoutesManager
     {
         var vehicle = Itinero.Osm.Vehicles.Vehicle.Car.Fastest();
 
-        var result = _router.TryResolve(vehicle, (float)address.Latitude, (float)address.Longtitude, radius);
+        var result = _router.TryResolve(vehicle, (float)address.coordinates!.lat, (float)address.coordinates!.lon, radius);
         if (result.IsError)
         {
             return false;
@@ -153,7 +155,7 @@ public class MapRoutesManager : IMapRoutesManager
     {
         var vehicle = Itinero.Osm.Vehicles.Vehicle.Car.Fastest();
 
-        bool result = _router.CheckConnectivity(vehicle, new RouterPoint((float)address.Latitude, (float)address.Longtitude, 0, 0), radius);
+        bool result = _router.CheckConnectivity(vehicle, new RouterPoint((float)address.coordinates!.lat, (float)address.coordinates!.lon, 0, 0), radius);
         if (result)
         {
             return false;

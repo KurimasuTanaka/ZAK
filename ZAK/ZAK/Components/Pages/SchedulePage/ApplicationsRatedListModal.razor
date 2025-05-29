@@ -18,27 +18,19 @@
                     <div>
                         @context.id
                     </div>
-                    @*Interactive components in Id section ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-                    @* <CheckBoxInputComponent label="Важлива заявка" applicationId="@context.id" propertyName="hot"
-                        propertyValue="@((bool)context["hot"])" />
-
-                    <TimeframeApplicationComponent applicationId="@context.id" firstPart="@context.firstPart"
-                        secondPart="@context.secondPart" timeRangeIsSet="@context.timeRangeIsSet"
-                        startHour="@context.startHour" endHour="@context.endHour">
-                    </TimeframeApplicationComponent> *@
                 </GridColumn>
                 @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
                 @*Column with name of the district *@
                 <GridColumn TItem="Application" HeaderText="District" PropertyName="districtName"
-                    SortKeySelector="item => item.districtName">
-                    @context.districtName
+                    SortKeySelector="item => item.address!.district!.name">
+                    @context.address!.district!.name
                 </GridColumn>
 
                 @*Column name with name of the street*@
                 <GridColumn TItem="Application" HeaderText="Street" PropertyName="streetName"
-                    SortKeySelector="item => item.streetName">
-                    @(context.streetName + " " + context.building);
+                    SortKeySelector="item => item.address!.streetName">
+                    @(context.address!.streetName + " " + context.address.building);
                 </GridColumn>
 
                 <GridColumn TItem="Application" HeaderText="Stretched" PropertyName="stretchingStatus"
@@ -66,27 +58,10 @@
                     }
                 </style>
 
-                <GridColumn TItem="Application" HeaderText="220" ColumnClass="@(x => "blackoutCell")">
-                    <table
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-collapse: collapse;">
-                        <tr>
-                            <BlackoutTimeComponent blackoutZone="@context.blackoutZones[0]" />
-                            <BlackoutTimeComponent blackoutZone="@context.blackoutZones[1]" />
-                            <BlackoutTimeComponent blackoutZone="@context.blackoutZones[2]" />
-                        </tr>
-                    </table>
-
-                </GridColumn>
-
                 <GridColumn TItem="Application" HeaderText="Доступ">
-                    @if (context.address is not null)
-                    {
-                        context.address.equipmentAccess.GetDisplayName();
-                    }
-                    else 
-                    {
-                        <span>Немає інформації по доступу</span>
-                    }
+
+                    @context.address!.equipmentAccess.GetDisplayName();
+
                 </GridColumn>
 
             </GridColumns>

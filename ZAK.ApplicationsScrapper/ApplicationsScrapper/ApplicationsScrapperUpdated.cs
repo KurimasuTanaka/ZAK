@@ -77,12 +77,12 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
     }
     private Application ScrapApplicationStreetName(Application application, HtmlNode applicationNode)
     {
-        application.streetName = applicationNode.SelectSingleNode("td[3]/b").InnerHtml;
+        application.address!.streetName = applicationNode.SelectSingleNode("td[3]/b").InnerHtml;
         return application;
     }
     private Application ScrapApplicationBuilding(Application application, HtmlNode applicationNode)
     {
-        application.building = applicationNode.SelectSingleNode("td[4]/b").InnerHtml;
+        application.address!.building = applicationNode.SelectSingleNode("td[4]/b").InnerHtml;
         return application;
     }
     private Application ScrapApplicationDate(Application application, HtmlNode applicationNode)

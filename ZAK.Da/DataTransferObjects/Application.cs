@@ -9,54 +9,7 @@ namespace ZAK.DA;
 public class Application : ApplicationModel
 {
     public double priority = 0.0;
-
     public int daysToDeadline = 0;
-
-    public BlackoutZone[] blackoutZones = [BlackoutZone.Unknown, BlackoutZone.Unknown, BlackoutZone.Unknown];
-
-    public string streetName
-    {
-        get
-        {
-            return address?.streetName ?? "";
-        }
-        set
-        {
-            if (address is not null) address.streetName = value;
-        }
-    }
-
-    public string building
-    {
-        get
-        {
-            return address?.building ?? "";
-        }
-        set
-        {
-            if (address is not null) address.building = value;
-        }
-    }
-
-    public string districtName
-    {
-        get
-        {
-            if (address is null || address.district is null) return "";
-            return address.district.name ?? "";
-        }
-    }
-
-    public string districtColor
-    {
-        get
-        {
-            
-            if (address is null || address.district is null) return "";
-            return address.district.color ?? "";
-        }
-    }
-
 
     public bool applicationWasUpdated
     {

@@ -9,7 +9,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ZAK.DAO\ZAK.DAO.csproj" />
     <ProjectReference Include="..\ZAK.Db\ZAK.Db.csproj" />
-    <Folder Include="DbContextFactory\" />
   </ItemGroup>
 
 </Project>

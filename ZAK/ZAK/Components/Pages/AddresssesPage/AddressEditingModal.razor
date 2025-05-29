@@ -8,10 +8,10 @@
         <MudStack Spacing="1">
             <MudTextField @bind-Value="address.streetName" Label="Вулиця" Variant="Variant.Outlined" />
             <MudTextField @bind-Value="address.building" Label="Будинок" Variant="Variant.Outlined" />
-            <MudTextField @bind-Value="address.streetNameAlias" Label="Альт. вулиця" Variant="Variant.Outlined" />
-            <MudTextField @bind-Value="address.buildingAlias" Label="Альт. будинок" Variant="Variant.Outlined" />
-            <MudNumericField @bind-Value="address.Latitude" Label="Широта" Variant="Variant.Outlined" />
-            <MudNumericField @bind-Value="address.Longtitude" Label="Долгота" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="address.addressAlias!.streetAlias" Label="Альт. вулиця" Variant="Variant.Outlined" />
+            <MudTextField @bind-Value="address.addressAlias!.buildingAlias" Label="Альт. будинок" Variant="Variant.Outlined" />
+            <MudNumericField @bind-Value="address.coordinates!.lat" Label="Широта" Variant="Variant.Outlined" />
+            <MudNumericField @bind-Value="address.coordinates!.lon" Label="Долгота" Variant="Variant.Outlined" />
         </MudStack>
         <MudButton @onclick="SaveChanges" Variant="Variant.Filled" Color="Color.Primary">Зберегти зміни</MudButton>
     </BodyTemplate>
