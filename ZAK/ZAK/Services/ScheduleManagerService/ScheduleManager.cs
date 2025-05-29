@@ -27,23 +27,6 @@ public class ScheduleManager : IScheduleManager
     {
         _logger.LogInformation($"Updating brigade {brigade.id}...");
 
-        // await _brigadeDataAccess.Update(
-        // brigade,
-        // brigade.id,
-        // includeQuery: b => b.Include(b => b.scheduledApplications).ThenInclude(sa => sa.application),
-        // findPredicate: b => b.id == brigade.id,
-        // inputDataProccessingQuery: (b, context) =>
-        // {
-        //     foreach (var schedule in brigade.scheduledApplications)
-        //     {
-        //         if (schedule.application != null)
-        //         {
-        //             context.Attach(schedule.application);
-        //         }
-        //     }
-        //     return b;
-        // });
-
         await _brigadeRepository.UpdateAsync(brigade);
 
         _logger.LogInformation($"Brigade {brigade.id} updated!");

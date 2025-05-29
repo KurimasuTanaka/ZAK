@@ -7,7 +7,7 @@
 <div style="width: 50%">
     <Button Color="ButtonColor.Secondary" @onclick="AddNewBrigade">Додати бригаду</Button >
     <BrigadeDeletionDropdown brigadeWasDeleted="RefreshList" />
-
+    <ScheduleCopyButton />
     <BrigadeList @ref=@brigadeList  RefreshMap="async (value) => {await RefreshMap.InvokeAsync();}"/>
 </div>
 
