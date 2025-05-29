@@ -119,7 +119,7 @@ public class BrigadeRepository : IBrigadeRepository
             {
                 var result = await context.brigades.AsNoTracking()
                     .Include(b => b.scheduledApplications)
-                    .ThenInclude(sa => sa.application).ThenInclude(a => a.address).ThenInclude(a => a.coordinates)
+                    .ThenInclude(sa => sa.application).ThenInclude(a => a.address).ThenInclude(a => a!.coordinates)
                     .Select(b => new Brigade(b))
                     .ToListAsync();
                 _logger.LogInformation("Retrieved {Count} brigades with scheduled application info", result.Count);

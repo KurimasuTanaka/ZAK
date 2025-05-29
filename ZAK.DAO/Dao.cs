@@ -12,7 +12,7 @@ using ZAK.Db.Models;
 namespace ZAK.DAO;
 
 public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
-                                                where EntityT : class
+                                                where EntityT : class, new()
                                                 where TransObjT : class, EntityT, new()
 {
     private IDbContextFactory<ZakDbContext> _dbContextFactory;
@@ -105,7 +105,7 @@ public class Dao<TransObjT, EntityT> : IDao<TransObjT, EntityT>
         _logger.LogInformation($"Inserting new entity of type {typeof(EntityT)}");
         await using (ZakDbContext dbContext = _dbContextFactory.CreateDbContext())
         {
-            EntityT insertedEntity = null;
+            EntityT insertedEntity = new();
             if (inputProcessQuery is not null) insertedEntity = inputProcessQuery(dbContext.Set<EntityT>(), entity, dbContext);
             else insertedEntity = entity;
 

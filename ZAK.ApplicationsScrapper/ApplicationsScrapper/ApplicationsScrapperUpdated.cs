@@ -59,7 +59,6 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
 
         application = TryScrapApplicationDeadline(application);
         application = TryScrapApplicationArrangmentStatus(application);
-        application = TryScrapAddressBlackoutGroup(application);
 
         return application;
     }
@@ -198,6 +197,7 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
         }
         catch (Exception e)
         {
+            _logger.LogError(e, "Error while trying to scrap application deadline for application with id {ApplicationId}", e.Message);
             return application;
         }
 
@@ -250,34 +250,6 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
             application.operatorComment.ToLower().Contains("домовлено") ||
             application.operatorComment.ToLower().Contains("договорено")
         ) application.ignored = true;
-
-        return application;
-    }
-
-    private Application TryScrapAddressBlackoutGroup(Application application)
-    {
-        int groupLineIndex = application.operatorComment.ToLower().IndexOf("група");
-        if (groupLineIndex == -1) return application;
-
-        int length = 15;
-        if (groupLineIndex + length > application.operatorComment.Length)
-        {
-            length = application.operatorComment.Length - groupLineIndex;
-        }
-
-        string groupLine = application.operatorComment.Substring(groupLineIndex, length);
-        string[] words = groupLine.Split(' ');
-        foreach (string word in words)
-        {
-            string wordToParse = new string(word.Where(c => char.IsDigit(c)).ToArray());
-            if (wordToParse.Length == 0) continue;
-
-            if (Int32.TryParse(wordToParse, out int group))
-            {
-                application.address.blackoutGroup = group;
-                return application;
-            }
-        }
 
         return application;
     }

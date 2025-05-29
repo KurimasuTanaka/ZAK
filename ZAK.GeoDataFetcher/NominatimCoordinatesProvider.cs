@@ -51,11 +51,14 @@ public class NominatimCoordinatesProvider : ICoordinatesProvider
 
             if (jsonNode.AsArray().Count > 1)
             {
-                if (jsonNode[0]!.AsObject().TryGetPropertyValue("addresstype", out var addresstype)) ;
-                if (addresstype is not null)
+                if (jsonNode[0]!.AsObject().TryGetPropertyValue("addresstype", out var addresstype))
                 {
-                    string addresstypeString = addresstype.ToString();
-                    if (!addresstypeString.Equals("building")) return;
+                    
+                if (addresstype is not null)
+                    {
+                        string addresstypeString = addresstype.ToString();
+                        if (!addresstypeString.Equals("building")) return;
+                    }
                 }
             }
             else if (jsonNode.AsArray().Count == 0) return;
@@ -63,6 +66,10 @@ public class NominatimCoordinatesProvider : ICoordinatesProvider
             string lat = jsonNode[0]!.AsObject().TryGetPropertyValue("lat", out var latValue) ? latValue!.ToString() : "0.0";
             string lon = jsonNode[0]!.AsObject().TryGetPropertyValue("lon", out var lonValue) ? lonValue!.ToString() : "0.0";
 
+            if (address.coordinates is null)
+            {
+                address.coordinates = new();
+            }
             address.coordinates.lat = Double.Parse(lat);
             address.coordinates.lon = Double.Parse(lon);
         }
