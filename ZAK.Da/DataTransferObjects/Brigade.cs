@@ -81,7 +81,18 @@ public class Brigade : BrigadeModel
         for(int i = 0; i < brigadeSlotsCount; i++)
         {
             ScheduledApplicationModel? scheduledApplication = scheduledApplications.Find(s => s.scheduledTime == i);
-            if(scheduledApplication is not null) applications.Add(new ApplicationScheduled(scheduledApplication.application, brigadeId: id, applicationScheduledTime: i));
+            if (scheduledApplication is not null)
+            {
+                //applications.Add(new ApplicationScheduled(scheduledApplication.application, brigadeId: id, applicationScheduledTime: i));
+
+                ApplicationScheduled? applicationScheduled = new();
+                applicationScheduled.id = scheduledApplication.application.id;
+                applicationScheduled.address = scheduledApplication.application.address;
+                applicationScheduled.brigadeId = scheduledApplication.brigadeId;
+                applicationScheduled.applicationScheduledTime = i;
+                applications.Add(applicationScheduled);
+
+            }
             else applications.Add(new ApplicationScheduled(this.id, i));
         }
         return applications;

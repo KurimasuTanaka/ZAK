@@ -95,7 +95,7 @@ public class BrigadeRepository : IBrigadeRepository
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
                 var result = await context.brigades.AsNoTracking()
-                    .Include(b => b.scheduledApplications)
+                    .Include(b => b.scheduledApplications).ThenInclude(sa => sa.application).ThenInclude(a => a.address)
                     .Select(b => new Brigade(b))
                     .ToListAsync();
                 _logger.LogInformation("Retrieved {Count} brigades", result.Count);

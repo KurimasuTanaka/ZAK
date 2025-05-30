@@ -81,10 +81,17 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
   @*Column name with name of the street*@
-  <GridColumn TItem="Application" HeaderText="Адреса" PropertyName="streetName"
-    SortKeySelector="item => item.address!.streetName" TextAlignment="Alignment.Center">
-    <h6>@(context.address!.district!.name)</h6><br>
-    @(context.representableAddress);
+  <GridColumn TItem="Application" HeaderText="Адреса" PropertyName="streetName" TextAlignment="Alignment.Center">
+
+    @if (context.address is not null)
+    {
+      <h6>@(context.address!.district!.name)</h6>
+    
+      <br>
+      @(context.representableAddress)
+      
+    }
+    else { <span class="text-danger">Адреса не вказана</span>}
   </GridColumn>
 
   @*Column with stretching status ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@

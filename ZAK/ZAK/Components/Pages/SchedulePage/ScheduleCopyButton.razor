@@ -1,0 +1,43 @@
+﻿@inject IJSRuntime JSRuntime;
+@inject IBrigadeRepository _brigadeRepository;
+@inject ILogger<ScheduleCopyButton> _logger;
+
+<Button @onclick="CopyShedule">Скопіювати графік</Button>
+
+@code {
+    private async Task CopyShedule(MouseEventArgs args)
+    {
+        string brigadeInChatFormat = "";
+
+        List<Brigade> brigades = (await _brigadeRepository.GetAllAsync()).ToList();
+
+        for (int i = 0; i < brigades.Count; i++)
+        {
+
+            brigadeInChatFormat += "Бригада " + (i + 1).ToString() + "\n";
+            List<ApplicationScheduled> scheduledApplications = brigades[i].GetApplications();
+
+            foreach (ApplicationScheduled application in scheduledApplications)
+            {
+                if (application.id == 0)
+                {
+                    brigadeInChatFormat +=
+                    (i + 10).ToString() + " - " + (i + 11).ToString() + " " +
+                    "----- Резерв -----\n";
+                }
+                else
+                {
+                    brigadeInChatFormat +=
+                    (i + 10).ToString() + " - " + (i + 11).ToString() + " " +
+                    application.id + " " + application.address!.streetName + " " +
+                    application.address!.building + "\n";
+                }
+            }
+
+            _logger.LogInformation("Brigade string generated successfully. \nInvoking clipboard function... ");
+
+            await JSRuntime.InvokeVoidAsync("CopyToClipboard", brigadeInChatFormat);
+
+        }
+    }
+}
