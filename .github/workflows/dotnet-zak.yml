@@ -1,0 +1,50 @@
+
+name: DEPLOY ZAK TO THE SERVER
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Publish
+      run: dotnet publish   --property:PublishDir=published 
+    - name: Upload files
+      uses: actions/upload-artifact@v4
+      with:
+        name: published_project
+        path: ZAK/published
+      
+  web-deploy:
+    needs: build
+    name: Deploy bot to the server
+    runs-on: ubuntu-latest
+    steps:
+    - name: Upload files
+      uses: actions/download-artifact@v4
+      with:
+        name: published_project
+        path: ZAK/published
+    - name: Sent published project by ssh
+      uses: burnett01/rsync-deployments@7.0.2
+      with:
+        switches: -avzr --delete
+        path: zak/published/
+        remote_path: /apps/emoticonBot/
+        remote_host: ${{ secrets.SSH_HOST }}
+        remote_user: ${{ secrets.SSH_USER }}
+        remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
