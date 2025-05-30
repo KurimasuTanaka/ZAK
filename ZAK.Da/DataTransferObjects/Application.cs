@@ -35,7 +35,7 @@ public class Application : ApplicationModel
     }
 
     public Application() { }
-    public Application(ApplicationModel model) 
+    public Application(ApplicationModel model) : base(model)
     {   
         SetupApplicationDeadline();
     }
