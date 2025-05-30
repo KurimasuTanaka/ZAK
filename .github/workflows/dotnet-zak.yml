@@ -2,10 +2,11 @@
 name: DEPLOY ZAK TO THE SERVER
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-
+  
 jobs:
   build:
 
