@@ -4,6 +4,7 @@ using ZAK.DA;
 using Itinero;
 using Itinero.IO.Osm;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 namespace ZAK.MapRoutesManager;
 
 public class MapRoutesManager : IMapRoutesManager
@@ -11,19 +12,26 @@ public class MapRoutesManager : IMapRoutesManager
     private RouterDb _routerDb = new RouterDb();
     private Router _router;
 
-    private ILogger<MapRoutesManager> _logger;
+    private readonly ILogger<MapRoutesManager> _logger;
     private readonly IBrigadeRepository _brigadeRepository;
-
-    public MapRoutesManager(ILogger<MapRoutesManager> logger, IBrigadeRepository brigadeRepository)
+    public MapRoutesManager(ILogger<MapRoutesManager> logger, IBrigadeRepository brigadeRepository, IConfiguration configuration)
     {
         _logger = logger;
         _brigadeRepository = brigadeRepository;
 
+
         _logger.LogInformation("Loading OSM data...");
+
+        string? osmFilePath = configuration["OsmFilePath"];
+        if (string.IsNullOrEmpty(osmFilePath))
+        {
+            _logger.LogError("OSM file path is not configured.");
+            throw new ArgumentException("OSM file path is not configured.");
+        }
 
         try
         {
-            using (var stream = new FileInfo(@"./../../kyiv.osm.pbf").OpenRead())
+            using (var stream = new FileInfo(osmFilePath).OpenRead())
             {
                 _routerDb.LoadOsmData(stream, Itinero.Osm.Vehicles.Vehicle.Car); // create the network for cars only.
             }
@@ -64,6 +72,11 @@ public class MapRoutesManager : IMapRoutesManager
 
     public async Task<List<List<Vector2>>> GetRoutesAsync()
     {
+        if (_routerDb == null || _router == null)
+        {
+            _logger.LogError("RouterDb or Router is not initialized. Probably OSM data was not loaded correctly.");
+            return new List<List<Vector2>>();
+        }
 
         _logger.LogInformation("Populationg brigades with applications");
         //Populate brigades with applications
@@ -78,7 +91,7 @@ public class MapRoutesManager : IMapRoutesManager
         {
             //Check if there is only one address in the list or if the list is empty
             if (addressList.Count == 1 || addressList.Count == 0) continue;
-        
+
             routes.Add(GetPath(addressList));
         }
 
@@ -129,6 +142,12 @@ public class MapRoutesManager : IMapRoutesManager
 
     public bool CheckResolving(float lat, float lon, float radius = 150)
     {
+        if (_routerDb == null || _router == null)
+        {
+            _logger.LogError("RouterDb or Router is not initialized. Probably OSM data was not loaded correctly.");
+            return false;
+        }
+
         var vehicle = Itinero.Osm.Vehicles.Vehicle.Car.Fastest();
 
         var result = _router.TryResolve(vehicle, lat, lon, radius);
@@ -141,6 +160,12 @@ public class MapRoutesManager : IMapRoutesManager
 
     public bool CheckResolving(Address address, float radius = 150)
     {
+        if (_routerDb == null || _router == null)
+        {
+            _logger.LogError("RouterDb or Router is not initialized. Probably OSM data was not loaded correctly.");
+            return false;
+        }
+
         var vehicle = Itinero.Osm.Vehicles.Vehicle.Car.Fastest();
 
         var result = _router.TryResolve(vehicle, (float)address.coordinates!.lat, (float)address.coordinates!.lon, radius);
@@ -153,6 +178,12 @@ public class MapRoutesManager : IMapRoutesManager
 
     public bool CheckConnection(Address address, float radius = 50)
     {
+        if(_routerDb == null || _router == null)
+        {
+            _logger.LogError("RouterDb or Router is not initialized. Probably OSM data was not loaded correctly.");
+            return false;
+        }
+
         var vehicle = Itinero.Osm.Vehicles.Vehicle.Car.Fastest();
 
         bool result = _router.CheckConnectivity(vehicle, new RouterPoint((float)address.coordinates!.lat, (float)address.coordinates!.lon, 0, 0), radius);
