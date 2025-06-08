@@ -7,7 +7,6 @@
 @using BlazorApp.Enums;
 @using BlazorBootstrap;
 @using Microsoft.AspNetCore.Authorization
-@using ZAK.Components.Pages.ApplicationsPage.ApplicationInputComponents;
 @using ZAK.Components.Pages.ApplicationsPage.ApplicationsActivities;
 
 @using System.Diagnostics;
@@ -46,10 +45,12 @@
       <ApplicationWasChangedIcon application="@context" />
     </div>
     @*Interactive components in Id section ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-    <CheckBoxInputComponent label="Ігнорувати" applicationId="@context.id" propertyName="ignored"
-      propertyValue="@(context.ignored)" />
-    <CheckBoxInputComponent label="Важлива заявка" applicationId="@context.id" propertyName="important"
-      propertyValue="@(context.important)" />
+
+    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Ігнорувати" 
+    @bind-Value="@context.ignored" @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
+    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Важлива заявка" 
+    @bind-Value="@context.important" @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
+
 
     <TimeframeApplicationComponent applicationId="@context.id" firstPart="@context.firstPart"
       secondPart="@context.secondPart" timeRangeIsSet="@context.timeRangeIsSet" startHour="@context.startHour"
@@ -61,16 +62,16 @@
   @*Interactivity column*@
   <GridColumn TItem="Application" HeaderText="Параметри">
 
-    <Switch Label="Цікавився статусом" @bind-Value="@context.statusWasChecked"
+    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Цікавився статусом" @bind-Value="@context.statusWasChecked"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
-    <Switch Label="Срочка" @bind-Value="@context.urgent"
+    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Срочка" @bind-Value="@context.urgent"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
-    <Switch Label="Є вільний кабель" @bind-Value="@context.freeCable"
+    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Є вільний кабель" @bind-Value="@context.freeCable"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
-    <Switch Label="Зміна тарифу" @bind-Value="@context.tarChangeApp"
+    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Зміна тарифу" @bind-Value="@context.tarChangeApp"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
     <hr>

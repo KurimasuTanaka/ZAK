@@ -13,6 +13,7 @@ using MudBlazor.Services;
 using ZAK.Services.ScheduleManagerService;
 using ZAK.DAO;
 using ZAK.Services.ApplicationsLoadingService;
+using NReco.Logging.File;
 
 
 namespace ZAK;
@@ -53,6 +54,11 @@ public class Program
         string? connectionString = builder.Configuration["ConnectionStrings:MySQL"];
         if (String.IsNullOrEmpty(connectionString)) throw new Exception("Connection string is empty");
 
+        builder.Services.AddLogging(loggingBuilder =>
+        {
+            loggingBuilder.AddFile("app.log", append: true);
+        });
+
         var serverVersion = new MySqlServerVersion(new Version(8, 0, 41));
         builder.Services.AddDbContextFactory<ZakDbContext>(options =>
         options.UseMySql(connectionString, serverVersion));
@@ -65,7 +71,7 @@ public class Program
         builder.Services.AddScoped<IFileLoader, FileLoader>();
         builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();
         builder.Services.AddScoped<IGeoDataManager, GeoDataManager>();
-        
+
         builder.Services.AddTransient<IApplicationsLoadingService, ApplicationsLoadingService>();
         builder.Services.AddTransient<IScheduleManager, ScheduleManager>();
 
