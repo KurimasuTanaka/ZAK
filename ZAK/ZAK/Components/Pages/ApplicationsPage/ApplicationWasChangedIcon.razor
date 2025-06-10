@@ -1,4 +1,5 @@
 ﻿@inject IApplicationReporisory _applicationRepository;
+@inject ILogger<ApplicationWasChangedIcon> _logger;
 
 @if (application.applicationWasUpdated)
 {
@@ -37,6 +38,8 @@
 
     private async Task UpdateConfirmed()
     {
+        _logger.LogInformation($"Setting status that changes made to application with Id {application.id} were confirmed");
+
         application.operatorCommentWasUpdated = false;
         application.masterCommentWasUpdated = false;
         application.statusWasUpdated = false;

@@ -1,5 +1,6 @@
 ﻿@inject IAddressRepository _addressRepository;
 @inject ISnackbar Snackbar;
+@inject ILogger<ApplicationEditorAddressPicker> _logger;
 
 <MudPopoverProvider />
 
@@ -35,25 +36,25 @@
         {
 
 
-            <MudTable T="Address" @ref="table" ServerData="ServerReload" Hover="true" Dense="true"
-                OnRowClick="AddressTableRowClick">
+            <MudTable T="Address" @ref="table" ServerData="GetAddressData" Hover="true" Dense="true"
+                OnRowClick="AddressChosen">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Адреса</MudText>
                     <MudSpacer />
-                    <MudTextField T="string" ValueChanged="@(s => StreetNameSearchChanged(s))" Placeholder="Search"
+                    <MudTextField T="string" ValueChanged="@(s => StreetNameSearchChanged(s))" Placeholder="Назва вулиці"
                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
                         Class="mt-0"></MudTextField>
-                    <MudTextField T="string" ValueChanged="@(s => BuildingNameSearchChanged(s))" Placeholder="Search"
+                    <MudTextField T="string" ValueChanged="@(s => BuildingNameSearchChanged(s))" Placeholder="Назва будинку"
                         Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
                         Class="mt-0"></MudTextField>
 
                 </ToolBarContent>
                 <HeaderContent>
                     <MudTh>
-                        <MudTableSortLabel SortLabel="streetName" T="Address">Улица</MudTableSortLabel>
+                        <MudTableSortLabel SortLabel="streetName" T="Address">Вулиця</MudTableSortLabel>
                     </MudTh>
                     <MudTh>
-                        <MudTableSortLabel SortLabel="building" T="Address">Дом</MudTableSortLabel>
+                        <MudTableSortLabel SortLabel="building" T="Address">Будинок</MudTableSortLabel>
                     </MudTh>
                 </HeaderContent>
                 <RowTemplate>
@@ -103,11 +104,17 @@
 
     private bool addressAdding = false;
 
-    private async Task<TableData<Address>> ServerReload(TableState state, CancellationToken token)
+    private async Task<TableData<Address>> GetAddressData(TableState state, CancellationToken token)
     {
+        _logger.LogInformation("Fetching address data");
+
         List<Address> addresses = (await _addressRepository.GetAllAsync()).ToList();
+        
+        //Apply filtering
         if (streetNameSearch != "") addresses = addresses.Where(add => add.streetName.Contains(streetNameSearch)).ToList();
         if (buildingNameSearch != "") addresses = addresses.Where(add => add.building.Contains(buildingNameSearch)).ToList();
+        
+        //Applying pagination
         addresses = addresses.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
 
         TableData<Address> tableData = new();
@@ -130,13 +137,17 @@
         table.ReloadServerData();
     }
 
-    private async void AddressTableRowClick(TableRowClickEventArgs<Address> tableRowClickEventArgs)
+    private async void AddressChosen(TableRowClickEventArgs<Address> tableRowClickEventArgs)
     {
+        _logger.LogInformation($"Address chosen: {tableRowClickEventArgs.Item}");
+
         application.address = tableRowClickEventArgs.Item;
         if (application.address is not null) await addressChanged.InvokeAsync(new Address(application.address));
     }
     private async void AddNewAddress(MouseEventArgs args)
     {
+        _logger.LogInformation($"Adding new address: {newAddressStreetName} {newAddressBuildingName}");
+
         Address newAddress = new();
         newAddress.streetName = newAddressStreetName;
         newAddress.building = newAddressBuildingName;

@@ -133,9 +133,10 @@
     await applicationsGrid.RefreshDataAsync();
   }
 
-  private async Task<GridDataProviderResult<Application>> ApplicationsDataProvider(
-  GridDataProviderRequest<Application> request)
+  private async Task<GridDataProviderResult<Application>> ApplicationsDataProvider(GridDataProviderRequest<Application> request)
   {
+    _logger.LogInformation("Loading applications data");
+
     List<Application> applications;
 
     if (showUpdated)

@@ -3,6 +3,7 @@
 
 @inject IApplicationReporisory _applicationRepository;
 @inject ICoefficientRepository _coefficientRepository;
+@inject ILogger<ApplicationsRatedListModal> _logger;
 
 <Modal @ref=applicationsList Title="Выбрать заявку" Size="ModalSize.ExtraLarge">
     <BodyTemplate>
@@ -95,12 +96,11 @@
     int scheduledBrigadeId = 0;
     public async Task ShowAsync(List<ApplicationScheduled> scheduledApplications, ApplicationScheduled scheduledApplication)
     {
+        _logger.LogInformation("Showing applications rated list modal");
+
         scheduledTime = scheduledApplication.applicationScheduledTime;
         scheduledBrigadeId = scheduledApplication.brigadeId;
-
         applications = (await _applicationRepository.GetAllWithIgnoringAsync()).ToList();
-
-        //this.applicationWasChosen = applicationWasChosen;
 
         //Find near applications
         Application? newApplication1 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications,
@@ -129,6 +129,8 @@
 
     private int FindNearApplication(List<ApplicationScheduled> scheduledApplications, int time, int direction)
     {
+        _logger.LogInformation($"Finding near application for time {time} with direction {direction}");
+
         for (int i = time + direction; i < scheduledApplications.Count - direction; i += direction)
         {
             if (i < 0 || i >= scheduledApplications.Count) return 0;
@@ -148,6 +150,8 @@
 
     public void AddApplicationToSchedule(GridRowEventArgs<Application> application)
     {
+        _logger.LogInformation($"Adding application with ID {application.Item.id} to schedule at time {scheduledTime} for brigade ID {scheduledBrigadeId}");
+
         ApplicationScheduled scheduledApplication = new ApplicationScheduled()
         {
             id = application.Item.id,
@@ -160,6 +164,8 @@
 
     public void LeaveChosenTimeEmpty()
     {
+        _logger.LogInformation($"Leaving time {scheduledTime} empty for brigade ID {scheduledBrigadeId}");
+
         ApplicationScheduled scheduledApplication = new ApplicationScheduled()
         {
             id = -1,

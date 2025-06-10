@@ -2,6 +2,7 @@
 
 @inject IApplicationReporisory _applicationRepository;
 @inject IAddressRepository _addressRepository;
+@inject ILogger<ApplicationAdditionModal> _logger;
 
 <Modal @ref="modal" Title="Додавання нової заявки" Size="ModalSize.Large">
     <BodyTemplate>
@@ -20,6 +21,8 @@
 
     async void FormSubmitted()
     {
+        _logger.LogInformation("Creating new application with data: {@application}", application);
+
         if(application.address is not null)
         {
             var applicationAddress = (await _addressRepository.GetAllAsync()).
@@ -40,6 +43,8 @@
     }
     public async Task ShowModal()
     {
+        _logger.LogInformation("Showing modal for adding new application");
+
         await modal.ShowAsync();
     }
 

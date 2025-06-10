@@ -61,9 +61,6 @@
     MudDropContainer<ApplicationScheduled> dropContainer = default!;
     private List<Brigade> brigades = new();
     private List<ApplicationScheduled> applicationsToSwap = new();
-
-
-    //NEW===========================================================================================================
     private List<ApplicationScheduled> applications = new();
     ApplicationsRatedListModal applicationsRatedList = default!;
 
@@ -194,10 +191,6 @@
     protected override async Task OnParametersSetAsync()
     {
         await GetApplications();
-    }
-
-    protected override void OnAfterRender(bool firstRender)
-    {
     }
 
 }

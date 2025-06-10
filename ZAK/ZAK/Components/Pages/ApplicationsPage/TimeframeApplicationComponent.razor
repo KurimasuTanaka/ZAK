@@ -1,6 +1,7 @@
 ﻿@using ZAK.DA;
 
 @inject IApplicationReporisory _applicationRepository;
+@inject ILogger<TimeframeApplicationComponent> _logger;
 
 <Card>
     <ul class="list-group list-group-flush">
@@ -10,7 +11,6 @@
                 @onclick="UpdateFirstPartTimeframe">First</Button>
             <Button style="width: 100%; --bs-btn-border-radius: 0;" class="btn-sm" Color="ButtonColor.Secondary"
                 @onclick="UpdateSecondPartTimeframe">Second</Button>
-
         </li>
         <li class="list-group-item p-1" style="display: flex; align-items: center; padding:0px">
             <span>From:</span>
@@ -59,11 +59,13 @@
         {
             result = $"С {startHour} до {endHour}";
         }
-        else result = firstPart ? "В первой половине" : "Во второй половине";
+        else result = firstPart ? "В першій половині" : "В другій половині";
     }
 
     private async Task UpdateStrartHour()
     {
+        _logger.LogInformation($"Updating start hour for application with Id {applicationId} to {startHour}");
+
         Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.startHour = startHour;
         await _applicationRepository.UpdateAsync(application);
@@ -73,6 +75,8 @@
 
     private async Task UpdateEndHour()
     {
+        _logger.LogInformation($"Updating end hour for application with Id {applicationId}");
+
         Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.endHour = endHour;
         await _applicationRepository.UpdateAsync(application);
@@ -82,16 +86,22 @@
 
     private async Task UpdateFirstPartTimeframe()
     {
+        _logger.LogInformation($"Setting first part timeframe for application with Id {applicationId}");
+
         Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.firstPart = true;
+        application.secondPart = false;
         await _applicationRepository.UpdateAsync(application);
-        result = "В первой половине";
+        result = "В першій половині";
     }
     private async Task UpdateSecondPartTimeframe()
     {
+        _logger.LogInformation($"Setting second part timeframe for application with Id {applicationId}");
+
         Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.secondPart = true;
+        application.firstPart = false;
         await _applicationRepository.UpdateAsync(application);
-        result = "Во второй половине";
+        result = "В другій половині";
     }
 }

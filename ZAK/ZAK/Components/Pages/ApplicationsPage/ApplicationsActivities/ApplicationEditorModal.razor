@@ -2,7 +2,7 @@
 
 @inject IApplicationReporisory _applicationRepository;
 @inject IAddressRepository _addressRepository;
-
+@inject ILogger<ApplicationEditorModal> _logger;
 
 <Modal @ref="modal" Title="Редагування заявки" Size="ModalSize.Large">
     <BodyTemplate>
@@ -20,6 +20,8 @@
 
     async void FormSubmitted()
     {
+        _logger.LogInformation("Updating application with data: {@application}", application);
+
         if(application.address is not null)
         {
             var applicationAddress = (await _addressRepository.GetAllAsync()).
@@ -39,6 +41,8 @@
     }
     public async Task ShowModal(Application application)
     {
+        _logger.LogInformation("Showing modal for editing application with ID: {ApplicationId}", application.id);
+
         this.application = application;
         await modal.ShowAsync();
     }

@@ -1,4 +1,5 @@
 ﻿@inject IBrigadeRepository _brigadeRepository;
+@inject ILogger<BrigadeDeletionDropdown> _logger;
 
 <Dropdown Color="DropdownColor.Secondary" OnShown="UploadBrigades">
     <DropdownToggleButton>Видалити бригаду</DropdownToggleButton>
@@ -6,7 +7,7 @@
         @for (int i = 0; i < brigades.Count; i++)
         {
             var brigadeNum = i;
-                <Button @onclick="(arg => DeleteBrigade(brigadeNum))">Бригаду @(brigadeNum + 1)</Button>
+                <Button @onclick="arg => DeleteBrigade(brigadeNum)">Бригаду @(brigadeNum + 1)</Button>
         }
     </DropdownMenu>
 </Dropdown>
@@ -19,13 +20,17 @@
 
 
     public async Task UploadBrigades()
-    {
+    {   
+        _logger.LogInformation("Uploading brigades for deletion dropdown");
+
         brigades = (await _brigadeRepository.GetAllAsync()).ToList();
         brigades.Order();
     }
 
     public async Task DeleteBrigade(int brigadeNumber)
     {
+        _logger.LogInformation($"Deleting brigade with ID {brigades[brigadeNumber].id}");
+
         await _brigadeRepository.DeleteAsync(brigades[brigadeNumber].id);
         await brigadeWasDeleted.InvokeAsync();
     }

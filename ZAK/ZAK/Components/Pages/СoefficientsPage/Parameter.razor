@@ -3,6 +3,7 @@
 @using BlazorBootstrap;
 
 @inject ICoefficientRepository _coefficientRepository;
+@inject ILogger<Parameter> _logger;
 
 <td class="pr-4">
     <h6>@coefficient.parameterAlias</h6>
@@ -22,6 +23,8 @@
 
     private async void UpdateParameterValue()
     {
+        _logger.LogInformation($"Updating coefficient with id {coefficient.id} to value {coefficient.coefficient}");
+
         if (!_initialized)
         {
             _initialized = true;
@@ -35,6 +38,8 @@
 
     private async void UpdateInfinityStatus()
     {
+        _logger.LogInformation($"Updating coefficient with id {coefficient.id} infinite status to {coefficient.infinite}");
+
         Coefficient oldCoefficient = await _coefficientRepository.GetByIdAsync(coefficient.id);
         oldCoefficient.infinite = coefficient.infinite;
         await _coefficientRepository.UpdateAsync(oldCoefficient);
