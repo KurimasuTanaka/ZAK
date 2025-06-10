@@ -1,19 +1,65 @@
-﻿<div>
+﻿@inject IAddressRepository _addressRepository;
+@inject ILogger<CoordinatesBoxComponent> _logger;
+
+<div>
     <table>
         <tr>
             <td>
-                <AddressCoordinatesClearButtonComponent addressId="@context.Id" informationUpdated="informationUpdated" />
+                <Button @onclick="DeleteCoordinates">
+                    <Icon Name="IconName.X" />
+                </Button>
             </td>
             <td>
-                <CoordinatesInputComponent addressId="context.Id" coordinate="@context.coordinates!.lat" Lat="@true" />
+                <NumberInput TValue="double" @bind-Value="@Address.coordinates!.lat"
+                    @bind-Value:after="UpdateCoordinates" />
             </td>
             <td>
-                <CoordinatesInputComponent addressId="context.Id" coordinate="@context.coordinates!.lat" Lon="@true" />
+                <NumberInput TValue="double" @bind-Value="@Address.coordinates!.lon"
+                    @bind-Value:after="UpdateCoordinates" />
             </td>
         </tr>
     </table>
 </div>
 @code {
-    [Parameter] public Address context { get; set; } = default!;
-    [Parameter] public EventCallback informationUpdated { get; set; }
+    [Parameter] public Address Address { get; set; } = default!;
+    [Parameter] public EventCallback InformationUpdated { get; set; }
+    private int _initializationCounter = 0;
+
+    private async Task UpdateCoordinates()
+    {
+        if (_initializationCounter < 2)
+        {
+            _initializationCounter++;
+            return;
+        }
+
+        if (Address.coordinates is null)
+        {
+            Address.coordinates = new AddressCoordinates();
+        }
+
+        _logger.LogInformation($"Updating coordinates for address with id {Address.Id} to {Address.coordinates}");
+        await _addressRepository.UpdateAsync(Address);
+        await InformationUpdated.InvokeAsync();
+    }
+
+    private async void DeleteCoordinates()
+    {
+        _logger.LogInformation("Clearing coordinates for address with ID: {AddressId}", Address.Id);
+
+        if (Address.coordinates is null)
+        {
+            return;
+        }
+        else
+        {
+            Address.coordinates.lat = 0;
+            Address.coordinates.lon = 0;
+        }
+
+        await _addressRepository.UpdateAsync(Address);
+
+        await InformationUpdated.InvokeAsync();
+    }
+
 }

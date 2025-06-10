@@ -63,11 +63,11 @@
 
         <GridColumn TItem="Address" HeaderText="Широта \ Долгота" PropertyName="Latitude"
             ColumnClass="@(x => "blackoutCell")">
-            <CoordinatesBoxComponent context="context" informationUpdated="UpdateTable" />
+            <CoordinatesBoxComponent Address="context" InformationUpdated="UpdateTable" />
         </GridColumn>
 
         <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" SortKeySelector="item => item.resolved" TextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W5")">
-            <AddressResolvedComponent resolved="context.resolved"  />
+            <h1>@(context.resolved ? '+' : '-')</h1>
         </GridColumn>
 
         <GridColumn TItem="Address" HeaderText="Доступ" ColumnClass="@(x => "W10")">
