@@ -10,6 +10,22 @@ namespace ZAK.Tests;
 
 public class DataAccessTests : ZakTestBase
 {
+    [Fact]
+    public async Task GetApplicationById()
+    {
+        //Arrange
+        Application application = new();
+        application.operatorComment = "Test comment";
+        application.id = 1;
+        await applicationRepository.CreateAsync(application);
+
+        //Act
+        Application? applicationFromDb = await applicationRepository.GetByIdAsync(application.id);
+
+        //Assert
+        Assert.NotNull(applicationFromDb);
+        Assert.Equal(application.operatorComment, applicationFromDb.operatorComment);
+    }
 
     [Fact]
     public async Task InsertNewApplicationToTheEmptyDb()

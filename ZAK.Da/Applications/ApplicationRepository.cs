@@ -216,8 +216,7 @@ public class ApplicationRepository : IApplicationReporisory
                 var application = await context.applications.AsNoTracking()
                     .Include(a => a.address).ThenInclude(a => a!.district)
                     .Include(a => a.address!.coordinates)
-                    .Select(a => new Application(a))
-                    .FirstOrDefaultAsync(a => a.id == id);
+                    .Where(a => a.id == id).Select(a => new Application(a)).FirstOrDefaultAsync();
 
                 if (application is not null)
                 {

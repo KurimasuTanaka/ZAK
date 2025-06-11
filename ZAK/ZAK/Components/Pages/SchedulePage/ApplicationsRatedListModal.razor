@@ -23,18 +23,18 @@
                 @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
                 @*Column with name of the district *@
-                <GridColumn TItem="Application" HeaderText="District" PropertyName="districtName"
+                <GridColumn TItem="Application" HeaderText="Район" PropertyName="districtName"
                     SortKeySelector="item => item.address!.district!.name">
                     @context.address!.district!.name
                 </GridColumn>
 
                 @*Column name with name of the street*@
-                <GridColumn TItem="Application" HeaderText="Street" PropertyName="streetName"
+                <GridColumn TItem="Application" HeaderText="Вулиця" PropertyName="streetName"
                     SortKeySelector="item => item.address!.streetName">
                     @(context.address!.streetName + " " + context.address.building);
                 </GridColumn>
 
-                <GridColumn TItem="Application" HeaderText="Stretched" PropertyName="stretchingStatus"
+                <GridColumn TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus"
                     SortKeySelector="item => item.stretchingStatus">
                     @(context.stretchingStatus.GetDisplayName())
                 </GridColumn>
@@ -42,28 +42,40 @@
 
 
                 @*Column for date*@
-                <GridColumn TItem="Application" HeaderText="Date">
+                <GridColumn TItem="Application" HeaderText="Дата">
                     <span>@context.year.@context.month.@context.day</span>
                 </GridColumn>
 
-                <GridColumn TItem="Application" HeaderText="Приоритет" SortKeySelector="item => item.priority"
+                <GridColumn TItem="Application" HeaderText="Пріорітет" SortKeySelector="item => item.priority"
                     IsDefaultSortColumn="true" SortDirection="BlazorBootstrap.SortDirection.Descending">
                     <span>@context.priority</span>
                 </GridColumn>
-
-                <style>
-                    .blackoutCell {
-                        position: relative;
-                        padding: 0;
-                        margin: 0;
-                    }
-                </style>
 
                 <GridColumn TItem="Application" HeaderText="Доступ">
 
                     @context.address!.equipmentAccess.GetDisplayName();
 
                 </GridColumn>
+ 
+                <GridColumn TItem="Application" HeaderText="Доступ">
+
+                    @if(context.timeRangeIsSet)
+                    {
+                        <span>@context.startHour:00 - @context.endHour:00</span>
+                    }
+                    else
+                    {
+                        @if(context.firstPart)
+                        {
+                            <span>В першу пол.</span>
+                        }
+                        else 
+                        {
+                            <span>В другу пол.</span>
+                        }
+                    }
+                </GridColumn>
+
 
             </GridColumns>
 
