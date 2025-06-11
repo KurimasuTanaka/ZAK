@@ -35,27 +35,29 @@ function drawPath(coordinates, color) {
 
 
 
-function drawMarker(markerString) {
-
-    // let markerData = markerString.split(' ');
-
-    // let stretched = markerData[3];
-    // let important = markerData[4];
-
+function drawMarker(markerString) 
+{
     let markerData = JSON.parse(markerString);
 
     let classToUse = "";
 
     if (markerData.stretchingStatus == "Stretched") {
-        if (markerData.hot == "True")
+        if (markerData.hot == true) {
             classToUse = "div-icon-imp-str";
-        else
+        }
+        else 
+        {
             classToUse = "div-icon-reg-str";
+        }
     } else {
-        if (markerData.hot == "True")
+        if (markerData.hot == true)
+        {
             classToUse = "div-icon-imp-nstr";
+        }
         else
+        {
             classToUse = "div-icon-reg-nstr";
+        }
 
     }
 
