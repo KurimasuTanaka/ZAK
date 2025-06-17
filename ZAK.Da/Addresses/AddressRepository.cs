@@ -128,23 +128,20 @@ public class AddressRepository : IAddressRepository
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                List<District> districts = await context.districts.Select(d => new District(d)).ToListAsync();
+                // Get all districts from DB as entities (not as new District(d)), so EF tracks them
+                var districts = await context.districts.ToListAsync();
 
                 foreach (var address in addresses)
                 {
-                    District? districtFromDb = districts.Find(dist =>
+                    if (address.district != null)
                     {
-                        if (address.district is not null && dist.name == address.district.name)
+                        // Try to find existing district by name
+                        var existingDistrict = districts.FirstOrDefault(d => d.name == address.district.name);
+                        if (existingDistrict != null)
                         {
-                            return true;
+                            // Attach the existing tracked entity to the address
+                            address.district = existingDistrict;
                         }
-                        return false;
-                    });
-
-                    if (districtFromDb is not null)
-                    {
-                        address.district = districtFromDb;
-                        context.Attach(address.district);
                     }
                 }
 

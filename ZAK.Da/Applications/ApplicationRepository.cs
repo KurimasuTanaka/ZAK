@@ -287,8 +287,23 @@ public class ApplicationRepository : IApplicationReporisory
 
         try
         {
+            entities.ToList().ForEach(e => { if (e.address is not null) e.address.district = null; }); // Clear district to avoid circular reference issues
+
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
+                List<AddressModel> addresses = context.addresses.ToList();
+
+                foreach (var application in entities)
+                {
+                    if (application.address is not null)
+                    {
+                        AddressModel? address = addresses.FirstOrDefault(add =>
+                            application.address.streetName == add.streetName && application.address.building == add.building);
+
+                        if (address is not null) application.address = address;
+                    }
+                }
+
                 context.applications.UpdateRange(entities);
                 await context.SaveChangesAsync();
                 _logger.LogInformation("Range of applications updated successfully");

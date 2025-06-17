@@ -101,7 +101,12 @@ public class ApplicationsLoadingTests : ZakTestBase
             building = "Test building 3",
             district = district2
         };
-
+        Address address4 = new()
+        {
+            streetName = "Test street 4",
+            building = "Test building 4",
+            district = district2
+        };
         //Setup applications
         Application application1 = new()
         {
@@ -121,6 +126,12 @@ public class ApplicationsLoadingTests : ZakTestBase
             operatorComment = "Application comment 3"
         };
 
+        Application application4 = new()
+        {
+            address = address4,
+            operatorComment = "Application comment 4"
+        };
+
         List<Application> applicationsToInsert = new() { application1, application2 };
 
         //Act
@@ -129,10 +140,10 @@ public class ApplicationsLoadingTests : ZakTestBase
 
         applicationsToInsert[1].statusWasChecked = true;
         Application applicationToUpdate = applicationsToInsert[1];
-        applicationToUpdate.address = null;
         await applicationRepository.UpdateAsync(applicationToUpdate);
 
         applicationsToInsert.Add(application3);
+        applicationsToInsert.Add(application4);
         applicationsToInsert[1].operatorComment = "Applications comment 2 UPDATED";
         applicationsToInsert[1].address = address3;
         applicationsToInsert.RemoveAt(0);
@@ -146,7 +157,7 @@ public class ApplicationsLoadingTests : ZakTestBase
         List<Address> addedAddresses = (await addressRepository.GetAllAsync()).ToList();
         List<District> addedDistricts = (await districtsDao.GetAll()).ToList();
 
-        Assert.Equal(3, addedAddresses.Count);
+        Assert.Equal(4, addedAddresses.Count);
         Assert.Equal(address3.building, addedApplications.Where(a => a.operatorComment == "Applications comment 2 UPDATED").First().address!.building);
         Assert.True(addedApplications.Where(a => a.operatorComment == "Applications comment 2 UPDATED").First().statusWasChecked);
         Assert.Equal(2, addedDistricts.Count);

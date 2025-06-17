@@ -54,5 +54,8 @@ public class ZakDbContext : DbContext
                 new CoefficientModel() { id = 7, parameter = "deadline", parameterAlias="Час до дедлайну", coefficient = 1}
         ]);
     }
-
+    public bool Exists<T>(T entity) where T : class
+    {
+        return this.Set<T>().Local.Any(e => e == entity);
+    }
 }
