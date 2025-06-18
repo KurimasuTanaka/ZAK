@@ -3,6 +3,7 @@ using ApplicationsScrappingModule;
 using ZAK.DA;
 using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace ApplicationsScrappingModule;
 
@@ -21,7 +22,8 @@ public abstract class ApplicationsScrapperBase : IApplicationsScrapper
     {
         _logger.LogInformation($"Loading applications file from {applicationsFilePath}...");
         
-        StreamReader streamReader = new StreamReader(applicationsFilePath);
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        StreamReader streamReader = new StreamReader(applicationsFilePath, Encoding.GetEncoding("windows-1251"));
         string fileData = await streamReader.ReadToEndAsync();
         streamReader.Close();
 

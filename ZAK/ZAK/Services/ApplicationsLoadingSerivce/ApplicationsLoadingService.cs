@@ -121,37 +121,6 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         if (oldApplications.Count() is not 0) newApplications = parsedApplications.Except(oldApplications, new ApplicationComparer()).ToList();
         else newApplications = parsedApplications;
 
-        // await _applicationsDataAccess.InsertRange(
-        //     newApplications,
-        //     inputProcessQuery: (applications, dbContext) =>
-        //     {
-        //         List<Address> addresses = dbContext.Set<AddressModel>().Select(a => new Address(a)).ToList();
-
-        //         foreach (Application app in applications)
-        //         {
-        //             Address? addressFromDb = addresses.Find(add =>
-        //             {
-        //                 if (app.address.streetName == add.streetName && app.address.building == add.building)
-        //                 {
-        //                     return true;
-        //                 }
-        //                 return false;
-        //             });
-
-        //             if (addressFromDb is not null)
-        //             {
-        //                 app.address = addressFromDb;
-
-        //                 //var entities = dbContext.Set<AddressModel>().Local.ToList();
-
-        //                 //dbContext.Attach(app.address);
-        //             }
-
-        //         }
-        //         return applications;
-        //     }
-        // );
-
         await _applicationRepository.CreateRangeAsync(newApplications);
 
         _logger.LogInformation("New applications added successfully!");
