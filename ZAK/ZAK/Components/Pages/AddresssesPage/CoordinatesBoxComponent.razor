@@ -25,6 +25,14 @@
     [Parameter] public EventCallback InformationUpdated { get; set; }
     private int _initializationCounter = 0;
 
+    protected override void OnParametersSet()
+    {
+        if (Address.coordinates is null)
+        {
+            Address.coordinates = new AddressCoordinates();
+        }
+    }
+
     private async Task UpdateCoordinates()
     {
         if (_initializationCounter < 2)
@@ -32,12 +40,7 @@
             _initializationCounter++;
             return;
         }
-
-        if (Address.coordinates is null)
-        {
-            Address.coordinates = new AddressCoordinates();
-        }
-
+        
         _logger.LogInformation($"Updating coordinates for address with id {Address.Id} to {Address.coordinates}");
         await _addressRepository.UpdateAsync(Address);
         await InformationUpdated.InvokeAsync();

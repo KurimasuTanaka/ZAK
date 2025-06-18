@@ -22,16 +22,17 @@
                 </GridColumn>
                 @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
-                @*Column with name of the district *@
+                @*Column with name of the district*@
                 <GridColumn TItem="Application" HeaderText="Район" PropertyName="districtName"
-                    SortKeySelector="item => item.address!.district!.name">
-                    @context.address!.district!.name
+                    SortKeySelector="item => item.address != null && item.address.district != null ? item.address.district.name : string.Empty">
+                    @(context.address != null && context.address.district != null ? context.address.district.name : string.Empty)
                 </GridColumn>
-
+ 
                 @*Column name with name of the street*@
                 <GridColumn TItem="Application" HeaderText="Вулиця" PropertyName="streetName"
-                    SortKeySelector="item => item.address!.streetName">
-                    @(context.address!.streetName + " " + context.address.building);
+                    SortKeySelector="item => item.address != null ? item.address.streetName : string.Empty">
+                    @(context.address != null ? context.address.streetName : string.Empty + " " + 
+                      context.address != null ? context.address!.building : string.Empty);
                 </GridColumn>
 
                 <GridColumn TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus"

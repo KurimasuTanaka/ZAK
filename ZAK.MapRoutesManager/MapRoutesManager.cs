@@ -168,6 +168,12 @@ public class MapRoutesManager : IMapRoutesManager
 
         var vehicle = Itinero.Osm.Vehicles.Vehicle.Car.Fastest();
 
+        if (address.coordinates == null)
+        {
+            _logger.LogError("Address coordinates are null. Cannot resolve address.");
+            return false;
+        }
+
         var result = _router.TryResolve(vehicle, (float)address.coordinates!.lat, (float)address.coordinates!.lon, radius);
         if (result.IsError)
         {

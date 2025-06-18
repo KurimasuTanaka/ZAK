@@ -4,13 +4,20 @@
 @inject IAddressRepository _addressRepository;
 @inject ILogger<PriorityInputComponent> _logger;
 
-<NumberInput TValue="double" Label="Приорітет" @bind-Value="@priority" @bind-Value:after="UpdateDbData" />
+<NumberInput TValue="double" Label="Приорітет" @bind-Value="@Address.addressPriority!.priority" @bind-Value:after="UpdateDbData" />
 
 @code {
-    [Parameter] public int addressId { get; set; }
-    [Parameter] public double priority { get; set; }
+    [Parameter] public Address Address { get; set; } = default!;
 
     private bool _initialized = false;
+
+    protected override void OnParametersSet()
+    {
+        if (Address.addressPriority is null)
+        {
+            Address.addressPriority = new AddressPriority { priority = 0 };
+        }
+    }
 
     private async Task UpdateDbData()
     {
@@ -20,18 +27,9 @@
             return;
         }
 
-        _logger.LogInformation($"Updating priority for address with id {addressId} to {priority}");
+        _logger.LogInformation($"Updating priority for address with id {Address.Id} to {Address.addressPriority!.priority}");
 
-        Address address = await _addressRepository.GetByIdAsync(addressId);
-
-        if (address != null)
-        {
-            address.addressPriority!.priority = priority;
-            await _addressRepository.UpdateAsync(address);
-        }
-        else
-        {
-            _logger.LogWarning($"Address with id {addressId} not found.");
-        }
+        await _addressRepository.UpdateAsync(Address);
+        
     }
 }

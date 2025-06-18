@@ -70,6 +70,9 @@ public class Application : ApplicationModel
         if (year is 0) year = DateTime.Now.Year;
 
         DateTime dateTime = new DateTime(year, month, day);
+
+        if(maxDaysForConnection > 50) 
+            maxDaysForConnection = 50; // Limit to prevent overflow
         daysToDeadline = (dateTime.AddDays(maxDaysForConnection) - DateTime.Today).Days;
 
     }

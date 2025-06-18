@@ -5,35 +5,37 @@
 @inject IAddressRepository _addressRepository;
 @inject ILogger<AliasInputComponent> _logger;
 
-<TextInput TValue="double" Label="Укр. назва" @bind-Value="alias" @bind-Value:after="UpdateDbData" Variant="Variant.Filled"   />
+<TextInput TValue="string" Label="Укр. назва" @bind-Value="AliasValue" @bind-Value:after="UpdateDbData" Variant="Variant.Filled"   />
 
 @code {
-    [Parameter] public int addressId { get; set; }
 
-    [Parameter] public string alias { get; set; } = "";
- 
-    [Parameter] public bool streetAlias { get; set; }
+    [Parameter] public Address Address { get; set; } = default!; 
+    [Parameter] public bool StreetAlias { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (Address.addressAlias is null)
+        {
+            Address.addressAlias = new AddressAlias();
+        }
+    }
+
+    private string AliasValue
+    {
+        get => StreetAlias ? Address.addressAlias!.streetAlias : Address.addressAlias!.buildingAlias;
+        set
+        {
+            if (StreetAlias)
+                Address.addressAlias!.streetAlias = value;
+            else
+                Address.addressAlias!.buildingAlias = value;
+        }
+    }
 
     private async Task UpdateDbData()
     {
-        _logger.LogInformation($"Updating alias for address with id {addressId} to {alias}");
+        _logger.LogInformation($"Updating alias for address with id {Address.Id} to {AliasValue}");
 
-        Address address = (await _addressRepository.GetByIdAsync(addressId));
-
-        if(address.addressAlias is null)
-        {
-            address.addressAlias = new AddressAlias();
-        }
-
-        if (streetAlias)
-        {
-            address.addressAlias.streetAlias = alias;
-        }
-        else 
-        {
-            address.addressAlias.buildingAlias = alias;
-        }
-
-        await _addressRepository.UpdateAsync(address);
+        await _addressRepository.UpdateAsync(Address);
     }
 }  

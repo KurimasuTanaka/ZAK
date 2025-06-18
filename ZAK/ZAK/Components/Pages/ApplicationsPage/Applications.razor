@@ -86,9 +86,11 @@
 
     @if (context.address is not null)
     {
-      <h6>@(context.address!.district!.name)</h6>
-    
+      if(context.address.district is not null)
+      {
+        <h6>@(context.address!.district!.name)</h6>
       <br>
+      }
       @(context.representableAddress)
       
     }
