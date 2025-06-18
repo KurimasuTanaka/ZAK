@@ -24,7 +24,7 @@
 
 <Card class="my-3">
   <CardBody>
-    <ApplicationsActivities />
+    <ApplicationsActivities ApplicationsInformationWasChanged="Redraw" />
     <Switch Label="Показувати тільки оновлені" @bind-Value="showUpdated" @bind-Value:after="Redraw" />
     <Switch Label="Показувати ігноровані" @bind-Value="showIgnored" Disabled="@showUpdated"
       @bind-Value:after="Redraw" />

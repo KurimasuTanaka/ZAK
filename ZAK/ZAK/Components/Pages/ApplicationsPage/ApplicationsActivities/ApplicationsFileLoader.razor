@@ -37,6 +37,7 @@
       return;
     }
     updateApplicationButton.HideLoading();
+    await ApplicationsInformationWasChanged.InvokeAsync();
   }
 
   List<ToastMessage> messages = [];
