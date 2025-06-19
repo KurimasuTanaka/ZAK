@@ -95,20 +95,34 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
     }
     private Application ScrapApplicationStretchingStatus(Application application, HtmlNode applicationNode)
     {
-        HtmlAttribute backgroundColor = applicationNode.SelectNodes("td[7]")[0].Attributes[1];
+        HtmlNodeCollection stretchingOptions = applicationNode.SelectNodes("td[7]/span[1]/select[1]/option");
 
 
-        switch (backgroundColor.Value)
+        if (stretchingOptions != null)
         {
-            case "background-color: rgb(173, 216, 230)":
-                application.stretchingStatus = StretchingStatus.DoNotStrech;
-                break;
-            case "background-color: rgb(144, 238, 144);":
-                application.stretchingStatus = StretchingStatus.Streched;
-                break;
-            default:
-                application.stretchingStatus = StretchingStatus.NotSctreched;
-                break;
+            foreach (HtmlNode option in stretchingOptions)
+            {
+                if (option.Attributes["selected"] != null)
+                {
+                    switch (option.InnerHtml)
+                    {
+                        case "Протянута":
+                            application.stretchingStatus = StretchingStatus.Streched;
+                            break;
+                        case "Не выдавать":
+                            application.stretchingStatus = StretchingStatus.DoNotStrech;
+                            break;
+                        default:
+                            application.stretchingStatus = StretchingStatus.NotSctreched;
+                            break;
+                    }
+                    break; 
+                }
+            }
+        }
+        else
+        {
+            application.stretchingStatus = StretchingStatus.NotSctreched;
         }
 
 

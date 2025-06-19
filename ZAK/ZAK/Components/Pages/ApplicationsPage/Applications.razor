@@ -99,7 +99,7 @@
 
   @*Column with stretching status ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
   <GridColumn style="width: 10%;" TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus"
-    SortKeySelector="item => item.stretchingStatus"
+    SortKeySelector="item => item.stretchingStatus" TextAlignment="Alignment.Center"
     ColumnClass="@(x => StretchingStatusComponent.GetStrechingStatusClass(x.stretchingStatus))">
 
     <StretchingStatusComponent applicationId="@context.id" stretchingStatus="@context.stretchingStatus" />
