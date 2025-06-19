@@ -60,20 +60,24 @@
     [Parameter] public EventCallback RefreshMap { get; set; }
     MudDropContainer<ApplicationScheduled> dropContainer = default!;
     private List<Brigade> brigades = new();
-    private List<ApplicationScheduled> applicationsToSwap = new();
     private List<ApplicationScheduled> applications = new();
     ApplicationsRatedListModal applicationsRatedList = default!;
 
     private async Task ItemDroppedHandler(MudItemDropInfo<ApplicationScheduled> dropItem)
     {
+        _logger.LogInformation($"Item dropped in dropzone {dropItem.DropzoneIdentifier} at index {dropItem.IndexInZone}");
+
         if(dropItem == null || dropItem.Item == null || dropItem.DropzoneIdentifier == null)
         {
             _logger.LogWarning("Drop item or its properties are null. Cannot process the drop.");
             return;
         }
 
+        
         if(dropItem.Item.id == 0)
         {
+            _logger.LogInformation("Dropped item is an empty timeslot");
+            
             if(dropItem.Item.brigadeId == Int32.Parse(dropItem.DropzoneIdentifier))
             {
                 await _brigadesManager.MoveEmptyTimeslotFromOneTimeToAnother(
@@ -109,9 +113,10 @@
                     dropItem.Item.applicationScheduledTime);
             }
         }
+
+        _logger.LogInformation("Item dropped successfully. Clearing applications list and refreshing applications list");
         applications.Clear();
         await GetApplications();
-        StateHasChanged();
     }
 
     private async Task ApplicationWasChosen(ApplicationScheduled scheduledApplication)
@@ -146,14 +151,14 @@
     {
         _logger.LogInformation("Button on application was pressed. Opening modal window with applications list...");
 
-        await applicationsRatedList.ShowAsync(applications.Where(a => a.brigadeId == scheduledApplication.brigadeId).ToList(),
+        await applicationsRatedList.ShowAsync(applications.Where(a => a.id != 0).ToList(),
         scheduledApplication);
     }
 
 
     public async Task GetApplications()
     {
-        _logger.LogInformation("Getting all brigades...");
+        _logger.LogInformation("Getting all brigades to update list of scheduled applications");
 
         brigades = (await _brigadeRepository.GetAllAsync()).ToList();
 
@@ -165,11 +170,13 @@
             }
             dropContainer.Refresh();
         }
+
+        await RefreshMap.InvokeAsync();
     }
 
     public async Task ReuploadApplications()
     {
-        _logger.LogInformation("Getting all brigades...");
+        _logger.LogInformation("Getting all brigades to update list of scheduled applications. Application list will be cleared");
 
         brigades = (await _brigadeRepository.GetAllAsync()).ToList();
 
@@ -188,9 +195,11 @@
         dropContainer.Refresh();
     }
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await GetApplications();
+        _logger.LogInformation("Parameters set for BrigadeList component. Getting applications to render brigade list");
+        
+        if(firstRender) await GetApplications();
     }
 
 }

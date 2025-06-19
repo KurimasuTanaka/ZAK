@@ -50,7 +50,11 @@
     {
         _logger.LogInformation("Refreshing map in SchedulePage component");
 
-        await mapPart.RefreshMap();
+        if (mapPart is null)
+        {
+            _logger.LogWarning("MapPart reference is null, cannot refresh map");
+            return;
+        } else await mapPart.RefreshMap();
     }
 
 }

@@ -116,9 +116,9 @@
         applications = (await _applicationRepository.GetAllWithIgnoringAsync()).ToList();
 
         //Find near applications
-        Application? newApplication1 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications,
+        Application? newApplication1 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications.Where(a => a.brigadeId == scheduledBrigadeId).ToList(),
         scheduledTime, -1));
-        Application? newApplication2 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications,
+        Application? newApplication2 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications.Where(a => a.brigadeId == scheduledBrigadeId).ToList(),
         scheduledTime, 1));
 
         List<Application> nearApplications = new List<Application>();

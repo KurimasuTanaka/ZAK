@@ -26,15 +26,15 @@
     }
 
     .div-icon-reg-str {
-        border: 3px solid #00C853 ;
-        background-color: #2962FF ;
+        border: 3px solid #00C853;
+        background-color: #2962FF;
         border-radius: 50%;
         text-align: center;
     }
 
     .div-icon-reg-nstr {
-        border: 3px solid #424242 ;
-        background-color: #2962FF ;
+        border: 3px solid #424242;
+        background-color: #2962FF;
         border-radius: 50%;
         text-align: center;
     }
@@ -48,7 +48,7 @@
     }
 
     .div-icon-imp-nstr {
-        border: 3px solid #424242 ;
+        border: 3px solid #424242;
         background-color: #D50000;
         border-radius: 50%;
         text-align: center;
@@ -59,12 +59,15 @@
     [CascadingParameter]
     UnresolvedAddressesInfo unresolvedAddressesInfo { get; set; } = default!;
 
+    bool isInitialized = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             _logger.LogInformation("MapComponentLeaflet is rendered for the first time");
+
+            isInitialized = true;
 
             await Js.InvokeVoidAsync("initMap");
 
@@ -80,12 +83,18 @@
 
     public async Task DrawMarkers()
     {
+        if (!isInitialized)
+        {
+            _logger.LogWarning("MapComponentLeaflet is not initialized, cannot draw markers");
+            return;
+        }
+
         _logger.LogInformation("MapComponentLeaflet is drawing markers");
 
 
         List<Application> applications = (await _applicationRepository.GetAllWithIgnoringAsync()).
-            Where(a => a.address is not null && a.address.coordinates is not null).
-            ToList();
+        Where(a => a.address is not null && a.address.coordinates is not null).
+        ToList();
 
         foreach (var application in applications)
         {
@@ -100,32 +109,39 @@
                 masterComment = application.masterComment
             };
 
-            await Js.InvokeVoidAsync("drawMarker", JsonSerializer.Serialize(temp));
+            try
+            {
+                await Js.InvokeVoidAsync("drawMarker", JsonSerializer.Serialize(temp));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("Error while drawing marker: {Message}", e.Message);
+                return; 
+            }
         }
 
     }
 
     public async Task DrawPaths()
     {
+        if (!isInitialized)
+        {
+            _logger.LogWarning("MapComponentLeaflet is not initialized, cannot draw paths");
+            return;
+        }
+
         _logger.LogInformation("MapComponentLeaflet is drawing paths");
 
-        try
-        {
             List<List<Vector2>> routes = await mapRoutesManager.GetRoutesAsync();
             for (int i = 0; i < routes.Count; i++)
             {
                 await DrawPath(routes[i], i);
             }
-
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
     }
 
     public async Task DrawPath(List<Vector2> path, int brigadeNumber)
     {
+
 
         _logger.LogInformation("MapComponentLeaflet is drawing paths");
 
@@ -146,14 +162,37 @@
             case 4: color = "#3a86ff"; break;
         }
 
-        await Js.InvokeVoidAsync("drawPath", pathString, color);
+        try
+        {
+            await Js.InvokeVoidAsync("drawPath", pathString, color);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Error while drawing path: {Message}", e.Message);
+            return;
+        }
     }
 
     public async Task RefreshMap()
     {
+        if (!isInitialized)
+        {
+            _logger.LogWarning("MapComponentLeaflet is not initialized, cannot refresh map");
+            return;
+        }
+
         _logger.LogInformation("Refreshing map in MapComponentLeaflet component");
 
-        await Js.InvokeVoidAsync("clearMap");
+        try
+        {
+            await Js.InvokeVoidAsync("clearMap");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError("Error while clearing map: {Message}", e.Message);
+            return; 
+        }
+
         await DrawPaths();
         StateHasChanged();
     }
