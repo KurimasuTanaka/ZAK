@@ -79,16 +79,28 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         List<Application> oldApplications = (await _applicationRepository.GetAllAsync()).ToList();
 
         List<Application> applicationsToUpdate = newApplications.Intersect(oldApplications, new ApplicationComparer()).ToList();
-        
+
         for (int i = 0; i < applicationsToUpdate.Count; i++)
         {
-            Application newApp = oldApplications.Find(app => app.id == applicationsToUpdate[i].id)!;
+            Application oldApp = oldApplications.Find(app => app.id == applicationsToUpdate[i].id)!;
 
-            if (applicationsToUpdate[i].address != newApp.address) applicationsToUpdate[i].addresWasUpdated = true;
-            if (applicationsToUpdate[i].operatorComment != newApp.operatorComment) applicationsToUpdate[i].operatorCommentWasUpdated = true;
-            if (applicationsToUpdate[i].masterComment != newApp.masterComment) applicationsToUpdate[i].masterCommentWasUpdated = true;
-            if (applicationsToUpdate[i].stretchingStatus != newApp.stretchingStatus) applicationsToUpdate[i].statusWasUpdated = true;
+            if (applicationsToUpdate[i].address != oldApp.address) applicationsToUpdate[i].addresWasUpdated = true;
+            if (applicationsToUpdate[i].operatorComment != oldApp.operatorComment) applicationsToUpdate[i].operatorCommentWasUpdated = true;
+            if (applicationsToUpdate[i].masterComment != oldApp.masterComment) applicationsToUpdate[i].masterCommentWasUpdated = true;
+            if (applicationsToUpdate[i].stretchingStatus != oldApp.stretchingStatus) applicationsToUpdate[i].statusWasUpdated = true;
 
+            applicationsToUpdate[i].ignored = oldApp.ignored;
+            applicationsToUpdate[i].tarChangeApp = oldApp.tarChangeApp;
+            applicationsToUpdate[i].freeCable = oldApp.freeCable;
+            applicationsToUpdate[i].important = oldApp.important;
+            applicationsToUpdate[i].maxDaysForConnection = oldApp.maxDaysForConnection;
+            applicationsToUpdate[i].timeRangeIsSet = oldApp.timeRangeIsSet;
+            applicationsToUpdate[i].secondPart = oldApp.secondPart;
+            applicationsToUpdate[i].firstPart = oldApp.firstPart;
+            applicationsToUpdate[i].startHour = oldApp.startHour;
+            applicationsToUpdate[i].endHour = oldApp.endHour;
+            applicationsToUpdate[i].statusWasChecked = oldApp.statusWasChecked;
+            applicationsToUpdate[i].urgent = oldApp.urgent;
         }
         await _applicationRepository.UpdateRangeAsync(applicationsToUpdate);
         _logger.LogInformation("Old applications updated successfully!");
