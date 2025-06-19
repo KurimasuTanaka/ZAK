@@ -31,8 +31,8 @@
                 @*Column name with name of the street*@
                 <GridColumn TItem="Application" HeaderText="Вулиця" PropertyName="streetName"
                     SortKeySelector="item => item.address != null ? item.address.streetName : string.Empty">
-                    @(context.address != null ? context.address.streetName : string.Empty + " " + 
-                      context.address != null ? context.address!.building : string.Empty);
+                    @((context.address != null ? context.address.streetName : string.Empty) + " " + 
+                      (context.address != null ? context.address!.building : string.Empty));
                 </GridColumn>
 
                 <GridColumn TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus"
