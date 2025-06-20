@@ -9,6 +9,7 @@ using ZAK.Db.Models;
 using ZAK.Services.ScheduleManagerService;
 
 namespace ZAK.Tests;
+
 public class ScheduleManagerTests : ZakTestBase
 {
 
@@ -359,15 +360,10 @@ public class ScheduleManagerTests : ZakTestBase
 
         Assert.Equal(4, editedBrigade.scheduledApplications.Count);
 
-        Assert.Equal(firstApplicationToAddToSchedule.id, editedBrigade.scheduledApplications[0].applicationId);
-        Assert.Equal(thirdApplicationToAddToSchedule.id, editedBrigade.scheduledApplications[1].applicationId);
-        Assert.Equal(secondApplicationToAddToSchedule.id, editedBrigade.scheduledApplications[2].applicationId);
-        Assert.Equal(forthApplicationToAddToSchedule.id, editedBrigade.scheduledApplications[3].applicationId);
-
-        Assert.Equal(timeToScheduleFirstApplication, editedBrigade.scheduledApplications[0].scheduledTime);
-        Assert.Equal(timeToScheduleThirdApplication - 1, editedBrigade.scheduledApplications[1].scheduledTime);
-        Assert.Equal(timeToMoveApplication, editedBrigade.scheduledApplications[2].scheduledTime);
-        Assert.Equal(timeToScheduleForthApplication, editedBrigade.scheduledApplications[3].scheduledTime);
+        Assert.Equal(timeToScheduleFirstApplication, GetApplicationById(editedBrigade.scheduledApplications, firstApplicationToAddToSchedule.id).scheduledTime);
+        Assert.Equal(timeToMoveApplication - 1,      GetApplicationById(editedBrigade.scheduledApplications, secondApplicationToAddToSchedule.id).scheduledTime);
+        Assert.Equal(timeToScheduleThirdApplication, GetApplicationById(editedBrigade.scheduledApplications, thirdApplicationToAddToSchedule.id).scheduledTime);
+        Assert.Equal(timeToScheduleForthApplication, GetApplicationById(editedBrigade.scheduledApplications, forthApplicationToAddToSchedule.id).scheduledTime);
     }
 
     [Fact]
@@ -499,5 +495,69 @@ public class ScheduleManagerTests : ZakTestBase
         Assert.Equal(timeToScheduleThirdApplication + 1, editedBrigade.scheduledApplications[1].scheduledTime);
 
     }
+    [Fact]
+    public async Task MoveScheduledApplicationToTimeBetweenTwoScheduledApplications()
+    {
+        //Arrange
+        ScheduleManager brigadesManager = new(brigadeRepository, scheduleManagerLogger);
 
+        Brigade brigade = new();
+
+        await brigadeRepository.CreateAsync(brigade);
+
+        Application newApplication1 = new();
+        newApplication1.operatorComment = "First application";
+
+
+        Application newApplication2 = new();
+        newApplication2.operatorComment = "Second application";
+
+        Application newApplication3 = new();
+        newApplication2.operatorComment = "Third application";
+
+
+        await applicationRepository.CreateAsync(newApplication1);
+        await applicationRepository.CreateAsync(newApplication2);
+        await applicationRepository.CreateAsync(newApplication3);
+
+        int timeToScheduleFirstApplication = 0;
+        int timeToScheduleSecondApplication = 2;
+        int timeToScheduleThirdApplication = 4;
+
+        int timeslotToMoveThirdApplication = 2;
+
+        Application firstApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(0);
+        Application secondApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(1);
+        Application thirdApplicationToAddToSchedule = (await applicationRepository.GetAllAsync()).ElementAt(2);
+
+        Brigade brigadeToEdit = (await brigadeRepository.GetAllAsync()).First();
+
+        await brigadesManager.ScheduleApplication(firstApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleFirstApplication);
+        await brigadesManager.ScheduleApplication(secondApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleSecondApplication);
+        await brigadesManager.ScheduleApplication(thirdApplicationToAddToSchedule.id, brigadeToEdit.id, timeToScheduleThirdApplication);
+
+        //Act
+
+        await brigadesManager.MoveScheduledApplicationFromOneTimeToAnother(
+            thirdApplicationToAddToSchedule.id,
+            brigadeToEdit.id,
+            timeslotToMoveThirdApplication, timeToScheduleThirdApplication);
+
+        //Assert
+
+        Brigade editedBrigade = (await brigadeRepository.GetAllWithScheduledApplicationInfoAsync()).FirstOrDefault()!;
+
+        editedBrigade.scheduledApplications.OrderBy(sa => sa.scheduledTime);
+
+        Assert.Equal(3, editedBrigade.scheduledApplications.Count);
+        Assert.Equal(firstApplicationToAddToSchedule.id, editedBrigade.scheduledApplications[0].applicationId);
+        Assert.Equal(thirdApplicationToAddToSchedule.id, editedBrigade.scheduledApplications[1].applicationId);
+        Assert.Equal(secondApplicationToAddToSchedule.id, editedBrigade.scheduledApplications[2].applicationId);
+
+    }
+
+    private ScheduledApplicationModel GetApplicationById(List<ScheduledApplicationModel> applications, int id)
+    {
+        return applications.FirstOrDefault(app => app.applicationId == id) ?? throw new Exception($"Application with id {id} not found");
+    }
 }

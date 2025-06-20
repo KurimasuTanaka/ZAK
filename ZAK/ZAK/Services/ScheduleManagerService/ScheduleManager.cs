@@ -55,25 +55,25 @@ public class ScheduleManager : IScheduleManager
         });
     }
 
-    private void ShiftScheduledApplicationsForward(Brigade brigade, int fromTime, int toTime)
+    private void ShiftScheduledApplicationsForward(Brigade brigade, int startTime, int endTime)
     {
-        _logger.LogInformation($"Moving applications in brigade {brigade.id} that scheduled from {fromTime} to {toTime} to the next hour...");
+        _logger.LogInformation($"Moving applications in brigade {brigade.id} that scheduled from {startTime} to {endTime} to the next hour...");
 
-        brigade.scheduledApplications.Where(sa => sa.scheduledTime > fromTime && sa.scheduledTime < toTime).ToList().ForEach(sa =>
-        {
-            sa.scheduledTime++;
-        });
-        brigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime > 9);
+        brigade.scheduledApplications.Where(sa => sa.scheduledTime >= startTime && sa.scheduledTime <= endTime).ToList().ForEach(sa =>
+                {
+                    sa.scheduledTime++;
+                });
+
     }
 
-    private void ShiftScheduledApplicationsBackward(Brigade brigade, int fromTime, int toTime)
+    private void ShiftScheduledApplicationsBackward(Brigade brigade, int startTime, int endTime)
     {
-        _logger.LogInformation($"Moving applications in brigade {brigade.id} that scheduled from {fromTime} to {toTime} to the previous hour...");
+        _logger.LogInformation($"Moving applications in brigade {brigade.id} that scheduled from {startTime} to {endTime} to the previous hour...");
 
-        brigade.scheduledApplications.Where(sa => sa.scheduledTime > fromTime && sa.scheduledTime <= toTime).ToList().ForEach(sa =>
-        {
-            sa.scheduledTime--;
-        });
+        brigade.scheduledApplications.Where(sa => sa.scheduledTime >= startTime && sa.scheduledTime <= endTime).ToList().ForEach(sa =>
+                {
+                    sa.scheduledTime--;
+                });
     }
 
     public async Task MoveScheduledApplicationFromOneBrigadeToAnother(int applicationId, int brigadeId, int newTime, int prevBrigadeId, int prevTime)
@@ -129,17 +129,6 @@ public class ScheduleManager : IScheduleManager
         await UpdateBrigade(brigade);
     }
 
-    public async Task MoveScheduledApplicationFromOneTimeToAnother(int applicationId, int brigadeId, int newTime, int prevTime)
-    {
-        Brigade brigade = await GetBrigadeById(brigadeId);
-
-
-        ShiftScheduledApplicationsBackward(brigade, prevTime, newTime);
-        brigade.scheduledApplications.Where(sa => sa.applicationId == applicationId).First().scheduledTime = newTime;
-
-        await UpdateBrigade(brigade);
-    }
-
     public async Task MoveEmptyTimeslotFromOneBrigadeToAnother(int brigadeId, int newTime, int prevBrigadeId, int prevTime)
     {
         Brigade prevBrigade = await GetBrigadeById(prevBrigadeId);
@@ -160,6 +149,27 @@ public class ScheduleManager : IScheduleManager
         Brigade brigade = await GetBrigadeById(brigadeId);
 
         ShiftScheduledApplicationsBackward(brigade, prevTime, newTime);
+
+        await UpdateBrigade(brigade);
+    }
+
+    public async Task MoveScheduledApplicationFromOneTimeToAnother(int applicationId, int brigadeId, int newTime, int prevTime)
+    {
+        Brigade brigade = await GetBrigadeById(brigadeId);
+
+
+        if (prevTime < newTime)
+        {
+            ShiftScheduledApplicationsBackward(brigade, Math.Min(prevTime, newTime) + 1, Math.Max(prevTime, newTime) - 1);
+            brigade.scheduledApplications.Where(sa => sa.applicationId == applicationId).First().scheduledTime = newTime - 1;
+
+        }
+        else
+        {
+            ShiftScheduledApplicationsForward(brigade, Math.Min(prevTime, newTime), Math.Max(prevTime, newTime) - 1);
+            brigade.scheduledApplications.Where(sa => sa.applicationId == applicationId).First().scheduledTime = newTime;
+        }
+
 
         await UpdateBrigade(brigade);
     }
