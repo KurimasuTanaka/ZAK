@@ -29,15 +29,15 @@ public enum EquipmentAccess
 {
     [Display(Name = "ЖЕК", Description = null)]
     HousingOffice,
-    [Display(Name = "Председатель, ограниченный", Description = null)]
-    Chairman_limitted,
-    [Display(Name = "Председатель, свободный", Description = null)]
-    Chairman_free,
+    [Display(Name = "Звонить", Description = null)]
+    Call_Required,
     [Display(Name = "Свободный", Description = null)]
     Free,
-    [Display(Name = "Смешанный", Description = null)]
-    Mixed,
+    [Display(Name = "Смотреть топологию", Description = null)]
+    Check_Topology,
     [Display(Name = "Не указан", Description = null)]
-    Unknown
+    Unknown,
+    [Display(Name = "Вадим", Description = null)]
+    Vadim
 
 }
