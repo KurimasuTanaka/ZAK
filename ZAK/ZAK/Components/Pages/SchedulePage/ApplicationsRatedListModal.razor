@@ -18,6 +18,11 @@
                 <GridColumn TItem="Application" HeaderText="Id" PropertyName="id">
                     <div>
                         @context.id
+
+                        @if(context.important)
+                        {
+                            <Icon Name="IconName.Star" Color="BlazorBootstrap.IconColor.Warning" />
+                        }
                     </div>
                 </GridColumn>
                 @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@

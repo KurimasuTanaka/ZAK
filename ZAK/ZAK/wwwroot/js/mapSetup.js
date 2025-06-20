@@ -75,9 +75,14 @@ function drawMarker(markerString)
     const popup = L.popup()
         .setContent(
             `
-                <b> ${markerData.id}</b><br>
-                ${markerData.operatorComment}<br>
-                ${markerData.masterComment}<br>
+                <b> ${markerData.id}</b>
+                <hr>
+                ${markerData.streetName + " " + markerData.houseNumber}
+                <hr>
+                ${markerData.operatorComment}
+                <br>
+                ${markerData.masterComment}
+                <br>
             `
         );
     popup.maxHeight = 50;
