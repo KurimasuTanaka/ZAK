@@ -13,7 +13,7 @@
             AllowFiltering="true" AllowPaging="true" PageSize="100" AllowSorting="true"
             OnRowDoubleClick="AddApplicationToSchedule" AllowRowClick="true"
             style="width: 100%; height: 100%; border-collapse: collapse;">
-            <GridColumns>
+            <GridColumns HeaderTextAlignment="Alignment.Center">
                 @*Id column with set of interactive components*@
                 <GridColumn TItem="Application" HeaderText="Id" PropertyName="id">
                     <div>
@@ -28,19 +28,19 @@
                 @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
                 @*Column with name of the district*@
-                <GridColumn TItem="Application" HeaderText="Район" PropertyName="districtName"
+                <GridColumn TItem="Application" HeaderText="Район" PropertyName="districtName" HeaderTextAlignment="Alignment.Center"
                     SortKeySelector="item => item.address != null && item.address.district != null ? item.address.district.name : string.Empty">
                     @(context.address != null && context.address.district != null ? context.address.district.name : string.Empty)
                 </GridColumn>
  
                 @*Column name with name of the street*@
-                <GridColumn TItem="Application" HeaderText="Вулиця" PropertyName="streetName"
+                <GridColumn TItem="Application" HeaderText="Вулиця" PropertyName="streetName" HeaderTextAlignment="Alignment.Center"
                     SortKeySelector="item => item.address != null ? item.address.streetName : string.Empty">
                     @((context.address != null ? context.address.streetName : string.Empty) + " " + 
                       (context.address != null ? context.address!.building : string.Empty));
                 </GridColumn>
 
-                <GridColumn TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus"
+                <GridColumn TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus" HeaderTextAlignment="Alignment.Center"
                     SortKeySelector="item => item.stretchingStatus">
                     @(context.stretchingStatus.GetDisplayName())
                 </GridColumn>
@@ -48,22 +48,22 @@
 
 
                 @*Column for date*@
-                <GridColumn TItem="Application" HeaderText="Дата">
+                <GridColumn TItem="Application" HeaderText="Дата" HeaderTextAlignment="Alignment.Center">
                     <span>@context.year.@context.month.@context.day</span>
                 </GridColumn>
 
-                <GridColumn TItem="Application" HeaderText="Пріорітет" SortKeySelector="item => item.priority"
+                <GridColumn TItem="Application" HeaderText="Пріорітет" SortKeySelector="item => item.priority" HeaderTextAlignment="Alignment.Center"
                     IsDefaultSortColumn="true" SortDirection="BlazorBootstrap.SortDirection.Descending">
                     <span>@context.priority</span>
                 </GridColumn>
 
-                <GridColumn TItem="Application" HeaderText="Доступ">
+                <GridColumn TItem="Application" HeaderText="Доступ" HeaderTextAlignment="Alignment.Center">
 
                     @context.address!.equipmentAccess.GetDisplayName();
 
                 </GridColumn>
  
-                <GridColumn TItem="Application" HeaderText="Доступ">
+                <GridColumn TItem="Application" HeaderText="Зручний час" HeaderTextAlignment="Alignment.Center">
 
                     @if(context.timeRangeIsSet)
                     {

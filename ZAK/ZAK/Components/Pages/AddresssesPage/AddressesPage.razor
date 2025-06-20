@@ -36,41 +36,41 @@
 
     <GridColumns>
 
-        <GridColumn TItem="Address" HeaderText="-" Filterable="false" Sortable="false" TextAlignment="Alignment.Center" >
+        <GridColumn TItem="Address" HeaderText="-" Filterable="false" Sortable="false" TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center" >
             <Button @onclick="@(mouseArg => addressEditingModal.ShowModal(context))">
                 <Icon Name="IconName.Pencil" />
             </Button>
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName" FilterTextboxWidth="200" TextAlignment="Alignment.Center"
+        <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName" FilterTextboxWidth="200" TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center"
             SortKeySelector="item => item.streetName" ColumnClass="@(x => "W10")">
             @context.streetName
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Будинок" PropertyName="building" TextAlignment="Alignment.Center"
+        <GridColumn TItem="Address" HeaderText="Будинок" PropertyName="building" TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center"
             SortKeySelector="item => item.building" ColumnClass="@(x => "W5")">
             @context.building
         </GridColumn>
-         <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority" ColumnClass="@(x => "W5")">
+         <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority" ColumnClass="@(x => "W5")" HeaderTextAlignment="Alignment.Center"> 
             <PriorityInputComponent Address="context"  />
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Альт. вулиця" PropertyName="streetNameAlias">
+        <GridColumn TItem="Address" HeaderText="Альт. вулиця" PropertyName="streetNameAlias" HeaderTextAlignment="Alignment.Center">
             <AliasInputComponent Address="context" StreetAlias="@true" />
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias" ColumnClass="@(x => "W5")">
+        <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias" ColumnClass="@(x => "W5")" HeaderTextAlignment="Alignment.Center">
             <AliasInputComponent Address="context" StreetAlias="@false" />
         </GridColumn> 
 
 
-        <GridColumn TItem="Address" HeaderText="Широта \ Долгота" PropertyName="Latitude"
+        <GridColumn TItem="Address" HeaderText="Широта \ Долгота" PropertyName="Latitude" HeaderTextAlignment="Alignment.Center"
             ColumnClass="@(x => "blackoutCell")">
             <CoordinatesBoxComponent Address="context" InformationUpdated="UpdateTable" />
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" SortKeySelector="item => item.resolved" TextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W5")">
+        <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" HeaderTextAlignment="Alignment.Center" SortKeySelector="item => item.resolved" TextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W5")">
             <h1>@(context.resolved ? '+' : '-')</h1>
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Доступ" ColumnClass="@(x => "W10")">
+        <GridColumn TItem="Address" HeaderText="Доступ" ColumnClass="@(x => "W10")" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
             <AddressAccessComponent addressId="context.Id" equipmentAccess="@context.equipmentAccess" />
         </GridColumn>
     </GridColumns>

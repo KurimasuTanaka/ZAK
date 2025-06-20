@@ -36,7 +36,7 @@
   SelectionMode="GridSelectionMode.Multiple" Responsive="true">
 
   @*Id column with set of interactive components*@
-  <GridColumn TItem="Application" HeaderText="№" PropertyName="id" SortKeySelector="item => item.id">
+  <GridColumn TItem="Application" HeaderText="№" PropertyName="id" SortKeySelector="item => item.id" HeaderTextAlignment="Alignment.Center">
     <div>
       @context.id
       <Button @onclick="@(mouseArg => applicationEditorModal.ShowModal(context))">
@@ -60,7 +60,7 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
   @*Interactivity column*@
-  <GridColumn TItem="Application" HeaderText="Параметри">
+  <GridColumn TItem="Application" HeaderText="Параметри" HeaderTextAlignment="Alignment.Center">
 
     <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Цікавився статусом" @bind-Value="@context.statusWasChecked"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
@@ -82,7 +82,7 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
   @*Column name with name of the street*@
-  <GridColumn TItem="Application" HeaderText="Адреса" PropertyName="streetName" TextAlignment="Alignment.Center">
+  <GridColumn TItem="Application" HeaderText="Адреса" PropertyName="streetName" TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center">
 
     @if (context.address is not null)
     {
@@ -98,7 +98,7 @@
   </GridColumn>
 
   @*Column with stretching status ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-  <GridColumn style="width: 10%;" TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus"
+  <GridColumn style="width: 10%;" TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus" HeaderTextAlignment="Alignment.Center"
     SortKeySelector="item => item.stretchingStatus" TextAlignment="Alignment.Center"
     ColumnClass="@(x => StretchingStatusComponent.GetStrechingStatusClass(x.stretchingStatus))">
 
@@ -107,13 +107,13 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
   @*Column for comments section*@
-  <GridColumn TItem="Application" HeaderText="Коментар" PropertyName="operatorComment">
+  <GridColumn TItem="Application" HeaderText="Коментар" PropertyName="operatorComment" HeaderTextAlignment="Alignment.Center">
     <CommentComponent operatorComment="@context.operatorComment" masterComment="@context.masterComment">
     </CommentComponent>
   </GridColumn>
 
   @*Column for date*@
-  <GridColumn TItem="Application" HeaderText="Дата" style="width: 15%;">
+  <GridColumn TItem="Application" HeaderText="Дата" style="width: 15%;" HeaderTextAlignment="Alignment.Center">
     <span>@context.year.@context.month.@context.day</span>
     <span>
       <h6>Дней к дедлайну: </h6> @context.daysToDeadline
