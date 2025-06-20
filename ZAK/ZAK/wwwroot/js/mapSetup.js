@@ -35,8 +35,7 @@ function drawPath(coordinates, color) {
 
 
 
-function drawMarker(markerString) 
-{
+function drawMarker(markerString) {
     let markerData = JSON.parse(markerString);
 
     let classToUse = "";
@@ -45,17 +44,14 @@ function drawMarker(markerString)
         if (markerData.hot == true) {
             classToUse = "div-icon-imp-str";
         }
-        else 
-        {
+        else {
             classToUse = "div-icon-reg-str";
         }
     } else {
-        if (markerData.hot == true)
-        {
+        if (markerData.hot == true) {
             classToUse = "div-icon-imp-nstr";
         }
-        else
-        {
+        else {
             classToUse = "div-icon-reg-nstr";
         }
 
@@ -72,6 +68,16 @@ function drawMarker(markerString)
 
     );
 
+    let selectOptions = "";
+    for (let i = 0; i < markerData.brigadeCount; i++) {
+
+        selectOptions +=
+            `<option id="brigadeSelector" value="${i}.${markerData.id}">
+                Бригада ${i + 1}
+            </option>`;
+    }
+
+
     const popup = L.popup()
         .setContent(
             `
@@ -82,16 +88,43 @@ function drawMarker(markerString)
                 ${markerData.operatorComment}
                 <br>
                 ${markerData.masterComment}
-                <br>
+                <hr>
+                <b>Додати до бригади:</b>
+                <select class="custom-select"> 
+                    ${selectOptions}
+                </select>
+
             `
         );
+
+
     popup.maxHeight = 50;
+
+    // marker.on('popupopen', () => {
+    //     // Находим элемент <select> внутри popup
+    //     const select = document.querySelector('.custom-select');
+    //     if (select) {
+    //         // Удаляем старые обработчики, чтобы избежать дублирования
+    //         select.removeEventListener('change', handleSelectChange);
+    //         // Добавляем новый обработчик
+    //         select.addEventListener('change', (event) => handleSelectChange(event, marker));
+    //     }
+    // });
 
     marker.bindPopup(popup);
     markerGroup.addLayer(marker);
     map.addLayer(markerGroup);
+
 }
 
+// function handleSelectChange(value) {
+//     {
+//         const selectedOption = value.target.value;
+//         const [brigadeNumber, applicationId] = selectedOption.split('.');
+//         alert(`Бригада ${brigadeNumber} обрана для заявки ${applicationId}`);
+//         leafleatMapController.invokeMethodAsync("ScheduleApplicationToBrigade", applicationId, brigadeNumber)
+//     }
+// }
 function clearMap() {
     polylineGroup.clearLayers();
 }

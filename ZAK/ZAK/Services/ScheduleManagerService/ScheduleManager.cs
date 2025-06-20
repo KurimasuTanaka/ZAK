@@ -173,4 +173,26 @@ public class ScheduleManager : IScheduleManager
 
         await UpdateBrigade(brigade);
     }
+
+    public async Task ScheduleApplicationToFirstEmptyTime(int applicationId, int brigadeId)
+    {
+        Brigade brigade = await GetBrigadeById(brigadeId);
+
+        for(int i = 0; i < 10; i++)
+        {
+            if (brigade.scheduledApplications.FirstOrDefault(sa => sa.scheduledTime == i) is null)
+            {
+                _logger.LogInformation($"Inserting application {applicationId} in brigade {brigadeId} on time {i}...");
+                ScheduledApplicationModel newScheduledApplication = new ScheduledApplicationModel()
+                {
+                    applicationId = applicationId,
+                    brigadeId = brigadeId,
+                    scheduledTime = i
+                };
+                brigade.scheduledApplications.Add(newScheduledApplication);
+                await UpdateBrigade(brigade);
+                return;
+            }
+        }
+    }
 }
