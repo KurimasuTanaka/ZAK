@@ -135,7 +135,9 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
     }
     private Application ScrapApplicationMasterComment(Application application, HtmlNode applicationNode)
     {
-        application.masterComment = applicationNode.SelectSingleNode("td[8]/span[2]").InnerHtml;
+        string? stringBuf = applicationNode.SelectSingleNode("td[8]/span[2]").InnerHtml.Remove(0, 77); //Skip the first 77 characters, which are not needed
+        application.masterComment = stringBuf != null ? stringBuf : "";
+
 
         return application;
     }

@@ -36,21 +36,24 @@
   SelectionMode="GridSelectionMode.Multiple" Responsive="true">
 
   @*Id column with set of interactive components*@
-  <GridColumn TItem="Application" HeaderText="№" PropertyName="id" SortKeySelector="item => item.id" HeaderTextAlignment="Alignment.Center">
+  <GridColumn TItem="Application" HeaderText="№" PropertyName="id" SortKeySelector="item => item.id"
+    HeaderTextAlignment="Alignment.Center">
     <div class="d-flex justify-content-left align-items-center">
       @context.id
       <Button @onclick="@(mouseArg => applicationEditorModal.ShowModal(context))">
-        <Icon Name="IconName.Pencil" Size="IconSize.x6"  />
+        <Icon Name="IconName.Pencil" Size="IconSize.x6" />
       </Button>
       <ApplicationDeletionIcon Application="@context" />
     </div>
-      <ApplicationWasChangedIcon application="@context" />
+    <ApplicationWasChangedIcon application="@context" />
     @*Interactive components in Id section ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
 
-    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Ігнорувати" 
-    @bind-Value="@context.ignored" @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
-    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Важлива заявка" 
-    @bind-Value="@context.important" @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
+    <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right" Label="Ігнорувати"
+      @bind-Value="@context.ignored"
+      @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
+    <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right" Label="Важлива заявка"
+      @bind-Value="@context.important"
+      @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
 
     <TimeframeApplicationComponent applicationId="@context.id" firstPart="@context.firstPart"
@@ -63,16 +66,20 @@
   @*Interactivity column*@
   <GridColumn TItem="Application" HeaderText="Параметри" HeaderTextAlignment="Alignment.Center">
 
-    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Цікавився статусом" @bind-Value="@context.statusWasChecked"
+    <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right"
+      Label="Цікавився статусом" @bind-Value="@context.statusWasChecked"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
-    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Срочка" @bind-Value="@context.urgent"
+    <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right" Label="Срочка"
+      @bind-Value="@context.urgent"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
-    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Є вільний кабель" @bind-Value="@context.freeCable"
+    <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right" Label="Є вільний кабель"
+      @bind-Value="@context.freeCable"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
-    <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Зміна тарифу" @bind-Value="@context.tarChangeApp"
+    <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right" Label="Зміна тарифу"
+      @bind-Value="@context.tarChangeApp"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
     <hr>
@@ -83,24 +90,30 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
   @*Column name with name of the street*@
-  <GridColumn TItem="Application" HeaderText="Адреса" PropertyName="streetName" TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center">
+  <GridColumn TItem="Application" HeaderText="Адреса" PropertyName="streetName" TextAlignment="Alignment.Center"
+    HeaderTextAlignment="Alignment.Center">
 
     @if (context.address is not null)
     {
-      if(context.address.district is not null)
+      if (context.address.district is not null)
       {
         <h6>@(context.address!.district!.name)</h6>
-      <br>
+        <br>
       }
       @(context.representableAddress)
-      
+
     }
-    else { <span class="text-danger">Адреса не вказана</span>}
+    else
+    {
+
+      <span class="text-danger">Адреса не вказана</span>
+    }
   </GridColumn>
 
   @*Column with stretching status ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-  <GridColumn style="width: 10%;" TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus" HeaderTextAlignment="Alignment.Center"
-    SortKeySelector="item => item.stretchingStatus" TextAlignment="Alignment.Center"
+  <GridColumn style="width: 10%;" TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus"
+    HeaderTextAlignment="Alignment.Center" SortKeySelector="item => item.stretchingStatus"
+    TextAlignment="Alignment.Center"
     ColumnClass="@(x => StretchingStatusComponent.GetStrechingStatusClass(x.stretchingStatus))">
 
     <StretchingStatusComponent applicationId="@context.id" stretchingStatus="@context.stretchingStatus" />
@@ -108,14 +121,21 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
   @*Column for comments section*@
-  <GridColumn TItem="Application" HeaderText="Коментар" PropertyName="operatorComment" HeaderTextAlignment="Alignment.Center">
-    <CommentComponent operatorComment="@context.operatorComment" masterComment="@context.masterComment">
-    </CommentComponent>
+  <GridColumn TItem="Application" HeaderText="Коментар" PropertyName="operatorComment"
+    HeaderTextAlignment="Alignment.Center">
+    <div style="max-height: 20em; overflow: auto;">
+      @((MarkupString)@context.operatorComment)
+      @if (!String.IsNullOrEmpty(context.masterComment))
+      {
+        <hr>
+        @((MarkupString)@context.masterComment)
+      }
+    </div>
   </GridColumn>
 
   @*Column for date*@
-  <GridColumn TItem="Application" HeaderText="Дата" style="width: 15%;" 
-    HeaderTextAlignment="Alignment.Center" Sortable="true" SortKeySelector="item => new DateTime(item.year, item.month, item.day)">
+  <GridColumn TItem="Application" HeaderText="Дата" style="width: 15%;" HeaderTextAlignment="Alignment.Center"
+    Sortable="true" SortKeySelector="item => new DateTime(item.year, item.month, item.day)">
     <span>@context.year.@context.month.@context.day</span>
     <span>
       <h6>Дней к дедлайну: </h6> @context.daysToDeadline
@@ -137,7 +157,8 @@
     await applicationsGrid.RefreshDataAsync();
   }
 
-  private async Task<GridDataProviderResult<Application>> ApplicationsDataProvider(GridDataProviderRequest<Application> request)
+  private async Task<GridDataProviderResult<Application>> ApplicationsDataProvider(GridDataProviderRequest<Application>
+  request)
   {
     _logger.LogInformation("Loading applications data");
 
