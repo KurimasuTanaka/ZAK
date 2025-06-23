@@ -1,6 +1,9 @@
 ﻿@inject IAddressRepository _addressRepository;
 @inject ISnackbar Snackbar;
 @inject ILogger<AddressEditingModal> _logger;
+@inject IDistrictRepository _districtRepository;
+
+<MudPopoverProvider />
 
 <Modal @ref="modal" Title="Редагування адреси" Size="ModalSize.Regular">
     <BodyTemplate>
@@ -12,6 +15,18 @@
             <MudTextField @bind-Value="address.addressAlias!.buildingAlias" Label="Альт. будинок" Variant="Variant.Outlined" />
             <MudNumericField @bind-Value="address.coordinates!.lat" Label="Широта" Variant="Variant.Outlined" />
             <MudNumericField @bind-Value="address.coordinates!.lon" Label="Долгота" Variant="Variant.Outlined" />
+        
+            @if (address.district is null)
+            {
+                address.district = new District();
+            }
+
+            <MudSelect @bind-Value="address.district.name" Variant="Variant.Outlined">
+                @foreach (var district in districts)
+                {
+                    <MudSelectItem Value="@district.name">@district.name</MudSelectItem>
+                }
+            </MudSelect>
         </MudStack>
         <MudButton @onclick="SaveChanges" Variant="Variant.Filled" Color="Color.Primary">Зберегти зміни</MudButton>
     </BodyTemplate>
@@ -24,11 +39,16 @@
     private Address address = new();
     [Parameter] public EventCallback UpdateTable { get; set; }
     Modal modal = default!;
+    List<District> districts = new();
 
     public async Task ShowModal(Address address)
     {
         this.address = new(address);
+
+        districts = (await _districtRepository.GetAllAsync()).ToList();
+
         await modal.ShowAsync();
+            
     }
     public async Task SaveChanges()
     {
@@ -43,6 +63,8 @@
         }
         else
         {
+            address.district = districts.FirstOrDefault(d => d.name == address!.district!.name);
+
             await _addressRepository.UpdateAsync(address);
             _logger.LogInformation("Address updated: {StreetName} {Building}", address.streetName, address.building);
 

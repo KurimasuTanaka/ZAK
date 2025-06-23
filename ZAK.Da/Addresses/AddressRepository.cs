@@ -77,6 +77,7 @@ public class AddressRepository : IAddressRepository
                 var result = await context.addresses.Include(a => a.addressAlias)
                                                     .Include(a => a.addressPriority)
                                                     .Include(a => a.coordinates)
+                                                    .Include(a => a.district)
                                                     .Select(a => new Address(a))
                                                     .ToListAsync();
                 _logger.LogInformation("Retrieved {Count} addresses", result.Count);
@@ -165,13 +166,14 @@ public class AddressRepository : IAddressRepository
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                var existingEntity = await context.addresses.Include(a => a.coordinates).Include(a => a.addressAlias).Include(a => a.addressPriority).FirstOrDefaultAsync(a => a.Id == entity.Id);
+                var existingEntity = await context.addresses.Include(a => a.coordinates).Include(a => a.addressAlias).Include(a => a.addressPriority).Include(a => a.district).FirstOrDefaultAsync(a => a.Id == entity.Id);
                 if (existingEntity != null)
                 {
                     context.Entry(existingEntity).CurrentValues.SetValues(entity);
                     if (entity.coordinates != null) existingEntity.coordinates = entity.coordinates;
                     if (entity.addressAlias != null) existingEntity.addressAlias = entity.addressAlias;
                     if (entity.addressPriority != null) existingEntity.addressPriority = entity.addressPriority;
+                    if (entity.district != null) existingEntity.district = context.districts.FirstOrDefault(d => d.name == entity.district.name) ?? entity.district;
 
                     await context.SaveChangesAsync();
                     _logger.LogInformation("Address updated successfully: {@Address}", entity);

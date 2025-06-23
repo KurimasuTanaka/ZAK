@@ -67,6 +67,7 @@ public class Program
         builder.Services.AddTransient<IApplicationReporisory, ApplicationRepository>();
         builder.Services.AddTransient<IAddressRepository, AddressRepository>();
         builder.Services.AddTransient<ICoefficientRepository, CoefficientRepository>();
+        builder.Services.AddTransient<IDistrictRepository, DistrictRepository>();
 
         builder.Services.AddScoped<IFileLoader, FileLoader>();
         builder.Services.AddScoped<IApplicationsScrapper, ApplicationsScrapperUpdated>();

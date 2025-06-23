@@ -32,9 +32,20 @@
         <ItemRenderer>
             @if (context.address is not null)
             {
+                if(context.address.district is not null)
+                {
+
                 <MudListItem T="ApplicationScheduled"
                     Text="@($"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id} - {@context.address!.district!.name} - {@context.address!.streetName} {@context.address!.building}")"
                     OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
+                }
+                else
+                {
+                    <MudListItem T="ApplicationScheduled"
+                    Text="@($"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id} - {@context.address!.streetName} {@context.address!.building}")"
+                    OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
+                
+                }
             }
             else
             {
