@@ -37,13 +37,14 @@
 
   @*Id column with set of interactive components*@
   <GridColumn TItem="Application" HeaderText="№" PropertyName="id" SortKeySelector="item => item.id" HeaderTextAlignment="Alignment.Center">
-    <div>
+    <div class="d-flex justify-content-left align-items-center">
       @context.id
       <Button @onclick="@(mouseArg => applicationEditorModal.ShowModal(context))">
-        <Icon Name="IconName.Pencil" />
+        <Icon Name="IconName.Pencil" Size="IconSize.x6"  />
       </Button>
-      <ApplicationWasChangedIcon application="@context" />
+      <ApplicationDeletionIcon Application="@context" />
     </div>
+      <ApplicationWasChangedIcon application="@context" />
     @*Interactive components in Id section ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
 
     <MudSwitch Size="Size.Small" Color="Color.Info"  LabelPlacement="MudBlazor.Placement.Right" Label="Ігнорувати" 

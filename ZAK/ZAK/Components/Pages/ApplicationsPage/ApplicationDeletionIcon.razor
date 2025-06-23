@@ -1,0 +1,43 @@
+﻿@inject IApplicationReporisory _applicationRepository;
+@inject ILogger<ApplicationDeletionIcon> _logger;
+
+<Modal  @ref="ApplicationDeletionModal" title="Видалення заявки" Size="ModalSize.Small" Class="text-center">
+    <BodyTemplate>
+        <p class="text-center">Ви впевнені, що хочете видалити заявку?</p>
+        <div class="d-flex justify-content-center">
+            <Button Color="ButtonColor.Danger" Class="m-1" @onclick="OnDeleteApplication">
+                Видалити
+            </Button>
+            <Button Color="ButtonColor.Secondary" Class="m-1" @onclick="CloseApplicationDeletionModal">
+                Скасувати
+            </Button>
+        </div>
+    </BodyTemplate>
+</Modal>
+
+<Button @onclick="ShowApplicationDeletionModal">
+    <Icon Name="IconName.Trash3Fill" Size="IconSize.x6" />
+</Button>
+
+@code {
+    Modal ApplicationDeletionModal { get; set; } = default!;
+    [Parameter] public Application Application { get; set; } = default!;
+
+    public async Task ShowApplicationDeletionModal()
+    {
+        await ApplicationDeletionModal.ShowAsync();
+    }
+
+    public async Task CloseApplicationDeletionModal()
+    {
+        await ApplicationDeletionModal.HideAsync();
+    }
+
+    public async Task OnDeleteApplication()
+    {
+        _logger.LogInformation("Deleting application with ID: {ApplicationId}", Application.id);
+
+        await _applicationRepository.DeleteAsync(Application.id);
+        await CloseApplicationDeletionModal();
+    }
+}

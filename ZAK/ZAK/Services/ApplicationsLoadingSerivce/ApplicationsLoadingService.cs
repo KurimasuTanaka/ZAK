@@ -65,7 +65,8 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
 
         List<Application> oldApplications = (await _applicationRepository.GetAllAsync()).ToList();
 
-        List<Application> applicationsToDelete = oldApplications.Except(newApplications, new ApplicationComparer()).ToList();
+        List<Application> applicationsToDelete = oldApplications.
+            Except(newApplications, new ApplicationComparer()).Where(a => a.userCreated is false).ToList();
 
         await _applicationRepository.DeleteRangeAsync(applicationsToDelete);
 
