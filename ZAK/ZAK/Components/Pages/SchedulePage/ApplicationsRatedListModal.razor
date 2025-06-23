@@ -149,8 +149,14 @@
     {
         _logger.LogInformation($"Finding near application for time {time} with direction {direction}");
 
-        for (int i = time + direction; i <= scheduledApplications.Count; i += direction)
+        for (int i = time + direction;; i += direction)
         {
+            if (i < 0 || i > 10) // Assuming time is in hours, valid range is 0-23
+            {
+                _logger.LogInformation($"Time {i} is out of bounds, stopping search");
+                break;
+            }
+
             ApplicationScheduled? scheduledApplication = scheduledApplications.Find(x => x.applicationScheduledTime == i);
             
             if(scheduledApplication is not null)

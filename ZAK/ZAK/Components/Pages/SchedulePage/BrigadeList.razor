@@ -201,9 +201,9 @@
 
     }
 
-    public void Refresh()
+    public async Task Refresh()
     {
-        dropContainer.Refresh();
+        await GetApplications();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -51,7 +51,6 @@ public class ApplicationPriorityCalculationTests
         double application2PriorityNearApp3 = application2.priority;
 
         // Assert
-        Assert.True(application2PriorityNearApp1 > application2PriorityNearApp3, 
-            "Application priority should be higher when closer to another application.");
+        Assert.True(application2PriorityNearApp1 > application2PriorityNearApp3);
     }
 }
