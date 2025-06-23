@@ -114,7 +114,8 @@
   </GridColumn>
 
   @*Column for date*@
-  <GridColumn TItem="Application" HeaderText="Дата" style="width: 15%;" HeaderTextAlignment="Alignment.Center">
+  <GridColumn TItem="Application" HeaderText="Дата" style="width: 15%;" 
+    HeaderTextAlignment="Alignment.Center" Sortable="true" SortKeySelector="item => new DateTime(item.year, item.month, item.day)">
     <span>@context.year.@context.month.@context.day</span>
     <span>
       <h6>Дней к дедлайну: </h6> @context.daysToDeadline

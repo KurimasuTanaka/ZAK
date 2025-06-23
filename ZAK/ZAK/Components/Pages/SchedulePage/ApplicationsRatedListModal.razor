@@ -149,13 +149,15 @@
     {
         _logger.LogInformation($"Finding near application for time {time} with direction {direction}");
 
-        for (int i = time + direction; i < scheduledApplications.Count - direction; i += direction)
+        for (int i = time + direction; i <= scheduledApplications.Count; i += direction)
         {
-            if (i < 0 || i >= scheduledApplications.Count) return 0;
-            if (scheduledApplications[i].id != 0)
+            ApplicationScheduled? scheduledApplication = scheduledApplications.Find(x => x.applicationScheduledTime == i);
+            
+            if(scheduledApplication is not null)
             {
-                return scheduledApplications[i].id;
-            }
+                _logger.LogInformation($"Found near application with time {i}");
+                return scheduledApplication.id;
+            } 
         }
         return 0;
     }

@@ -36,7 +36,7 @@ public class Application : ApplicationModel
 
     public Application() { }
     public Application(ApplicationModel model) : base(model)
-    {   
+    {
         SetupApplicationDeadline();
     }
 
@@ -71,7 +71,7 @@ public class Application : ApplicationModel
 
         DateTime dateTime = new DateTime(year, month, day);
 
-        if(maxDaysForConnection > 50) 
+        if (maxDaysForConnection > 50)
             maxDaysForConnection = 50; // Limit to prevent overflow
         daysToDeadline = (dateTime.AddDays(maxDaysForConnection) - DateTime.Today).Days;
 
@@ -91,15 +91,17 @@ public class Application : ApplicationModel
         {
             if (application.address is null || application.address.coordinates is null) break;
 
-            else distance +=
-                 (Math.Sqrt(
-                     Math.Pow(application.address.coordinates.lat - this.address.coordinates.lat, 2) +
-                     Math.Pow(application.address.coordinates.lon - this.address.coordinates.lon, 2)));
+            else distance += ApproxDistance(
+                     application.address.coordinates.lat,
+                     application.address.coordinates.lon,
+                     this.address.coordinates.lat,
+                     this.address.coordinates.lon);
+
         }
 
         //Calculate priority 
         priority =
-            (1 / distance) * coefficients["distance"]
+            Math.Abs(30 - distance) * coefficients["distance"]
             + (address.addressPriority is null ? 0.0 : address.addressPriority.priority) * coefficients["housePriority"]
             + (urgent ? 1 : 0) * coefficients["urgency"]
             + (statusWasChecked ? 1 : 0) * coefficients["statusCheck"]
@@ -118,6 +120,14 @@ public class Application : ApplicationModel
             property.SetValue(this, property.GetValue(source));
         }
     }
+
+
+    private double ApproxDistance(double lat1, double lon1, double lat2, double lon2)
+{
+    double dx = (lon2 - lon1) * Math.Cos((lat1 + lat2) * 0.5 * Math.PI / 180);
+    double dy = (lat2 - lat1);
+    return 111.32 * Math.Sqrt(dx * dx + dy * dy); // 1 градус ≈ 111.32 км
+}
 }
 
 public class ApplicationComparer : IEqualityComparer<Application?>
@@ -134,3 +144,4 @@ public class ApplicationComparer : IEqualityComparer<Application?>
         return obj.id.GetHashCode();
     }
 }
+
