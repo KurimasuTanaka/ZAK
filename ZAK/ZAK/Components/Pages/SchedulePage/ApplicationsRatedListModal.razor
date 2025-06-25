@@ -87,13 +87,12 @@
 
             @*Column for comments section*@
             <GridDetailView TItem="Application">
-                <div class="row">
-                    <div class="col">
-                        <CommentComponent masterComment="@context.masterComment"
-                            operatorComment="@context.operatorComment" />
-                    </div>
-                </div>
-
+                @((MarkupString)@context.operatorComment)
+                @if (!String.IsNullOrEmpty(context.masterComment) || context.masterComment != "<span></span>")
+                {
+                    <hr>
+                    @((MarkupString)@context.masterComment)
+                }
             </GridDetailView>
 
 
