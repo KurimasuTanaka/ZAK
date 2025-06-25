@@ -1,4 +1,5 @@
-﻿@using ZAK.DA;
+﻿@using MudBlazor.Utilities
+@using ZAK.DA;
 @using MudBlazor
 @using ZAK.Services.ScheduleManagerService
 
@@ -72,11 +73,13 @@
     MudDropContainer<ApplicationScheduled> dropContainer = default!;
     private List<Brigade> brigades = new();
     private List<ApplicationScheduled> applications = new();
+    
     ApplicationsRatedListModal applicationsRatedList = default!;
 
     private async Task ItemDroppedHandler(MudItemDropInfo<ApplicationScheduled> dropItem)
     {
         _logger.LogInformation($"Item dropped in dropzone {dropItem.DropzoneIdentifier} at index {dropItem.IndexInZone}");
+
 
         if(dropItem == null || dropItem.Item == null || dropItem.DropzoneIdentifier == null)
         {
@@ -84,50 +87,31 @@
             return;
         }
 
-        
-        if(dropItem.Item.id == 0)
+        int editedBrigadeId = Int32.Parse(dropItem.DropzoneIdentifier);
+        if(dropItem.Item.brigadeId != editedBrigadeId)
         {
-            _logger.LogInformation("Dropped item is an empty timeslot");
-            
-            if(dropItem.Item.brigadeId == Int32.Parse(dropItem.DropzoneIdentifier))
-            {
-                await _brigadesManager.MoveEmptyTimeslotFromOneTimeToAnother(
-                    dropItem.Item.brigadeId, 
-                    dropItem.IndexInZone, 
-                    dropItem.Item.applicationScheduledTime);
-            }
-            else
-            {
-                await _brigadesManager.MoveEmptyTimeslotFromOneBrigadeToAnother(
-                    Int32.Parse(dropItem.DropzoneIdentifier),
-                    dropItem.IndexInZone, 
-                    dropItem.Item.brigadeId, 
-                    dropItem.Item.applicationScheduledTime);
-            }
-        } else 
-        {
-            if (dropItem.Item.brigadeId == Int32.Parse(dropItem.DropzoneIdentifier))
-            {
-                await _brigadesManager.MoveScheduledApplicationFromOneTimeToAnother(
-                    dropItem.Item.id,
-                    dropItem.Item.brigadeId,
-                    dropItem.IndexInZone,
-                    dropItem.Item.applicationScheduledTime);
-            }
-            else
-            {
-                await _brigadesManager.MoveScheduledApplicationFromOneBrigadeToAnother(
-                    dropItem.Item.id,
-                    Int32.Parse(dropItem.DropzoneIdentifier),
-                    dropItem.IndexInZone,
-                    dropItem.Item.brigadeId,
-                    dropItem.Item.applicationScheduledTime);
-            }
+            _logger.LogWarning($"Scheduled application moved to the same brigade");
+            return;
         }
 
-        _logger.LogInformation("Item dropped successfully. Clearing applications list and refreshing applications list");
-        applications.Clear();
-        await GetApplications();
+        //Creating a separate list of brigade schedule and reordering it
+        List<ApplicationScheduled> brigadeSchedule = applications.Where(a => a.brigadeId == editedBrigadeId)
+            .ToList();
+        brigadeSchedule.UpdateOrder<ApplicationScheduled>(dropItem, app => app.applicationScheduledTime);
+
+        Brigade brigade = brigades.FirstOrDefault(b => b.id == editedBrigadeId)!;
+
+        brigade.scheduledApplications = brigadeSchedule
+            .Where(a => a.id != 0)
+            .Select(a => new ZAK.Db.Models.ScheduledApplicationModel
+            {
+                applicationId = a.id,
+                brigadeId = a.brigadeId,
+                scheduledTime = a.applicationScheduledTime,
+            })
+            .ToList();
+
+        await _brigadeRepository.UpdateAsync(brigade);
     }
 
     private async Task ApplicationWasChosen(ApplicationScheduled scheduledApplication)
@@ -139,7 +123,7 @@
 
         //Refreshing the brigade list
         applications.Clear();
-        await GetApplications();
+        await RefreshApplicationsList();
 
         //Hiding modal window
         await applicationsRatedList.HideAsync();
@@ -150,8 +134,6 @@
     {
         await _brigadesManager.MakeTimeSlotEmpty(scheduledTime.brigadeId, scheduledTime.applicationScheduledTime);
         //Refreshing the brigade list
-        applications.Clear();
-        await GetApplications();
 
         //Hiding modal window
         await applicationsRatedList.HideAsync();
@@ -167,7 +149,7 @@
     }
 
 
-    public async Task GetApplications()
+    public async Task RefreshApplicationsList()
     {
         _logger.LogInformation("Getting all brigades to update list of scheduled applications");
 
@@ -185,32 +167,11 @@
         await RefreshMap.InvokeAsync();
     }
 
-    public async Task ReuploadApplications()
-    {
-        _logger.LogInformation("Getting all brigades to update list of scheduled applications. Application list will be cleared");
-
-        brigades = (await _brigadeRepository.GetAllAsync()).ToList();
-
-        applications.Clear();
-
-        foreach (var brigade in brigades)
-        {
-            applications.AddRange(brigade.GetApplications());
-        }
-        dropContainer.Refresh();
-
-    }
-
-    public async Task Refresh()
-    {
-        await GetApplications();
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         _logger.LogInformation("Parameters set for BrigadeList component. Getting applications to render brigade list");
         
-        if(firstRender) await GetApplications();
+        if(firstRender) await RefreshApplicationsList();
     }
 
 }

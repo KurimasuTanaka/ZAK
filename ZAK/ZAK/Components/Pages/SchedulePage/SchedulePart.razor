@@ -16,9 +16,9 @@
 
     BrigadeList brigadeList = default!;
 
-    private void RefreshList()
+    private async Task RefreshList()
     {
-        brigadeList.Refresh();
+        await brigadeList.RefreshApplicationsList();
     }
 
     private async Task AddNewBrigade()
@@ -26,7 +26,7 @@
         _logger.LogInformation("Adding new brigade");
 
         await _brigadeRepository.CreateAsync(new Brigade());
-        await brigadeList.ReuploadApplications();
+        await brigadeList.RefreshApplicationsList();
     }
 
 }
