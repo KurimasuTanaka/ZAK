@@ -94,6 +94,7 @@
             return;
         }
 
+        //TODO: Consider to move this logic to the service
         //Creating a separate list of brigade schedule and reordering it
         List<ApplicationScheduled> brigadeSchedule = applications.Where(a => a.brigadeId == editedBrigadeId)
             .ToList();

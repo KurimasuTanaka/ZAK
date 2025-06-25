@@ -23,81 +23,7 @@ public class ScheduleManager : IScheduleManager
 
         return brigade;
     }
-    private async Task UpdateBrigade(Brigade brigade)
-    {
-        _logger.LogInformation($"Updating brigade {brigade.id}...");
 
-        await _brigadeRepository.UpdateAsync(brigade);
-
-        _logger.LogInformation($"Brigade {brigade.id} updated!");
-    }
-
-    private void ShiftScheduledApplicationsForward(Brigade brigade, int time)
-    {
-        _logger.LogInformation($"Moving applications in brigade {brigade.id} that scheduled after {time} hour to the next hour...");
-
-        brigade.scheduledApplications.Where(sa => sa.scheduledTime > time).ToList().ForEach(sa =>
-        {
-            sa.scheduledTime++;
-        });
-
-        brigade.scheduledApplications.RemoveAll(sa => sa.scheduledTime > 9);
-
-    }
-
-    private void ShiftScheduledApplicationsBackward(Brigade brigade, int time)
-    {
-
-        _logger.LogInformation($"Moving applications in brigade {brigade.id} that scheduled after {time} hour to the previous hour...");
-        brigade.scheduledApplications.Where(sa => sa.scheduledTime > time).ToList().ForEach(sa =>
-        {
-            sa.scheduledTime--;
-        });
-    }
-
-    private void ShiftScheduledApplicationsForward(Brigade brigade, int startTime, int endTime)
-    {
-        _logger.LogInformation($"Moving applications in brigade {brigade.id} that scheduled from {startTime} to {endTime} to the next hour...");
-
-        brigade.scheduledApplications.Where(sa => sa.scheduledTime >= startTime && sa.scheduledTime <= endTime).ToList().ForEach(sa =>
-                {
-                    sa.scheduledTime++;
-                });
-
-    }
-
-    private void ShiftScheduledApplicationsBackward(Brigade brigade, int startTime, int endTime)
-    {
-        _logger.LogInformation($"Moving applications in brigade {brigade.id} that scheduled from {startTime} to {endTime} to the previous hour...");
-
-        brigade.scheduledApplications.Where(sa => sa.scheduledTime >= startTime && sa.scheduledTime <= endTime).ToList().ForEach(sa =>
-                {
-                    sa.scheduledTime--;
-                });
-    }
-
-    public async Task MoveScheduledApplicationFromOneBrigadeToAnother(int applicationId, int brigadeId, int newTime, int prevBrigadeId, int prevTime)
-    {
-        //Delete application from previous brigade
-        Brigade? prevBrigade = await GetBrigadeById(prevBrigadeId);
-        prevBrigade.scheduledApplications.RemoveAll(sa => sa.applicationId == applicationId);
-        ShiftScheduledApplicationsBackward(prevBrigade, prevTime);
-        await UpdateBrigade(prevBrigade);
-
-        //Insert application to the new brigade
-        Brigade? newBrigade = await GetBrigadeById(brigadeId);
-        ShiftScheduledApplicationsForward(newBrigade, newTime);
-
-        _logger.LogInformation($"Inserting application {applicationId} in brigade {brigadeId} on time {newTime}...");
-        ScheduledApplicationModel newScheduledApplication = new ScheduledApplicationModel()
-        {
-            applicationId = applicationId,
-            brigadeId = brigadeId,
-            scheduledTime = newTime
-        };
-        newBrigade.scheduledApplications.Add(newScheduledApplication);
-        await UpdateBrigade(newBrigade);
-    }
     public async Task ScheduleApplication(int applicationId, int brigadeId, int time)
     {
         Brigade newBrigade = await GetBrigadeById(brigadeId);
@@ -114,7 +40,7 @@ public class ScheduleManager : IScheduleManager
         };
         newBrigade.scheduledApplications.Add(newScheduledApplication);
 
-        await UpdateBrigade(newBrigade);
+        await _brigadeRepository.UpdateAsync(newBrigade);
     }
 
     public async Task MakeTimeSlotEmpty(int brigadeId, int time)
@@ -126,52 +52,7 @@ public class ScheduleManager : IScheduleManager
 
         brigade.scheduledApplications.Remove(scheduledApplication);
 
-        await UpdateBrigade(brigade);
-    }
-
-    public async Task MoveEmptyTimeslotFromOneBrigadeToAnother(int brigadeId, int newTime, int prevBrigadeId, int prevTime)
-    {
-        Brigade prevBrigade = await GetBrigadeById(prevBrigadeId);
-
-        ShiftScheduledApplicationsBackward(prevBrigade, prevTime);
-
-        await UpdateBrigade(prevBrigade);
-
-        Brigade newBrigade = await GetBrigadeById(brigadeId);
-
-        ShiftScheduledApplicationsForward(newBrigade, newTime);
-
-        await UpdateBrigade(newBrigade);
-    }
-
-    public async Task MoveEmptyTimeslotFromOneTimeToAnother(int brigadeId, int newTime, int prevTime)
-    {
-        Brigade brigade = await GetBrigadeById(brigadeId);
-
-        ShiftScheduledApplicationsBackward(brigade, prevTime, newTime);
-
-        await UpdateBrigade(brigade);
-    }
-
-    public async Task MoveScheduledApplicationFromOneTimeToAnother(int applicationId, int brigadeId, int newTime, int prevTime)
-    {
-        Brigade brigade = await GetBrigadeById(brigadeId);
-
-
-        if (prevTime < newTime)
-        {
-            ShiftScheduledApplicationsBackward(brigade, Math.Min(prevTime, newTime) + 1, Math.Max(prevTime, newTime) - 1);
-            brigade.scheduledApplications.Where(sa => sa.applicationId == applicationId).First().scheduledTime = newTime - 1;
-
-        }
-        else
-        {
-            ShiftScheduledApplicationsForward(brigade, Math.Min(prevTime, newTime), Math.Max(prevTime, newTime) - 1);
-            brigade.scheduledApplications.Where(sa => sa.applicationId == applicationId).First().scheduledTime = newTime;
-        }
-
-
-        await UpdateBrigade(brigade);
+        await _brigadeRepository.UpdateAsync(brigade);
     }
 
     public async Task ScheduleApplicationToFirstEmptyTime(int applicationId, int brigadeId)
@@ -190,7 +71,7 @@ public class ScheduleManager : IScheduleManager
                     scheduledTime = i
                 };
                 brigade.scheduledApplications.Add(newScheduledApplication);
-                await UpdateBrigade(brigade);
+                await _brigadeRepository.UpdateAsync(brigade);
                 return;
             }
         }
