@@ -14,6 +14,7 @@ using ZAK.Services.ScheduleManagerService;
 using ZAK.DAO;
 using ZAK.Services.ApplicationsLoadingService;
 using NReco.Logging.File;
+using WebVella.BlazorTrace;
 
 
 namespace ZAK;
@@ -80,7 +81,7 @@ public class Program
         builder.Services.AddSingleton<IMapRoutesManager, MapRoutesManager.MapRoutesManager>();
         builder.Services.AddScoped<IUnresolvedAddressesChecker, UnresolvedAddressesChecker>();
 
-
+        builder.Services.AddBlazorTrace();
 
 
 

@@ -17,7 +17,6 @@ function initMap() {
 
 function drawPath(coordinates, color) {
 
-
     let cords = new Array();
 
     for (let i = 0; i < coordinates.split(' ').length - 1; i += 2) {
@@ -30,6 +29,7 @@ function drawPath(coordinates, color) {
             weight: 6,
             opacity: 0.7,
         });
+
     polylineGroup.addLayer(polyline);
 }
 

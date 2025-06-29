@@ -166,13 +166,15 @@
             int l = pathString.Length;
         }
 
-        string color = "";
+        string color = "red"; // Default color in case brigadeNumber is not recognized
         switch (brigadeNumber)
         {
-            case 0: color = "#ffbe0b"; break;
-            case 1: color = "#3a5a40"; break;
-            case 3: color = "#8338ec"; break;
-            case 4: color = "#3a86ff"; break;
+            case 0: color = "#1C3144"; break;
+            case 1: color = "#761922"; break;
+            case 2: color = "#D00000"; break;
+            case 3: color = "#E85D04"; break;
+            case 4: color = "#FFBA08"; break;
+            case 5: color = "#3F88C5"; break;
         }
 
         try

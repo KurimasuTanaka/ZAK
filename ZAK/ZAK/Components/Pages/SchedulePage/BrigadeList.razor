@@ -37,13 +37,14 @@
                 {
 
                 <MudListItem T="ApplicationScheduled"
-                    Text="@($"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id} - {@context.address!.district!.name} - {@context.address!.streetName} {@context.address!.building}")"
+                    Text="@($"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id} - {@context.address!.district!.name} - {@context.address!.streetName} {@context.address!.building} - {@context.comfortableVisitTime} - {@context.address!.equipmentAccess.GetDisplayName()}")"
                     OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
                 }
                 else
                 {
                     <MudListItem T="ApplicationScheduled"
-                    Text="@($"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id} - {@context.address!.streetName} {@context.address!.building}")"
+                    Text="@(
+                        $"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id} - {@context.address!.streetName} {@context.address!.building} - {@context.comfortableVisitTime} - {@context.address!.equipmentAccess.GetDisplayName()}")"
                     OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
                 
                 }

@@ -21,19 +21,26 @@
 
             foreach (ApplicationScheduled application in scheduledApplications)
             {
+                int applicationCounter = 0;
+
                 if (application.id == 0)
                 {
                     brigadeInChatFormat +=
-                    (i + 10).ToString() + " - " + (i + 11).ToString() + " " +
+                    (applicationCounter + 10).ToString() + " - " + (applicationCounter + 11).ToString() + " " +
                     "----- Резерв -----\n";
                 }
                 else
                 {
                     brigadeInChatFormat +=
-                    (i + 10).ToString() + " - " + (i + 11).ToString() + " " +
-                    application.id + " " + application.address!.streetName + " " +
-                    application.address!.building + "\n";
+                    (applicationCounter + 10).ToString() + " - " + (applicationCounter + 11).ToString() + " " +
+                    application.id + " " + 
+                    ClearSteetName(application.address!.streetName) + " " +
+                    application.address!.building + " (" +  
+                    application.comfortableVisitTime + " " +
+                    application.address.equipmentAccess.GetDisplayName() + ") \n";
                 }
+
+                applicationCounter++;
             }
 
             _logger.LogInformation("Brigade string generated successfully. \nInvoking clipboard function... ");
@@ -41,5 +48,21 @@
             await JSRuntime.InvokeVoidAsync("CopyToClipboard", brigadeInChatFormat);
 
         }
+    }
+
+    private string ClearSteetName(string streetName)
+    {
+        if (string.IsNullOrEmpty(streetName))
+        {
+            return string.Empty;
+        }
+
+        int bracketIndex = streetName.IndexOf('(');
+        int dotIndex = streetName.IndexOf('.');
+
+        if(bracketIndex == -1) bracketIndex = streetName.Length;
+        if(dotIndex == -1) dotIndex = 0;
+
+        return streetName.Substring(dotIndex + 1, bracketIndex - (dotIndex + 1)).Trim();
     }
 }

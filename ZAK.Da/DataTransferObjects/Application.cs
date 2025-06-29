@@ -34,6 +34,23 @@ public class Application : ApplicationModel
         }
     }
 
+    public string comfortableVisitTime 
+    {
+        get
+        {
+            if (timeRangeIsSet)
+            {
+                return $"{startHour} - {endHour}";
+            }
+            else
+            {
+                if (firstPart) return "перша пол.";
+                if (secondPart) return "друга пол.";
+                throw new Exception("Time range is not set");
+            }
+        }
+    }
+
     public Application() { }
     public Application(ApplicationModel model) : base(model)
     {

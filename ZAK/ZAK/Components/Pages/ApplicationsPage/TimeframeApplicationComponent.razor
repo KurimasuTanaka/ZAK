@@ -68,6 +68,7 @@
 
         Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.startHour = startHour;
+        application.timeRangeIsSet = true;
         await _applicationRepository.UpdateAsync(application);
 
         result = $"С {startHour} до {endHour}";
@@ -79,6 +80,7 @@
 
         Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.endHour = endHour;
+        application.timeRangeIsSet = true;
         await _applicationRepository.UpdateAsync(application);
 
         result = $"С {startHour} до {endHour}";
@@ -91,6 +93,7 @@
         Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.firstPart = true;
         application.secondPart = false;
+        application.timeRangeIsSet = false;
         await _applicationRepository.UpdateAsync(application);
         result = "В першій половині";
     }
@@ -101,6 +104,7 @@
         Application application = await _applicationRepository.GetByIdAsync(applicationId);
         application.secondPart = true;
         application.firstPart = false;
+        application.timeRangeIsSet = false;
         await _applicationRepository.UpdateAsync(application);
         result = "В другій половині";
     }

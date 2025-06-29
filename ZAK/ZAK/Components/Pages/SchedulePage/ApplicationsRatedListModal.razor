@@ -64,22 +64,7 @@
                 </GridColumn>
  
                 <GridColumn TItem="Application" HeaderText="Зручний час" HeaderTextAlignment="Alignment.Center">
-
-                    @if(context.timeRangeIsSet)
-                    {
-                        <span>@context.startHour:00 - @context.endHour:00</span>
-                    }
-                    else
-                    {
-                        @if(context.firstPart)
-                        {
-                            <span>В першу пол.</span>
-                        }
-                        else 
-                        {
-                            <span>В другу пол.</span>
-                        }
-                    }
+                    @context.comfortableVisitTime
                 </GridColumn>
 
 

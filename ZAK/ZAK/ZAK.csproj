@@ -13,6 +13,7 @@
     <PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.0" />
     <PackageReference Include="NReco.Logging.File" Version="1.2.2" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-preview.3.efcore.9.0.0" />
+    <PackageReference Include="WebVella.BlazorTrace" Version="1.0.11" />
     <ProjectReference Include="..\..\ZAK.ApplicationsScrapper\ZAK.ApplicationsScrapper.csproj" />
     <ProjectReference Include="..\..\ZAK.DAO\ZAK.DAO.csproj" />
     <ProjectReference Include="..\..\ZAK.Db\ZAK.Db.csproj" />
