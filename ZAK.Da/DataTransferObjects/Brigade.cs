@@ -86,12 +86,19 @@ public class Brigade : BrigadeModel
             {
                 //applications.Add(new ApplicationScheduled(scheduledApplication.application, brigadeId: id, applicationScheduledTime: i));
 
+                //TODO: FIX THIS 
                 ApplicationScheduled? applicationScheduled = new();
                 applicationScheduled.id = scheduledApplication.application.id;
                 applicationScheduled.address = scheduledApplication.application.address;
                 applicationScheduled.brigadeId = scheduledApplication.brigadeId;
                 applicationScheduled.applicationScheduledTime = i;
                 applicationScheduled.onStretching = scheduledApplication.onStretching;
+
+                applicationScheduled.timeRangeIsSet = scheduledApplication.application.timeRangeIsSet;
+                applicationScheduled.firstPart = scheduledApplication.application.firstPart;
+                applicationScheduled.secondPart = scheduledApplication.application.secondPart;
+                applicationScheduled.startHour = scheduledApplication.application.startHour;
+                applicationScheduled.endHour = scheduledApplication.application.endHour;
                 applications.Add(applicationScheduled);
 
             }

@@ -44,8 +44,8 @@ public class Application : ApplicationModel
             }
             else
             {
-                if (firstPart) return "перша пол.";
-                if (secondPart) return "друга пол.";
+                if (firstPart) return "Перша пол.";
+                if (secondPart) return "Друга пол.";
                 throw new Exception("Time range is not set");
             }
         }
