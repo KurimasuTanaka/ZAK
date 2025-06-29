@@ -135,7 +135,13 @@
     private async Task TimeWasLeftEmpty(ApplicationScheduled scheduledTime)
     {
         await _brigadesManager.MakeTimeSlotEmpty(scheduledTime.brigadeId, scheduledTime.applicationScheduledTime);
-        //Refreshing the brigade list
+
+        applications.RemoveAll(a => a.brigadeId == scheduledTime.brigadeId && 
+            a.applicationScheduledTime == scheduledTime.applicationScheduledTime);
+
+
+        dropContainer.Refresh();
+        await RefreshMap.InvokeAsync();
 
         //Hiding modal window
         await applicationsRatedList.HideAsync();
@@ -157,14 +163,11 @@
 
         brigades = (await _brigadeRepository.GetAllAsync()).ToList();
 
-        if (applications.Count == 0)
+        foreach (var brigade in brigades)
         {
-            foreach (var brigade in brigades)
-            {
-                applications.AddRange(brigade.GetApplications());
-            }
-            dropContainer.Refresh();
+            applications.AddRange(brigade.GetApplications());
         }
+        dropContainer.Refresh();
 
         await RefreshMap.InvokeAsync();
     }
