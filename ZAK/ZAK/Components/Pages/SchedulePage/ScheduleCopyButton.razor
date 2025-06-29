@@ -19,9 +19,9 @@
             brigadeInChatFormat += "Бригада " + (i + 1).ToString() + "\n";
             List<ApplicationScheduled> scheduledApplications = brigades[i].GetApplications();
 
+            int applicationCounter = 0;
             foreach (ApplicationScheduled application in scheduledApplications)
             {
-                int applicationCounter = 0;
 
                 if (application.id == 0)
                 {
