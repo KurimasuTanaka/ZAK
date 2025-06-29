@@ -31,40 +31,44 @@
             }
         </ChildContent>
         <ItemRenderer>
-            @if (context.address is not null)
-            {
-                if(context.address.district is not null)
-                {
-
-                <MudListItem T="ApplicationScheduled"
-                    Text="@($"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id} - {@context.address!.district!.name} - {@context.address!.streetName} {@context.address!.building} - {@context.comfortableVisitTime} - {@context.address!.equipmentAccess.GetDisplayName()}")"
-                    OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
-                }
-                else
-                {
-                    <MudListItem T="ApplicationScheduled"
-                    Text="@(
-                        $"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id} - {@context.address!.streetName} {@context.address!.building} - {@context.comfortableVisitTime} - {@context.address!.equipmentAccess.GetDisplayName()}")"
-                    OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
+            @{
+                //Add time info
+                var scheduledApplicationText = $"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id} -";
                 
-                }
-            }
-            else
-            {
-                if (context.id == 0)
+                if(context.id != 0)
                 {
-                    <MudListItem T="ApplicationScheduled"
-                        Text="@($"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | РЕЗЕРВ")"
-                        OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
+                    
+                    //If address is not null, add address info
+                    if(context.address is not null)
+                    {
+                        if (context.address.district is not null)
+                        {
+                            scheduledApplicationText += $" {@context.address!.district!.name} - ";
+                        }
 
-                }
-                else
+                        scheduledApplicationText += $"{context.address.streetName} {context.address.building}";
+                    
+                        scheduledApplicationText += $" - {context.address.equipmentAccess.GetDisplayName()}";
+                    }
+
+                    //Add comfortable visit time if brigade is not for stretching
+                    if(!context.onStretching) 
+                    {
+                        scheduledApplicationText += $" - {context.comfortableVisitTime}";
+                    }
+                    else
+                    {
+                        scheduledApplicationText += $" - ПРОТЯЖКА";
+                    } 
+                } else 
                 {
-                    <MudListItem T="ApplicationScheduled"
-                        Text="@($"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id}")"
-                        OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
+                    scheduledApplicationText += " РЕЗЕРВ";
                 }
             }
+            <MudListItem T="ApplicationScheduled"
+                Text="@scheduledApplicationText"
+                OnClick="@(async () => { await ShowSortedApplicationsListModal(context); })" />
+
 
         </ItemRenderer>
     </MudDropContainer>
@@ -121,7 +125,8 @@
         await _brigadesManager.ScheduleApplication(
         scheduledApplication.id,
         scheduledApplication.brigadeId,
-        scheduledApplication.applicationScheduledTime);
+        scheduledApplication.applicationScheduledTime, 
+        scheduledApplication.onStretching);
 
         //Refreshing the brigade list
         applications.Clear();

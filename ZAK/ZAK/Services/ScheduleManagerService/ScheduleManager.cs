@@ -24,7 +24,7 @@ public class ScheduleManager : IScheduleManager
         return brigade;
     }
 
-    public async Task ScheduleApplication(int applicationId, int brigadeId, int time)
+    public async Task ScheduleApplication(int applicationId, int brigadeId, int time, bool onStretching = false)
     {
         Brigade newBrigade = await GetBrigadeById(brigadeId);
 
@@ -36,7 +36,8 @@ public class ScheduleManager : IScheduleManager
         {
             applicationId = applicationId,
             brigadeId = brigadeId,
-            scheduledTime = time
+            scheduledTime = time,
+            onStretching = onStretching
         };
         newBrigade.scheduledApplications.Add(newScheduledApplication);
 

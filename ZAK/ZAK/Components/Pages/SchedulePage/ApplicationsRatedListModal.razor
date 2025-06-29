@@ -66,7 +66,9 @@
                 <GridColumn TItem="Application" HeaderText="Зручний час" HeaderTextAlignment="Alignment.Center">
                     @context.comfortableVisitTime
                 </GridColumn>
-
+                <GridColumn TItem="Application" HeaderText="Протяжка" HeaderTextAlignment="Alignment.Center">
+                    <Button Size="ButtonSize.Small" @onclick="@(() => AddApplicationToScheduleOnStretching(context))">На протяжку</Button>
+                </GridColumn>
 
             </GridColumns>
 
@@ -115,7 +117,8 @@
         if (newApplication2 != null) nearApplications.Add(newApplication2);
 
 
-        //Remove applications that are already in the schedule
+        //Remove applications that are already in the schedule exept the one that set on stretching
+        scheduledApplications = scheduledApplications.Where(x => x.onStretching == false).ToList();
         applications = applications.Where(x => !scheduledApplications.Select(a => a.id).Contains(x.id)).ToList();
 
         //Get priorities from db
@@ -167,6 +170,21 @@
             id = application.Item.id,
             applicationScheduledTime = scheduledTime,
             brigadeId = scheduledBrigadeId
+        };
+
+        ApplicationWasChosen.InvokeAsync(scheduledApplication);
+    }
+
+    public void AddApplicationToScheduleOnStretching(Application application)
+    {
+        _logger.LogInformation($"Adding application with ID {application.id} to schedule on stretching at time {scheduledTime} for brigade ID {scheduledBrigadeId}");
+
+        ApplicationScheduled scheduledApplication = new ApplicationScheduled()
+        {
+            id = application.id,
+            applicationScheduledTime = scheduledTime,
+            brigadeId = scheduledBrigadeId, 
+            onStretching = true
         };
 
         ApplicationWasChosen.InvokeAsync(scheduledApplication);

@@ -9,6 +9,7 @@ public class ApplicationScheduled : Application
 {
     public int applicationScheduledTime { get; set; }
     public int brigadeId { get; set; }
+    public bool onStretching { get; set; } = false;
 
     public ApplicationScheduled() : this(new ApplicationModel())
     {
@@ -90,6 +91,7 @@ public class Brigade : BrigadeModel
                 applicationScheduled.address = scheduledApplication.application.address;
                 applicationScheduled.brigadeId = scheduledApplication.brigadeId;
                 applicationScheduled.applicationScheduledTime = i;
+                applicationScheduled.onStretching = scheduledApplication.onStretching;
                 applications.Add(applicationScheduled);
 
             }

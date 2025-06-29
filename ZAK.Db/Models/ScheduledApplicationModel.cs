@@ -14,4 +14,5 @@ public class ScheduledApplicationModel
     [ForeignKey("brigadeId")]
     public int brigadeId { get; set; }
     public BrigadeModel brigade { get; set; } = null!;
+    public bool onStretching { get; set; } = false;
 }
