@@ -85,7 +85,11 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         {
             Application oldApp = oldApplications.Find(app => app.id == applicationsToUpdate[i].id)!;
 
-            if (applicationsToUpdate[i].address != oldApp.address) applicationsToUpdate[i].addresWasUpdated = true;
+            if (oldApp.address is not null && applicationsToUpdate[i].address is not null)
+            {
+                if (!(new AddressComparer().Equals(new Address(oldApp.address), new Address(applicationsToUpdate[i].address!)))) applicationsToUpdate[i].addresWasUpdated = true;
+                
+            }
             if (applicationsToUpdate[i].operatorComment != oldApp.operatorComment) applicationsToUpdate[i].operatorCommentWasUpdated = true;
             if (applicationsToUpdate[i].masterComment != oldApp.masterComment) applicationsToUpdate[i].masterCommentWasUpdated = true;
             if (applicationsToUpdate[i].stretchingStatus != oldApp.stretchingStatus) applicationsToUpdate[i].statusWasUpdated = true;
@@ -119,7 +123,7 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         List<Address> oldAddresses = (await _addressRepository.GetAllAsync()).ToList();
 
         List<Address> newAddresses = new();
-        if(oldAddresses.Count() is not 0) newAddresses = parsedAddresses.Except(oldAddresses, new AddressComparer()).ToList();
+        if (oldAddresses.Count() is not 0) newAddresses = parsedAddresses.Except(oldAddresses, new AddressComparer()).ToList();
         else newAddresses = parsedAddresses;
 
         await _addressRepository.CreateRangeAsync(newAddresses);

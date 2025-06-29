@@ -141,10 +141,6 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
 
         return application;
     }
-
-
-    //Attempt to scrap the information from the master comment
-
     private Application TryScrapApplicationFreeCable(Application application, HtmlNode applicationNode)
     {
         if (

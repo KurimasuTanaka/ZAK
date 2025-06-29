@@ -49,7 +49,9 @@ public class AddressComparer : IEqualityComparer<Address?>
 {
     public bool Equals(Address? x, Address? y)
     {
-        if (x is null || y is null) return false;
+        if ((x is null && y is null) || (x is not null && y is not null)) return true;
+        if ((x is null && y is not null) || (x is not null && y is null)) return false;
+        if( x is null || y is null) return false;
         if (x.streetName == y.streetName && x.building == y.building) return true;
         else return false;
     }

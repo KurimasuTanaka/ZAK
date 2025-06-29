@@ -1,10 +1,9 @@
-﻿@using System.Text
-@inject IApplicationReporisory _applicationRepository;
+﻿@inject IApplicationReporisory _applicationRepository;
 @inject ILogger<ApplicationWasChangedIcon> _logger;
 
 @if (application.applicationWasUpdated)
 {
-    <Tooltip Title="@_changesReport.ToString()" IsHtml="true" Placement="TooltipPlacement.Top">
+    <Tooltip Title="@_changesReport" IsHtml="true" Placement="TooltipPlacement.Top">
 
         <Button @onclick="UpdateConfirmed">
             <Icon Name="IconName.ExclamationDiamondFill" Size="IconSize.x5"  Color="IconColor.Warning" />
@@ -15,24 +14,25 @@
 @code {
     [Parameter] public Application application { get; set; } = default!;
 
-    private StringBuilder _changesReport = new("Було змінено: <br>"); 
+    private string _changesReport = String.Empty; 
     protected override void OnParametersSet()
     {
+        _changesReport = "Було змінено: <br>";
         if(application.operatorCommentWasUpdated)
         {
-            _changesReport.Append("- Коментар оператора <br>");
+            _changesReport += "- Коментар оператора <br>";
         }
         if(application.masterCommentWasUpdated)
         {
-            _changesReport.Append("- Коментар майстра <br>");
+            _changesReport += "- Коментар майстра <br>";
         }
         if(application.statusWasUpdated)
         {
-            _changesReport.Append("- Статус заявки <br>");
+            _changesReport += "- Статус заявки <br>";
         }
         if(application.addresWasUpdated)
         {
-            _changesReport.Append("- Адреса заявки <br>");
+            _changesReport += "- Адреса заявки <br>";
         }
     }
 
