@@ -39,6 +39,9 @@ public class ApplicationModel
     //Application is added to the schedule
     public bool inSchedule { get; set; } = false;
 
+    //Application is scheduled
+    public bool office { get; set; } = false;
+
     //Application have hight priority
     public bool important { get; set; } = false;
 
@@ -58,6 +61,8 @@ public class ApplicationModel
 
     //Application is created by user through the form
     public bool userCreated { get; set; } = false;
+
+    
 
     public ApplicationModel() { }
     public ApplicationModel(ApplicationModel applicationModel)

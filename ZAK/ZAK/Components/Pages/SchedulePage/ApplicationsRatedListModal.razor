@@ -27,13 +27,27 @@
             <GridColumns >
                 @*Id column with set of interactive components*@
                 <GridColumn TItem="Application" HeaderText="Id" PropertyName="id" HeaderTextAlignment="Alignment.Center" ColumnClass="@(x => "W5")">
-                    <div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
                         @context.id
 
-                        @if(context.important)
-                        {
-                            <Icon Name="IconName.Star" Color="BlazorBootstrap.IconColor.Warning" />
-                        }
+                        <div style="display: flex; gap: 5px; align-items: center;"> 
+
+                            @if(context.important)
+                            {
+                                <Icon Name="IconName.LightningChargeFill" Color="BlazorBootstrap.IconColor.Warning" />
+                            }
+
+                            @if(context.inSchedule)
+                            {
+                                <Icon Name="IconName.ClipboardCheckFill" Color="BlazorBootstrap.IconColor.Success" />
+                            }
+
+                            @if(context.office)
+                            {
+                                <Icon Name="IconName.Shop" Color="BlazorBootstrap.IconColor.Danger" />
+                            }
+
+                        </div>
                     </div>
                 </GridColumn>
                 @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@

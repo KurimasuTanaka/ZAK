@@ -84,6 +84,16 @@
 
     <hr>
 
+    <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right" Label="Підключення офісу"
+      @bind-Value="@context.office"
+      @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
+
+    <MudSwitch Size="Size.Small" Color="Color.Success" LabelPlacement="MudBlazor.Placement.Right" Label="Домовлена"
+      @bind-Value="@context.inSchedule"
+      @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
+
+  <hr>
+
     <InputDeadlineComponent applicationId="@context.id" daysForConnection="@context.maxDaysForConnection" />
   </GridColumn>
 
@@ -125,7 +135,7 @@
     HeaderTextAlignment="Alignment.Center">
     <div style="max-height: 20em; overflow: auto;">
       @((MarkupString)@context.operatorComment)
-      @if (!String.IsNullOrEmpty(context.masterComment))
+      @if (!String.IsNullOrEmpty(context.masterComment) && context.masterComment != "<span></span>")
       {
         <hr>
         @((MarkupString)@context.masterComment)

@@ -33,10 +33,11 @@
         <ItemRenderer>
             @{
                 //Add time info
-                var scheduledApplicationText = $"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | {@context.id} -";
+                var scheduledApplicationText = $"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | ";
                 
                 if(context.id != 0)
                 {
+                    scheduledApplicationText += $"{@context.id} -";
                     
                     //If address is not null, add address info
                     if(context.address is not null)
@@ -52,13 +53,23 @@
                     }
 
                     //Add comfortable visit time if brigade is not for stretching
-                    if(!context.onStretching) 
+
+                    if (context.office)
                     {
-                        scheduledApplicationText += $" - {context.comfortableVisitTime}";
+                        scheduledApplicationText += $" - ОФІС";
                     }
-                    else
+
+                    if(context.inSchedule)
+                    {
+                        scheduledApplicationText += $" - ДОМОВЛЕНО";
+                    } else if (context.onStretching)
                     {
                         scheduledApplicationText += $" - ПРОТЯЖКА";
+                    }
+
+                    if (!context.onStretching)
+                    {
+                        scheduledApplicationText += $" - {context.comfortableVisitTime}";    
                     } 
                 } else 
                 {
@@ -144,7 +155,7 @@
         applications.RemoveAll(a => a.brigadeId == scheduledTime.brigadeId && 
             a.applicationScheduledTime == scheduledTime.applicationScheduledTime);
 
-
+        applications.Clear();
         await RefreshApplicationsList();
 
         //Hiding modal window

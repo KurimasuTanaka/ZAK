@@ -56,6 +56,7 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
         application = TryScrapApplicationStatusWasChecked(application, applicationNode);
         application = TryScrapApplicationTarChangeApp(application, applicationNode);
         application = TryScrapApplicationTiming(application, applicationNode);
+        application = TryScrapApplicationOfficeTag(application);
 
         application = TryScrapApplicationDeadline(application);
         application = TryScrapApplicationArrangmentStatus(application);
@@ -116,7 +117,7 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
                             application.stretchingStatus = StretchingStatus.NotSctreched;
                             break;
                     }
-                    break; 
+                    break;
                 }
             }
         }
@@ -204,7 +205,7 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
         try
         {
             int index = application.operatorComment.IndexOf("Терміни");
-            if(index == -1) return application;
+            if (index == -1) return application;
             timerangeLine = application.operatorComment.Substring(index);
         }
         catch (Exception e)
@@ -261,8 +262,19 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
             application.operatorComment.ToLower().Contains("договорена") ||
             application.operatorComment.ToLower().Contains("домовлено") ||
             application.operatorComment.ToLower().Contains("договорено")
-        ) application.ignored = true;
+        ) application.inSchedule = true;
 
         return application;
     }
+
+    private Application TryScrapApplicationOfficeTag(Application application)
+    {
+        if (
+            application.operatorComment.ToLower().Contains("офіс") ||
+            application.operatorComment.ToLower().Contains("офис")
+        ) application.office = true;
+
+        return application;
+    }
+
 }

@@ -99,6 +99,10 @@ public class Brigade : BrigadeModel
                 applicationScheduled.secondPart = scheduledApplication.application.secondPart;
                 applicationScheduled.startHour = scheduledApplication.application.startHour;
                 applicationScheduled.endHour = scheduledApplication.application.endHour;
+
+                applicationScheduled.inSchedule = scheduledApplication.application.inSchedule;
+                applicationScheduled.office = scheduledApplication.application.office;
+
                 applications.Add(applicationScheduled);
 
             }

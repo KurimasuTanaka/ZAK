@@ -37,7 +37,9 @@
                     ClearSteetName(application.address!.streetName) + " " +
                     application.address!.building + " (" +  
                     application.comfortableVisitTime + " " +
-                    application.address.equipmentAccess.GetDisplayName() + ") \n";
+                    (application.office ? "ОФІС " : "") +
+                    application.address.equipmentAccess.GetDisplayName() + ") " +
+                    (application.inSchedule ? "ДОМОВЛЕНО " : "") + '\n'; 
                 }
 
                 applicationCounter++;
