@@ -137,7 +137,7 @@ public class ApplicationRepository : IApplicationReporisory
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                var result = await context.applications.AsNoTracking()
+                var result = await context.applications.AsSplitQuery().AsNoTracking()
                     .Include(a => a.address).ThenInclude(a => a!.district)
                     .Include(a => a.address!.coordinates)
                     .Select(a => new Application(a))
@@ -161,7 +161,7 @@ public class ApplicationRepository : IApplicationReporisory
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                var result = await context.applications.AsNoTracking()
+                var result = await context.applications.AsSplitQuery().AsNoTracking()
                     .Include(a => a.address).ThenInclude(a => a!.district)
                     .Include(a => a.address!.coordinates)
                     .Select(a => new Application(a))
@@ -187,7 +187,7 @@ public class ApplicationRepository : IApplicationReporisory
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                var result = await context.applications.AsNoTracking()
+                var result = await context.applications.AsSplitQuery().AsNoTracking()
                     .Include(a => a.address).ThenInclude(a => a!.district)
                     .Include(a => a.address!.coordinates)
                     .Select(a => new Application(a)).ToListAsync();
@@ -213,7 +213,7 @@ public class ApplicationRepository : IApplicationReporisory
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                var application = await context.applications.AsNoTracking()
+                var application = await context.applications.AsSplitQuery().AsNoTracking()
                     .Include(a => a.address).ThenInclude(a => a!.district)
                     .Include(a => a.address!.coordinates)
                     .Where(a => a.id == id).Select(a => new Application(a)).FirstOrDefaultAsync();

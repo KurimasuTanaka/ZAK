@@ -49,19 +49,19 @@
             SortKeySelector="item => item.building" ColumnClass="@(x => "W5")">
             @context.building
         </GridColumn>
-         <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority" ColumnClass="@(x => "W5")" HeaderTextAlignment="Alignment.Center"> 
+         <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority" ColumnClass="@(x => "W5")" Filterable="false" HeaderTextAlignment="Alignment.Center"> 
             <PriorityInputComponent Address="context"  />
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Альт. вулиця" PropertyName="streetNameAlias" HeaderTextAlignment="Alignment.Center">
+        <GridColumn TItem="Address" HeaderText="Альт. вулиця" PropertyName="streetNameAlias" Filterable="false" HeaderTextAlignment="Alignment.Center">
             <AliasInputComponent Address="context" StreetAlias="@true" />
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias" ColumnClass="@(x => "W5")" HeaderTextAlignment="Alignment.Center">
+        <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias" ColumnClass="@(x => "W5")" Filterable="false" HeaderTextAlignment="Alignment.Center">
             <AliasInputComponent Address="context" StreetAlias="@false" />
         </GridColumn> 
 
 
-        <GridColumn TItem="Address" HeaderText="Широта \ Долгота" PropertyName="Latitude" HeaderTextAlignment="Alignment.Center"
+        <GridColumn TItem="Address" HeaderText="Широта \ Долгота" PropertyName="Latitude" HeaderTextAlignment="Alignment.Center" Filterable="false"
             ColumnClass="@(x => "blackoutCell")">
             <CoordinatesBoxComponent Address="context" InformationUpdated="UpdateTable" />
         </GridColumn>
@@ -70,7 +70,7 @@
             <h1>@(context.resolved ? '+' : '-')</h1>
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Доступ" ColumnClass="@(x => "W10")" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center">
+        <GridColumn TItem="Address" HeaderText="Доступ" ColumnClass="@(x => "W10")" SortKeySelector="item => item.equipmentAccess" HeaderTextAlignment="Alignment.Center" Filterable="false" TextAlignment="Alignment.Center">
             <AddressAccessComponent addressId="context.Id" equipmentAccess="@context.equipmentAccess" />
         </GridColumn>
     </GridColumns>

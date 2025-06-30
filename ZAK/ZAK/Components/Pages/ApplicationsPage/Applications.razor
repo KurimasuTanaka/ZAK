@@ -64,7 +64,7 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
   @*Interactivity column*@
-  <GridColumn TItem="Application" HeaderText="Параметри" HeaderTextAlignment="Alignment.Center">
+  <GridColumn TItem="Application" HeaderText="Параметри" HeaderTextAlignment="Alignment.Center" Filterable="false">
 
     <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right"
       Label="Цікавився статусом" @bind-Value="@context.statusWasChecked"
@@ -111,7 +111,7 @@
   </GridColumn>
 
   @*Column with stretching status ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓*@
-  <GridColumn style="width: 10%;" TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus"
+  <GridColumn style="width: 10%;" TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus" Filterable="false"
     HeaderTextAlignment="Alignment.Center" SortKeySelector="item => item.stretchingStatus"
     TextAlignment="Alignment.Center"
     ColumnClass="@(x => StretchingStatusComponent.GetStrechingStatusClass(x.stretchingStatus))">
@@ -121,7 +121,7 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
   @*Column for comments section*@
-  <GridColumn TItem="Application" HeaderText="Коментар" PropertyName="operatorComment"
+  <GridColumn TItem="Application" HeaderText="Коментар" PropertyName="operatorComment" Filterable="false"
     HeaderTextAlignment="Alignment.Center">
     <div style="max-height: 20em; overflow: auto;">
       @((MarkupString)@context.operatorComment)
@@ -134,7 +134,7 @@
   </GridColumn>
 
   @*Column for date*@
-  <GridColumn TItem="Application" HeaderText="Дата" style="width: 15%;" HeaderTextAlignment="Alignment.Center"
+  <GridColumn TItem="Application" HeaderText="Дата" style="width: 15%;" HeaderTextAlignment="Alignment.Center" Filterable="false"
     Sortable="true" SortKeySelector="item => new DateTime(item.year, item.month, item.day)">
     <span>@context.year.@context.month.@context.day</span>
     <span>

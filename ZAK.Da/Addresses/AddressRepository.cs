@@ -74,7 +74,7 @@ public class AddressRepository : IAddressRepository
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                var result = await context.addresses.Include(a => a.addressAlias)
+                var result = await context.addresses.AsSplitQuery().AsNoTracking().Include(a => a.addressAlias)
                                                     .Include(a => a.addressPriority)
                                                     .Include(a => a.coordinates)
                                                     .Include(a => a.district)
@@ -99,7 +99,7 @@ public class AddressRepository : IAddressRepository
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                var address = await context.addresses
+                var address = await context.addresses.AsSplitQuery().AsNoTracking()
                                                 .Include(a => a.addressAlias)
                                                 .Include(a => a.addressPriority)
                                                 .Include(a => a.coordinates)

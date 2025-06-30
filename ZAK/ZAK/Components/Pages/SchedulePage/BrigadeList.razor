@@ -145,8 +145,7 @@
             a.applicationScheduledTime == scheduledTime.applicationScheduledTime);
 
 
-        dropContainer.Refresh();
-        await RefreshMap.InvokeAsync();
+        await RefreshApplicationsList();
 
         //Hiding modal window
         await applicationsRatedList.HideAsync();

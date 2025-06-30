@@ -94,7 +94,7 @@ public class BrigadeRepository : IBrigadeRepository
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                var result = await context.brigades.AsNoTracking()
+                var result = await context.brigades.AsSplitQuery().AsNoTracking()
                     .Include(b => b.scheduledApplications).ThenInclude(sa => sa.application).ThenInclude(a => a.address).ThenInclude(a => a!.district)
                     .Select(b => new Brigade(b))
                     .ToListAsync();
@@ -117,7 +117,7 @@ public class BrigadeRepository : IBrigadeRepository
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
             {
-                var result = await context.brigades.AsNoTracking()
+                var result = await context.brigades.AsSplitQuery().AsNoTracking()
                     .Include(b => b.scheduledApplications)
                     .ThenInclude(sa => sa.application).ThenInclude(a => a.address).ThenInclude(a => a!.coordinates)
                     .Select(b => new Brigade(b))
