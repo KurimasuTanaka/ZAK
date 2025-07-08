@@ -1,7 +1,5 @@
 ﻿@page "/applications"
-@* @attribute [Authorize] *@
 @rendermode InteractiveServer
-
 
 @using ZAK.DA;
 @using BlazorApp.Enums;
@@ -91,6 +89,11 @@
     <MudSwitch Size="Size.Small" Color="Color.Success" LabelPlacement="MudBlazor.Placement.Right" Label="Домовлена"
       @bind-Value="@context.inSchedule"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
+
+    @if(context.inSchedule)
+    {
+      <MudTextField @bind-Value="@context.brigadeNumber" @bind-Value:after="@(async () => {await _applicationRepository.UpdateAsync(context)})" />
+    }
 
   <hr>
 

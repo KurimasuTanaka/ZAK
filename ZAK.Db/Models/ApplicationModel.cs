@@ -39,8 +39,9 @@ public class ApplicationModel
     //Application is added to the schedule
     public bool inSchedule { get; set; } = false;
 
-    //Application is scheduled
+    //Application is scheduled data
     public bool office { get; set; } = false;
+    public int brigadeNumber { get; set; } = 0;
 
     //Application have hight priority
     public bool important { get; set; } = false;

@@ -84,8 +84,14 @@
 
                 <GridColumn TItem="Application" HeaderText="Доступ" HeaderTextAlignment="Alignment.Center" Filterable="false">
 
-                    @context.address!.equipmentAccess.GetDisplayName();
-
+                    @if(context.address is not null) 
+                    {
+                        @context.address!.equipmentAccess.GetDisplayName();
+                    }
+                    else 
+                    {
+                        <span class="text-danger">Не вказано</span>
+                    }
                 </GridColumn>
  
                 <GridColumn TItem="Application" HeaderText="Зручний час" HeaderTextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W10")">
