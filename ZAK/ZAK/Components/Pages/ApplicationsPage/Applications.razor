@@ -102,7 +102,7 @@
 
     @if(context.inSchedule)
     {
-      <MudTextField @bind-Value="@context.brigadeNumber" Label="Номер бригади" Variant="Variant.Outlined" @bind-Value:after="@(async () => {await _applicationRepository.UpdateAsync(context);})"  />
+      <MudTextField @bind-Value="@context.brigadeNumber" Label="Номер бригади" Margin="Margin.Dense" Variant="Variant.Outlined" @bind-Value:after="@(async () => {await _applicationRepository.UpdateAsync(context);})"  />
     }
 
   <hr>
