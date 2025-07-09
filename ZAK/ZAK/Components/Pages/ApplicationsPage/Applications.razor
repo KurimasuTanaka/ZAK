@@ -144,9 +144,8 @@
   @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
   @*Column for comments section*@
-  <GridColumn TItem="Application" HeaderText="Коментар" PropertyName="operatorComment" Filterable="false"
-    HeaderTextAlignment="Alignment.Center">
-    <div style="max-height: 20em; overflow: auto;">
+  <GridColumn TItem="Application" HeaderText="Коментар" PropertyName="operatorComment" Filterable="false" HeaderTextAlignment="Alignment.Center">
+    <div>
       @((MarkupString)@context.operatorComment)
       @if (!String.IsNullOrEmpty(context.masterComment) && context.masterComment != "<span></span>")
       {
