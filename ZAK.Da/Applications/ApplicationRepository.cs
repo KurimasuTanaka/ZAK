@@ -142,6 +142,9 @@ public class ApplicationRepository : IApplicationReporisory
                     .Include(a => a.address!.coordinates)
                     .Select(a => new Application(a))
                     .ToListAsync();
+
+                result = result.Where(a => !a.buried).ToList();
+
                 _logger.LogInformation("Retrieved {Count} applications", result.Count);
                 return result;
             }
@@ -167,7 +170,7 @@ public class ApplicationRepository : IApplicationReporisory
                     .Select(a => new Application(a))
                     .ToListAsync();
 
-                result = result.Where(a => a.applicationWasUpdated).ToList();
+                result = result.Where(a => a.applicationWasUpdated && !a.buried).ToList();
                 _logger.LogInformation("Retrieved {Count} updated applications", result.Count);
                 return result;
             }
@@ -192,7 +195,7 @@ public class ApplicationRepository : IApplicationReporisory
                     .Include(a => a.address!.coordinates)
                     .Select(a => new Application(a)).ToListAsync();
 
-                result = result.Where(a => !a.ignored).ToList();
+                result = result.Where(a => !a.ignored && !a.buried).ToList();
 
                 _logger.LogInformation("Retrieved {Count} applications (not ignored)", result.Count);
                 return result;

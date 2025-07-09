@@ -37,15 +37,15 @@
                                 <Icon Name="IconName.LightningChargeFill" Color="BlazorBootstrap.IconColor.Warning" />
                             }
 
-                            @if(context.inSchedule)
-                            {
-                                <Icon Name="IconName.ClipboardCheckFill" Color="BlazorBootstrap.IconColor.Success" />
-                            }
-
                             @if(context.office)
                             {
                                 <Icon Name="IconName.Shop" Color="BlazorBootstrap.IconColor.Danger" />
                             }
+                            @if(context.restretching)
+                            {
+                                <Icon Name="IconName.ArrowRepeat" Color="BlazorBootstrap.IconColor.Primary" />
+                            }
+
 
                         </div>
                     </div>
@@ -95,7 +95,16 @@
                 </GridColumn>
  
                 <GridColumn TItem="Application" HeaderText="Зручний час" HeaderTextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W10")">
+                    <div style="display: flex; flex-direction: column;">
+
                     @context.comfortableVisitTime
+                    @if(context.inSchedule)
+                    {
+                        <span class="text-success">Бригада №@(context.brigadeNumber)</span>
+                    }
+                    </div>
+                    
+
                 </GridColumn>
                 <GridColumn TItem="Application" HeaderText="" HeaderTextAlignment="Alignment.Center" Filterable="false">
                     <Button Size="ButtonSize.Small" @onclick="@(() => AddApplicationToScheduleOnStretching(context))">На протяжку</Button>

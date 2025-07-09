@@ -27,21 +27,21 @@ public class ApplicationModel
     public int startHour { get; set; } = 10;
     public int endHour { get; set; } = 19;
 
-    //Tariff change application
-    public bool tarChangeApp { get; set; } = false;
-
     //Did client asked about the status of the application
     public bool statusWasChecked { get; set; } = false;
     //Full comments
     public string operatorComment { get; set; } = String.Empty;
     public string masterComment { get; set; } = String.Empty;
 
-    //Application is added to the schedule
+    //Application schedule data
     public bool inSchedule { get; set; } = false;
-
-    //Application is scheduled data
-    public bool office { get; set; } = false;
     public int brigadeNumber { get; set; } = 0;
+
+    //Application type flags
+    public bool office { get; set; } = false;
+    public bool restretching { get; set; } = false;
+    public bool tarChangeApp { get; set; } = false;
+
 
     //Application have hight priority
     public bool important { get; set; } = false;
@@ -52,9 +52,11 @@ public class ApplicationModel
     //Application is urgent
     public bool urgent { get; set; } = false;
 
-    //Application can be ignored
+    //Application ignorance formats
     public bool ignored { get; set; } = false;
+    public bool buried { get; set; } = false;
 
+    //Update flags
     public bool addresWasUpdated { get; set; } = false;
     public bool masterCommentWasUpdated { get; set; } = false;
     public bool operatorCommentWasUpdated { get; set; } = false;
@@ -63,7 +65,7 @@ public class ApplicationModel
     //Application is created by user through the form
     public bool userCreated { get; set; } = false;
 
-    
+
 
     public ApplicationModel() { }
     public ApplicationModel(ApplicationModel applicationModel)

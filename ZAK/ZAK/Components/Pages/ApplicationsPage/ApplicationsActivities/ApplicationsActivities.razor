@@ -1,13 +1,20 @@
-﻿<ApplicationAdditionModal @ref="applicatonAdditionModal" ApplicationsInformationWasChanged="ApplicationsInformationWasChanged" />
+﻿<ApplicationAdditionModal @ref="applicatonAdditionModal"
+  ApplicationsInformationWasChanged="ApplicationsInformationWasChanged" />
+<ReturnBuriedModal @ref="returnBuriedModal" />
 
-  <div class="gap-3 my-3" style="display:flex; flex-direction:row">
-    <ApplicationsFileLoader ApplicationsInformationWasChanged="ApplicationsInformationWasChanged" />
-    <Button @onclick="@(async () => await applicatonAdditionModal.ShowModal())" Color="ButtonColor.Info">Додати нову заявку</Button>
-  </div>
+
+
+<div class="gap-3 my-3" style="display:flex; flex-direction:row">
+  <ApplicationsFileLoader ApplicationsInformationWasChanged="ApplicationsInformationWasChanged" />
+  <Button @onclick="@(async () => await applicatonAdditionModal.ShowModal())" Color="ButtonColor.Info">Додати нову заявку</Button>
+  <Button @onclick="@(async () => await returnBuriedModal.ShowModal())" Color="ButtonColor.Info">Відкопати заявку</Button>
+</div>
 
 
 @code {
   [Parameter] public EventCallback ApplicationsInformationWasChanged { get; set; }
 
   private ApplicationAdditionModal applicatonAdditionModal = default!;
+  private ReturnBuriedModal returnBuriedModal = default!;
+
 }

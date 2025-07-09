@@ -19,7 +19,6 @@
 <ApplicationEditorModal @ref="applicationEditorModal" />
 
 
-
 <Card class="my-3">
   <CardBody>
     <ApplicationsActivities ApplicationsInformationWasChanged="Redraw" />
@@ -49,6 +48,12 @@
     <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right" Label="Ігнорувати"
       @bind-Value="@context.ignored"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
+
+    <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right" Label="Закопана"
+      @bind-Value="@context.buried"
+      @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
+
+
     <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right" Label="Важлива заявка"
       @bind-Value="@context.important"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
@@ -80,6 +85,11 @@
       @bind-Value="@context.tarChangeApp"
       @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
 
+    <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right" Label="Перетяжка"
+      @bind-Value="@context.restretching"
+      @bind-Value:after="@(async () => await _applicationRepository.UpdateAsync(context))" />
+
+
     <hr>
 
     <MudSwitch Size="Size.Small" Color="Color.Info" LabelPlacement="MudBlazor.Placement.Right" Label="Підключення офісу"
@@ -92,7 +102,7 @@
 
     @if(context.inSchedule)
     {
-      <MudTextField @bind-Value="@context.brigadeNumber" @bind-Value:after="@(async () => {await _applicationRepository.UpdateAsync(context)})" />
+      <MudTextField @bind-Value="@context.brigadeNumber" Label="Номер бригади" Variant="Variant.Outlined" @bind-Value:after="@(async () => {await _applicationRepository.UpdateAsync(context);})"  />
     }
 
   <hr>
@@ -160,6 +170,7 @@
   private bool showIgnored = true;
 
   ApplicationEditorModal applicationEditorModal = default!;
+
   private Grid<Application> applicationsGrid = default!;
   private bool showUpdated = false;
 
