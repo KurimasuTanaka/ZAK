@@ -143,10 +143,37 @@ public class ApplicationRepository : IApplicationReporisory
                     .Select(a => new Application(a))
                     .ToListAsync();
 
-                result = result.Where(a => !a.buried).ToList();
-
                 _logger.LogInformation("Retrieved {Count} applications", result.Count);
                 return result;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting all applications");
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Application>> GetAllAsync(bool removeIgnored = false, bool removeBuried = false)
+    {
+        _logger.LogInformation("Getting all applications");
+
+        try
+        {
+            using (ZakDbContext context = _dbContextFactory.CreateDbContext())
+            {
+                var result = context.applications.AsSplitQuery().AsNoTracking()
+                    .Include(a => a.address).ThenInclude(a => a!.district)
+                    .Include(a => a.address!.coordinates).AsQueryable();
+                    
+
+                if (removeIgnored) result = result.Where(a => !a.ignored);
+                if (removeBuried) result = result.Where(a => !a.buried);
+
+                List<Application> resultList = await result.Select(a => new Application(a)).ToListAsync();;
+
+                _logger.LogInformation("Retrieved {Count} applications", resultList.Count);
+                return resultList;
             }
         }
         catch (Exception ex)
@@ -170,7 +197,7 @@ public class ApplicationRepository : IApplicationReporisory
                     .Select(a => new Application(a))
                     .ToListAsync();
 
-                result = result.Where(a => a.applicationWasUpdated && !a.buried).ToList();
+                result = result.Where(a => a.applicationWasUpdated).ToList();
                 _logger.LogInformation("Retrieved {Count} updated applications", result.Count);
                 return result;
             }
@@ -195,7 +222,7 @@ public class ApplicationRepository : IApplicationReporisory
                     .Include(a => a.address!.coordinates)
                     .Select(a => new Application(a)).ToListAsync();
 
-                result = result.Where(a => !a.ignored && !a.buried).ToList();
+                result = result.Where(a => !a.ignored).ToList();
 
                 _logger.LogInformation("Retrieved {Count} applications (not ignored)", result.Count);
                 return result;

@@ -101,7 +101,7 @@
         _logger.LogInformation("MapComponentLeaflet is drawing markers");
 
 
-        List<Application> applications = (await _applicationRepository.GetAllWithIgnoringAsync()).
+        List<Application> applications = (await _applicationRepository.GetAllAsync(true, true)).
         Where(a => a.address is not null && a.address.coordinates is not null).
         ToList();
 

@@ -196,7 +196,7 @@
       if (showIgnored) applications = (await _applicationRepository.GetAllAsync()).ToList();
       else
       {
-        applications = (await _applicationRepository.GetAllWithIgnoringAsync()).ToList();
+        applications = (await _applicationRepository.GetAllAsync(removeIgnored: true, removeBuried: true)).ToList();
       }
     }
     return await Task.FromResult(request.ApplyTo(applications));
