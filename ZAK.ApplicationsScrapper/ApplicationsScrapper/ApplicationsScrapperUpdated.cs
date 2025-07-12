@@ -112,6 +112,7 @@ public class ApplicationsScrapperUpdated : ApplicationsScrapperBase
                             break;
                         case "Не выдавать":
                             application.stretchingStatus = StretchingStatus.DoNotStrech;
+                            application.ignored = true;
                             break;
                         default:
                             application.stretchingStatus = StretchingStatus.NotSctreched;
