@@ -94,7 +94,6 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
             if (applicationsToUpdate[i].masterComment != oldApp.masterComment) applicationsToUpdate[i].masterCommentWasUpdated = true;
             if (applicationsToUpdate[i].stretchingStatus != oldApp.stretchingStatus) applicationsToUpdate[i].statusWasUpdated = true;
 
-            applicationsToUpdate[i].ignored = oldApp.ignored;
             applicationsToUpdate[i].buried = oldApp.buried;
             applicationsToUpdate[i].office = oldApp.office;
             applicationsToUpdate[i].tarChangeApp = oldApp.tarChangeApp;
