@@ -6,6 +6,8 @@ using ZAK.DAO;
 using ZAK.Db.Models;
 using ZAK.Services.ApplicationsLoadingService;
 using ZAK.Services.ScheduleManagerService;
+using Microsoft.Extensions.Caching.Memory;
+using Moq;
 
 namespace ZAK.Tests;
 
@@ -40,6 +42,12 @@ public class ZakTestBase : IDisposable
     {
         dbContextFactory.CreateDbContext();
 
+        Mock<IMemoryCache> memoryCacheMock = new Mock<IMemoryCache>();
+        object cacheValue = null;
+        memoryCacheMock.Setup(m => m.TryGetValue(It.IsAny<object>(), out cacheValue))
+            .Returns(false);
+
+
         addressesDaoLogger = new NullLogger<Dao<Address, AddressModel>>();
         addressCooerdinatesDaoLogger = new NullLogger<Dao<AddressCoordinates, AddressCoordinatesModel>>();
         addressAliasesDaoLogger = new NullLogger<Dao<AddressAlias, AddressAliasModel>>();
@@ -55,9 +63,9 @@ public class ZakTestBase : IDisposable
         brigadeRepositoryLogger = new NullLogger<BrigadeRepository>();
         applicationRepositoryLogger = new NullLogger<ApplicationRepository>();
 
-        addressRepository = new AddressRepository(dbContextFactory, addressRepositoryLogger);
+        addressRepository = new AddressRepository(dbContextFactory, addressRepositoryLogger, memoryCacheMock.Object);
         brigadeRepository = new BrigadeRepository(dbContextFactory, brigadeRepositoryLogger);
-        applicationRepository = new ApplicationRepository(dbContextFactory, applicationRepositoryLogger);
+        applicationRepository = new ApplicationRepository(dbContextFactory, applicationRepositoryLogger,memoryCacheMock.Object);
 
         addressCoordinatesDao = new Dao<AddressCoordinates, AddressCoordinatesModel>(dbContextFactory, addressCooerdinatesDaoLogger);
         addressAliasesDao = new Dao<AddressAlias, AddressAliasModel>(dbContextFactory, addressAliasesDaoLogger);

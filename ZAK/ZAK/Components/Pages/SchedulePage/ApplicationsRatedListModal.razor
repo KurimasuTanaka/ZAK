@@ -144,7 +144,7 @@
 
         scheduledTime = scheduledApplication.applicationScheduledTime;
         scheduledBrigadeId = scheduledApplication.brigadeId;
-        applications = (await _applicationRepository.GetAllAsync(true, true)).ToList();
+        applications = (await _applicationRepository.GetAllAsync(true)).ToList();
 
         //Find near applications
         Application? newApplication1 = applications.FirstOrDefault(x => x.id == FindNearApplication(scheduledApplications.Where(a => a.brigadeId == scheduledBrigadeId).ToList(),

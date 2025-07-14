@@ -5,6 +5,7 @@ using Itinero;
 using Itinero.IO.Osm;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Memory;
 namespace ZAK.MapRoutesManager;
 
 public class MapRoutesManager : IMapRoutesManager
@@ -14,11 +15,12 @@ public class MapRoutesManager : IMapRoutesManager
 
     private readonly ILogger<MapRoutesManager> _logger;
     private readonly IBrigadeRepository _brigadeRepository;
-    public MapRoutesManager(ILogger<MapRoutesManager> logger, IBrigadeRepository brigadeRepository, IConfiguration configuration)
+    private readonly IMemoryCache _cache;
+    public MapRoutesManager(ILogger<MapRoutesManager> logger, IBrigadeRepository brigadeRepository, IConfiguration configuration, IMemoryCache cache)
     {
         _logger = logger;
         _brigadeRepository = brigadeRepository;
-
+        _cache = cache;
 
         _logger.LogInformation("Loading OSM data...");
 
@@ -44,31 +46,6 @@ public class MapRoutesManager : IMapRoutesManager
         _router = new Itinero.Router(_routerDb);
 
     }
-
-    //For testing purposes
-    public MapRoutesManager(string osmPdbFilePath, ILogger<MapRoutesManager> logger, IBrigadeRepository brigadeRepository)
-    {
-        _logger = logger;
-        _brigadeRepository = brigadeRepository;
-
-        _logger.LogInformation("Loading OSM data...");
-
-        try
-        {
-            using (var stream = new FileInfo(osmPdbFilePath).OpenRead())
-            {
-                _routerDb.LoadOsmData(stream, Itinero.Osm.Vehicles.Vehicle.Car); // create the network for cars only.
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error loading OSM data");
-            throw;
-        }
-        _router = new Itinero.Router(_routerDb);
-
-    }
-
 
     public async Task<List<List<Vector2>>> GetRoutesAsync()
     {
@@ -121,8 +98,21 @@ public class MapRoutesManager : IMapRoutesManager
 
         for (int i = 0; i < addressList.Count - 1; i++)
         {
-            var start = _router.TryResolve(vehicle, (float)addressList[i].coordinates!.lat, (float)addressList[i].coordinates!.lon, 150);
-            var end = _router.TryResolve(vehicle, (float)addressList[i + 1].coordinates!.lat, (float)addressList[i + 1].coordinates!.lon, 150);
+            float fromLat = (float)addressList[i].coordinates!.lat;
+            float fromLon = (float)addressList[i].coordinates!.lon;
+            float toLat = (float)addressList[i + 1].coordinates!.lat;
+            float toLon = (float)addressList[i + 1].coordinates!.lon;
+
+            if (_cache.TryGetValue($"Route_{fromLat}_{fromLon}_{toLat}_{toLon}", out List<Vector2>? cachedPath) && cachedPath is not null)
+            {
+                _logger.LogInformation("Using cached path for addresses: {From} to {To}", addressList[i].coordinates, addressList[i + 1].coordinates);
+                path.AddRange(cachedPath);
+                continue;
+            }
+
+            var start = _router.TryResolve(vehicle, fromLat, fromLon, 150);
+            var end = _router.TryResolve(vehicle, toLat, toLon, 150);
+
             if (start.IsError || end.IsError)
             {
                 throw new Exception("Error while resolving address");
@@ -131,10 +121,17 @@ public class MapRoutesManager : IMapRoutesManager
             var route = _router.TryCalculate(vehicle, start.Value, end.Value);
             if (route.IsError)
             {
-                path.Add(new Vector2((float)addressList[i].coordinates!.lat, (float)addressList[i].coordinates!.lon));
-                path.Add(new Vector2((float)addressList[i + 1].coordinates!.lat, (float)addressList[i + 1].coordinates!.lon));
+                path.Add(new Vector2(fromLat, fromLon));
+                path.Add(new Vector2(toLat, toLon));
             }
-            else path.AddRange(route.Value.Shape.Select(s => new Vector2(s.Latitude, s.Longitude)));
+            else
+            {
+                List<Vector2> routePath = route.Value.Shape.Select(s => new Vector2(s.Latitude, s.Longitude)).ToList();
+
+                _cache.Set($"Route_{fromLat}_{fromLon}_{toLat}_{toLon}", routePath, TimeSpan.FromHours(1));
+
+                path.AddRange(routePath);
+            }
         }
 
         return path;

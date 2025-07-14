@@ -193,7 +193,7 @@
     }
     else
     {
-      applications = (await _applicationRepository.GetAllAsync(removeIgnored: !showIgnored, removeBuried: true)).ToList();
+      applications = (await _applicationRepository.GetAllAsync(removeIgnored: !showIgnored)).ToList();
     }
     return await Task.FromResult(request.ApplyTo(applications));
   }
