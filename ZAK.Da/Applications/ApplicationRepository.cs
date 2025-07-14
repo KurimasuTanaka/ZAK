@@ -1,5 +1,6 @@
 using System;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using ZAK.Db;
 using ZAK.Db.Models;
@@ -10,13 +11,22 @@ public class ApplicationRepository : IApplicationReporisory
 {
     private readonly IDbContextFactory<ZakDbContext> _dbContextFactory;
     private readonly ILogger<ApplicationRepository> _logger;
+    private readonly IMemoryCache _cache;
 
-    public ApplicationRepository(IDbContextFactory<ZakDbContext> dbContextFactory, ILogger<ApplicationRepository> logger)
+    public ApplicationRepository(IDbContextFactory<ZakDbContext> dbContextFactory, ILogger<ApplicationRepository> logger, IMemoryCache cache)
     {
+        _cache = cache;
         _logger = logger;
         _dbContextFactory = dbContextFactory;
     }
 
+
+    private void DropCache()
+    {
+        _cache.Remove("AllApplications");
+        _cache.Remove("ApplicationsIgnored");
+
+    }
 
     public async Task CreateAsync(Application entity)
     {
@@ -36,6 +46,9 @@ public class ApplicationRepository : IApplicationReporisory
 
                 context.applications.Add(entity);
                 await context.SaveChangesAsync();
+
+                DropCache();
+
             }
             _logger.LogInformation("Application created successfully: {@Application}", entity);
         }
@@ -69,6 +82,9 @@ public class ApplicationRepository : IApplicationReporisory
 
                 context.applications.AddRange(entities);
                 await context.SaveChangesAsync();
+
+                DropCache();
+
             }
             _logger.LogInformation("Range of applications created successfully");
         }
@@ -99,6 +115,9 @@ public class ApplicationRepository : IApplicationReporisory
                     _logger.LogWarning("Application with id {Id} not found for deletion", id);
                 }
             }
+
+            DropCache();
+
         }
         catch (Exception ex)
         {
@@ -121,6 +140,9 @@ public class ApplicationRepository : IApplicationReporisory
                 await context.SaveChangesAsync();
                 _logger.LogInformation("Range of applications deleted successfully");
             }
+
+            DropCache();
+
         }
         catch (Exception ex)
         {
@@ -133,6 +155,11 @@ public class ApplicationRepository : IApplicationReporisory
     {
         _logger.LogInformation("Getting all applications");
 
+        if (_cache.TryGetValue("AllApplications", out IEnumerable<Application>? cachedApplications) && cachedApplications is not null)
+        {
+            return cachedApplications;
+        }
+
         try
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
@@ -144,6 +171,9 @@ public class ApplicationRepository : IApplicationReporisory
                     .ToListAsync();
 
                 _logger.LogInformation("Retrieved {Count} applications", result.Count);
+
+                _cache.Set("AllApplications", result, TimeSpan.FromMinutes(10));
+
                 return result;
             }
         }
@@ -154,9 +184,25 @@ public class ApplicationRepository : IApplicationReporisory
         }
     }
 
-    public async Task<IEnumerable<Application>> GetAllAsync(bool removeIgnored = false, bool removeBuried = false)
+    public async Task<IEnumerable<Application>> GetAllAsync(bool removeIgnored = false)
     {
         _logger.LogInformation("Getting all applications");
+
+        if (removeIgnored)
+        {
+            if (_cache.TryGetValue("AllApplicationsIgnored", out IEnumerable<Application>? cachedApplications) && cachedApplications is not null)
+            {
+                return cachedApplications;
+            }
+        }
+        else
+        {
+            if (_cache.TryGetValue("AllApplications", out IEnumerable<Application>? cachedApplications) && cachedApplications is not null)
+            {
+                return cachedApplications;
+            }
+
+        }
 
         try
         {
@@ -165,14 +211,19 @@ public class ApplicationRepository : IApplicationReporisory
                 var result = context.applications.AsSplitQuery().AsNoTracking()
                     .Include(a => a.address).ThenInclude(a => a!.district)
                     .Include(a => a.address!.coordinates).AsQueryable();
-                    
 
                 if (removeIgnored) result = result.Where(a => !a.ignored);
-                if (removeBuried) result = result.Where(a => !a.buried);
 
-                List<Application> resultList = await result.Select(a => new Application(a)).ToListAsync();;
+                List<Application> resultList = await result.Select(a => new Application(a)).ToListAsync(); ;
 
                 _logger.LogInformation("Retrieved {Count} applications", resultList.Count);
+
+                if (removeIgnored)
+                    _cache.Set("AllApplicationsIgnored", resultList, TimeSpan.FromMinutes(10));
+                else
+                    _cache.Set("AllApplications", resultList, TimeSpan.FromMinutes(10));
+
+
                 return resultList;
             }
         }
@@ -199,38 +250,13 @@ public class ApplicationRepository : IApplicationReporisory
 
                 result = result.Where(a => a.applicationWasUpdated).ToList();
                 _logger.LogInformation("Retrieved {Count} updated applications", result.Count);
+
                 return result;
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting all updated applications");
-            throw;
-        }
-    }
-
-    public async Task<IEnumerable<Application>> GetAllWithIgnoringAsync()
-    {
-        _logger.LogInformation("Getting all applications with ignoring");
-
-        try
-        {
-            using (ZakDbContext context = _dbContextFactory.CreateDbContext())
-            {
-                var result = await context.applications.AsSplitQuery().AsNoTracking()
-                    .Include(a => a.address).ThenInclude(a => a!.district)
-                    .Include(a => a.address!.coordinates)
-                    .Select(a => new Application(a)).ToListAsync();
-
-                result = result.Where(a => !a.ignored).ToList();
-
-                _logger.LogInformation("Retrieved {Count} applications (not ignored)", result.Count);
-                return result;
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error getting all applications with ignoring");
             throw;
         }
     }
@@ -300,7 +326,10 @@ public class ApplicationRepository : IApplicationReporisory
                         }
                     }
                     await context.SaveChangesAsync();
+
                     _logger.LogInformation("Application updated successfully: {@Application}", entity);
+
+                    DropCache();
                 }
             }
         }
@@ -337,6 +366,9 @@ public class ApplicationRepository : IApplicationReporisory
                 context.applications.UpdateRange(entities);
                 await context.SaveChangesAsync();
                 _logger.LogInformation("Range of applications updated successfully");
+
+
+                DropCache();
             }
         }
         catch (Exception ex)

@@ -81,6 +81,8 @@ public class Program
         builder.Services.AddSingleton<IMapRoutesManager, MapRoutesManager.MapRoutesManager>();
         builder.Services.AddScoped<IUnresolvedAddressesChecker, UnresolvedAddressesChecker>();
 
+        builder.Services.AddMemoryCache();
+
         builder.Services.AddBlazorTrace();
 
 

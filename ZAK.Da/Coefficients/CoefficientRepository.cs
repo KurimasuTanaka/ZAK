@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ZAK.Db;
 using ZAK.Db.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ZAK.DA;
 
@@ -10,9 +11,11 @@ public class CoefficientRepository : ICoefficientRepository
 {
     private readonly IDbContextFactory<ZakDbContext> _dbContextFactory;
     private readonly ILogger<CoefficientRepository> _logger;
+    private readonly IMemoryCache _cache;
 
-    public CoefficientRepository(IDbContextFactory<ZakDbContext> dbContextFactory, ILogger<CoefficientRepository> logger)
+    public CoefficientRepository(IDbContextFactory<ZakDbContext> dbContextFactory, ILogger<CoefficientRepository> logger, IMemoryCache cache)
     {
+        _cache = cache;
         _dbContextFactory = dbContextFactory;
         _logger = logger;
     }
@@ -31,7 +34,17 @@ public class CoefficientRepository : ICoefficientRepository
 
     public async Task<IEnumerable<Coefficient>> GetAllAsync()
     {
+
+
+
         _logger.LogInformation("Getting all coefficients");
+
+
+        if (_cache.TryGetValue("AllCoefficients", out IEnumerable<Coefficient>? cachedCoefficients) && cachedCoefficients is not null)
+        {
+            return cachedCoefficients;
+        }
+
         try
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
@@ -40,6 +53,9 @@ public class CoefficientRepository : ICoefficientRepository
                     .Select(c => new Coefficient(c))
                     .ToListAsync();
                 _logger.LogInformation("Retrieved {Count} coefficients", result.Count);
+
+                _cache.Set("AllCoefficients", result, TimeSpan.FromMinutes(10));
+
                 return result;
             }
         }
@@ -87,6 +103,8 @@ public class CoefficientRepository : ICoefficientRepository
                     coefficientModel.coefficient = entity.coefficient;
                     await context.SaveChangesAsync();
                     _logger.LogInformation("Coefficient updated successfully: {@Coefficient}", entity);
+
+                    _cache.Remove("AllCoefficients");
                 }
                 else
                 {

@@ -1,6 +1,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using ZAK.Db;
 using ZAK.Db.Models;
@@ -11,9 +12,11 @@ public class AddressRepository : IAddressRepository
 {
     private readonly IDbContextFactory<ZakDbContext> _dbContextFactory;
     private readonly ILogger<AddressRepository> _logger;
+    private readonly IMemoryCache _cache;
 
-    public AddressRepository(IDbContextFactory<ZakDbContext> dbContextFactory, ILogger<AddressRepository> logger)
+    public AddressRepository(IDbContextFactory<ZakDbContext> dbContextFactory, ILogger<AddressRepository> logger, IMemoryCache cache)
     {
+        _cache = cache;
         _logger = logger;
         _dbContextFactory = dbContextFactory;
     }
@@ -30,6 +33,8 @@ public class AddressRepository : IAddressRepository
                 await context.SaveChangesAsync();
             }
             _logger.LogInformation("Address created successfully: {@Address}", entity);
+
+            _cache.Remove("AllAddresses");
         }
         catch (Exception ex)
         {
@@ -52,6 +57,9 @@ public class AddressRepository : IAddressRepository
                     context.addresses.Remove(entity);
                     await context.SaveChangesAsync();
                     _logger.LogInformation("Address deleted successfully: {Id}", id);
+
+                    _cache.Remove("AllAddresses");
+
                 }
                 else
                 {
@@ -70,6 +78,11 @@ public class AddressRepository : IAddressRepository
     {
         _logger.LogInformation("Getting all addresses");
 
+        if (_cache.TryGetValue("AllAddresses", out IEnumerable<Address>? cachedAddresses) && cachedAddresses is not null)
+        {
+            return cachedAddresses;
+        }
+
         try
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
@@ -81,6 +94,9 @@ public class AddressRepository : IAddressRepository
                                                     .Select(a => new Address(a))
                                                     .ToListAsync();
                 _logger.LogInformation("Retrieved {Count} addresses", result.Count);
+
+                _cache.Set("AllAddresses", result, TimeSpan.FromMinutes(10));
+
                 return result;
             }
         }
@@ -104,7 +120,7 @@ public class AddressRepository : IAddressRepository
                                                 .Include(a => a.addressPriority)
                                                 .Include(a => a.coordinates)
                                                 .FirstOrDefaultAsync(a => a.Id == id);
-                                                
+
                 if (address == null)
                 {
                     _logger.LogWarning("Address with id {Id} not found", id);
@@ -148,6 +164,8 @@ public class AddressRepository : IAddressRepository
 
                 await context.addresses.AddRangeAsync(addresses);
                 await context.SaveChangesAsync();
+
+                _cache.Remove("AllAddresses");
             }
             _logger.LogInformation("Range of addresses created successfully");
         }
@@ -177,6 +195,8 @@ public class AddressRepository : IAddressRepository
 
                     await context.SaveChangesAsync();
                     _logger.LogInformation("Address updated successfully: {@Address}", entity);
+
+                    _cache.Remove("AllAddresses");
                 }
                 else
                 {
@@ -218,6 +238,8 @@ public class AddressRepository : IAddressRepository
                 }
                 await context.SaveChangesAsync();
                 _logger.LogInformation("Range of addresses updated successfully");
+
+                _cache.Remove("AllAddresses");
             }
         }
         catch (Exception ex)
