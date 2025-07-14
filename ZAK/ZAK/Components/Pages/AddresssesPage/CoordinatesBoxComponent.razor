@@ -22,7 +22,6 @@
 </div>
 @code {
     [Parameter] public Address Address { get; set; } = default!;
-    [Parameter] public EventCallback InformationUpdated { get; set; }
     private int _initializationCounter = 0;
 
     protected override void OnParametersSet()
@@ -43,7 +42,6 @@
         
         _logger.LogInformation($"Updating coordinates for address with id {Address.Id} to {Address.coordinates}");
         await _addressRepository.UpdateAsync(Address);
-        await InformationUpdated.InvokeAsync();
     }
 
     private async void DeleteCoordinates()
@@ -61,8 +59,6 @@
         }
 
         await _addressRepository.UpdateAsync(Address);
-
-        await InformationUpdated.InvokeAsync();
     }
 
 }

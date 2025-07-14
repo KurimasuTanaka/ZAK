@@ -63,7 +63,7 @@
 
         <GridColumn TItem="Address" HeaderText="Широта \ Долгота" PropertyName="Latitude" HeaderTextAlignment="Alignment.Center" Filterable="false"
             ColumnClass="@(x => "blackoutCell")">
-            <CoordinatesBoxComponent Address="context" InformationUpdated="UpdateTable" />
+            <CoordinatesBoxComponent Address="context" />
         </GridColumn>
 
         <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" HeaderTextAlignment="Alignment.Center" SortKeySelector="item => item.resolved" TextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W5")">
