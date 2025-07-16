@@ -60,9 +60,6 @@
     }
 </style>
 @code {
-    [CascadingParameter]
-    UnresolvedAddressesInfo unresolvedAddressesInfo { get; set; } = default!;
-
     bool isInitialized = false;
 
     protected override void OnInitialized()
@@ -88,7 +85,6 @@
                 await DrawPaths();
                 await DrawMarkers();
             }
-            StateHasChanged();
         }
 
     }

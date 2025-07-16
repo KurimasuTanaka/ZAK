@@ -189,9 +189,19 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _logger.LogInformation("Parameters set for BrigadeList component. Getting applications to render brigade list");
-        
-        if(firstRender) await RefreshApplicationsList();
+        if (firstRender)
+        {
+            _logger.LogInformation("Parameters set for BrigadeList component. Getting applications to render brigade list");
+            
+            brigades = (await _brigadeRepository.GetAllAsync()).ToList();
+
+            foreach (var brigade in brigades)
+            {
+                applications.AddRange(brigade.GetApplications());
+            }
+            dropContainer.Refresh();
+            StateHasChanged();  
+        }
     }
 
 }
