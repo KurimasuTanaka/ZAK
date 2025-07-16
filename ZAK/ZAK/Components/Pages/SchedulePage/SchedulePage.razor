@@ -9,26 +9,13 @@
 @attribute [StreamRendering]
 
 @inject ILogger<SchedulePage> _logger
-@inject IUnresolvedAddressesChecker _unresolvedAddressesChecker;
 
-@if (unresolvedAddressesInfo is not null && unresolvedAddressesInfo.unresolvedAddressesExist)
-{
-    <Callout Color="CalloutColor.Danger">
-        <p>В базе есть незарезолвленные адреса!</p>
-    </Callout>
-}
-
-
+<UnresolvedAddressesCallout />
 
 <div style="display: flex; flex-direction: row">
     <SchedulePart RefreshMap="RefreshMap" />
 
-    @if(unresolvedAddressesInfo is not null)
-    {
-    <CascadingValue Value="unresolvedAddressesInfo">
-        <MapPart @ref="mapPart" />
-    </CascadingValue>
-    }
+    <MapPart @ref="mapPart" />
 </div>
 
 @code {
@@ -36,15 +23,6 @@
 
     MapPart mapPart = default!;
 
-
-    UnresolvedAddressesInfo? unresolvedAddressesInfo { get; set; } = null;
-
-    protected override async Task OnInitializedAsync()
-    {
-        _logger.LogInformation("Initializing SchedulePage component");
-
-        unresolvedAddressesInfo = await _unresolvedAddressesChecker.GetUnresolvedAddressesInfo();
-    }
 
     private async void RefreshMap()
     {
@@ -54,7 +32,8 @@
         {
             _logger.LogWarning("MapPart reference is null, cannot refresh map");
             return;
-        } else await mapPart.RefreshMap();
+        }
+        else await mapPart.RefreshMap();
     }
 
 }

@@ -31,8 +31,6 @@
 
 @code {
     private List<Coefficient> coefficients = new();
-
-    private bool showIgnored = false;
     override async protected Task OnParametersSetAsync()
     {
         coefficients =  (await _coefficientRepository.GetAllAsync()).ToList();

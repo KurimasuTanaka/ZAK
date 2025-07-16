@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ZAK.DAO;
 using ZAK.Db.Models;
 using ZAK.MapRoutesManager;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ZAK.Services.UnresolvedAddressesChecker;
 
@@ -17,11 +18,13 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
 {
     IAddressRepository _addressRepository;
     IMapRoutesManager _mapRoutesManager;
+    IMemoryCache _memoryCache;
 
-    public UnresolvedAddressesChecker(IAddressRepository addressRepository, IMapRoutesManager mapRoutesManager)
+    public UnresolvedAddressesChecker(IAddressRepository addressRepository, IMapRoutesManager mapRoutesManager, IMemoryCache memoryCache)
     {
         _addressRepository = addressRepository;
         _mapRoutesManager = mapRoutesManager;
+        _memoryCache = memoryCache;
     }
 
     public async Task<int> GetNumberOfUnresolvedAddresses()
@@ -50,11 +53,20 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
 
     public async Task<UnresolvedAddressesInfo> GetUnresolvedAddressesInfo()
     {
-        return new UnresolvedAddressesInfo
+        if( _memoryCache.TryGetValue("UnresolvedAddressesInfo", out UnresolvedAddressesInfo? cachedInfo))
+        {
+            if(cachedInfo is not null) return cachedInfo;
+        }
+
+        var newInfo = new UnresolvedAddressesInfo
         {
             unresolvedAddressesExist = await UnresolvedAddressesExist(),
             unresolvedAddressesNumber = await GetNumberOfUnresolvedAddresses()
         };
+
+        _memoryCache.Set("UnresolvedAddressesInfo", newInfo, TimeSpan.FromMinutes(5));
+
+        return newInfo;
     }
 
     public async Task<bool> UnresolvedAddressesExist()

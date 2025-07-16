@@ -18,6 +18,8 @@
 @inject IScheduleManager _scheduleManager;
 @inject ILogger<MapComponentLeaflet> _logger;
 
+@inject IUnresolvedAddressesChecker _unresolvedAddressesChecker;
+
 
 <div id="map">placeholder</div>
 
@@ -80,8 +82,9 @@
 
             await Js.InvokeVoidAsync("initMap");
 
-            if (!unresolvedAddressesInfo.unresolvedAddressesExist)
+            if (! (await _unresolvedAddressesChecker.GetUnresolvedAddressesInfo()).unresolvedAddressesExist)
             {
+                _logger.LogInformation("No unresolved addresses found, drawing map elements");
                 await DrawPaths();
                 await DrawMarkers();
             }
