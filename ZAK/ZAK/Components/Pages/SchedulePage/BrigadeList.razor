@@ -139,9 +139,13 @@
         scheduledApplication.applicationScheduledTime, 
         scheduledApplication.onStretching);
 
-        //Refreshing the brigade list
-        applications.Clear();
-        await RefreshApplicationsList();
+
+        applications.Where(a => a.brigadeId == scheduledApplication.brigadeId && 
+            a.applicationScheduledTime == scheduledApplication.applicationScheduledTime).
+            ToList().ForEach(a => a.Copy(scheduledApplication));
+
+        dropContainer.Refresh();
+        await RefreshMap.InvokeAsync();
 
         //Hiding modal window
         await applicationsRatedList.HideAsync();
@@ -152,11 +156,11 @@
     {
         await _brigadesManager.MakeTimeSlotEmpty(scheduledTime.brigadeId, scheduledTime.applicationScheduledTime);
 
-        applications.RemoveAll(a => a.brigadeId == scheduledTime.brigadeId && 
-            a.applicationScheduledTime == scheduledTime.applicationScheduledTime);
+        applications.Where(a => a.brigadeId == scheduledTime.brigadeId && 
+            a.applicationScheduledTime == scheduledTime.applicationScheduledTime).ToList().ForEach(a => a.id = 0);
 
-        applications.Clear();
-        await RefreshApplicationsList();
+        dropContainer.Refresh();
+        await RefreshMap.InvokeAsync();
 
         //Hiding modal window
         await applicationsRatedList.HideAsync();

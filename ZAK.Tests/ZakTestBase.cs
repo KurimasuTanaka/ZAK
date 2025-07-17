@@ -46,7 +46,9 @@ public class ZakTestBase : IDisposable
         object cacheValue = null;
         memoryCacheMock.Setup(m => m.TryGetValue(It.IsAny<object>(), out cacheValue))
             .Returns(false);
-
+        memoryCacheMock.Setup(x => x.CreateEntry(It.IsAny<object>()))
+            .Returns(
+                new Mock<ICacheEntry>().Object);
 
         addressesDaoLogger = new NullLogger<Dao<Address, AddressModel>>();
         addressCooerdinatesDaoLogger = new NullLogger<Dao<AddressCoordinates, AddressCoordinatesModel>>();

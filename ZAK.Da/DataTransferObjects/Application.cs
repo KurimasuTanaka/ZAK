@@ -132,10 +132,31 @@ public class Application : ApplicationModel
 
     public void Copy(Application source)
     {
-        foreach (PropertyInfo property in GetType().GetProperties().Where(p => p.CanWrite))
-        {
-            property.SetValue(this, property.GetValue(source));
-        }
+        if (source == null) throw new ArgumentNullException(nameof(source));
+
+        // Copy all relevant properties from the source application
+        this.id = source.id;
+        this.address = source.address;
+        this.urgent = source.urgent;
+        this.statusWasChecked = source.statusWasChecked;
+        this.freeCable = source.freeCable;
+        this.tarChangeApp = source.tarChangeApp;
+        this.daysToDeadline = source.daysToDeadline;
+        this.priority = source.priority;
+        this.year = source.year;
+        this.month = source.month;
+        this.day = source.day;
+        this.startHour = source.startHour;
+        this.endHour = source.endHour;
+        this.firstPart = source.firstPart;
+        this.secondPart = source.secondPart;
+        this.timeRangeIsSet = source.timeRangeIsSet;
+        this.maxDaysForConnection = source.maxDaysForConnection;
+        this.addresWasUpdated = source.addresWasUpdated;
+        this.masterCommentWasUpdated = source.masterCommentWasUpdated;
+        this.operatorCommentWasUpdated = source.operatorCommentWasUpdated;
+        this.statusWasUpdated = source.statusWasUpdated;
+        
     }
 
 

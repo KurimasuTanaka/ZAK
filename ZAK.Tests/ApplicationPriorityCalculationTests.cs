@@ -16,13 +16,13 @@ public class ApplicationPriorityCalculationTests
         Application application3 = new();
 
         application1.address = new AddressModel();
-        application1.address.coordinates = new AddressCoordinatesModel { lat = 10, lon = 10 };
+        application1.address.coordinates = new AddressCoordinatesModel { lat = 50.53184, lon = 30.51289 }; //50.531844824813426, 30.512894712067872
 
         application2.address = new AddressModel();
-        application2.address.coordinates = new AddressCoordinatesModel { lat = 20, lon = 10 };
+        application2.address.coordinates = new AddressCoordinatesModel { lat = 50.5179, lon = 30.5109 }; //50.517985003588876, 30.510920606380573
 
         application3.address = new AddressModel();
-        application3.address.coordinates = new AddressCoordinatesModel { lat = 40, lon = 10 };
+        application3.address.coordinates = new AddressCoordinatesModel { lat = 50.49210, lon = 30.4788 }; //50.492109725173655, 30.478819930084466
 
         Dictionary<string, double> coefficients = new()
         {

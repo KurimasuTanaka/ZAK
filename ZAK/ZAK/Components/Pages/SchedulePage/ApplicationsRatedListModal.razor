@@ -205,12 +205,10 @@
     {
         _logger.LogInformation($"Adding application with ID {application.Item.id} to schedule at time {scheduledTime} for brigade ID {scheduledBrigadeId}");
 
-        ApplicationScheduled scheduledApplication = new ApplicationScheduled()
-        {
-            id = application.Item.id,
-            applicationScheduledTime = scheduledTime,
-            brigadeId = scheduledBrigadeId
-        };
+        ApplicationScheduled scheduledApplication = new ApplicationScheduled();
+        scheduledApplication.Copy(application.Item);
+        scheduledApplication.applicationScheduledTime = scheduledTime;
+        scheduledApplication.brigadeId = scheduledBrigadeId;
 
         ApplicationWasChosen.InvokeAsync(scheduledApplication);
     }
@@ -219,13 +217,12 @@
     {
         _logger.LogInformation($"Adding application with ID {application.id} to schedule on stretching at time {scheduledTime} for brigade ID {scheduledBrigadeId}");
 
-        ApplicationScheduled scheduledApplication = new ApplicationScheduled()
-        {
-            id = application.id,
-            applicationScheduledTime = scheduledTime,
-            brigadeId = scheduledBrigadeId, 
-            onStretching = true
-        };
+        ApplicationScheduled scheduledApplication = new ApplicationScheduled();
+        scheduledApplication.Copy(application);
+
+        scheduledApplication.onStretching = true;
+        scheduledApplication.applicationScheduledTime = scheduledTime;
+        scheduledApplication.brigadeId = scheduledBrigadeId;
 
         ApplicationWasChosen.InvokeAsync(scheduledApplication);
     }

@@ -184,7 +184,7 @@ public class ApplicationRepository : IApplicationReporisory
         }
     }
 
-    public async Task<IEnumerable<Application>> GetAllAsync(bool removeIgnored = false)
+    public async Task<IEnumerable<Application>> GetAllAsync(bool removeIgnored, bool removeBuried = true)
     {
         _logger.LogInformation("Getting all applications");
 
@@ -213,6 +213,7 @@ public class ApplicationRepository : IApplicationReporisory
                     .Include(a => a.address!.coordinates).AsQueryable();
 
                 if (removeIgnored) result = result.Where(a => !a.ignored);
+                if (removeBuried) result = result.Where(a => !a.buried);
 
                 List<Application> resultList = await result.Select(a => new Application(a)).ToListAsync(); ;
 

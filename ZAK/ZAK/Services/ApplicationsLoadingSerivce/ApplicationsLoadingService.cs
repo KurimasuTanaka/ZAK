@@ -88,25 +88,14 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
             if (oldApp.address is not null && applicationsToUpdate[i].address is not null)
             {
                 if (!(new AddressComparer().Equals(new Address(oldApp.address), new Address(applicationsToUpdate[i].address!)))) applicationsToUpdate[i].addresWasUpdated = true;
-                
+
             }
             if (applicationsToUpdate[i].operatorComment != oldApp.operatorComment) applicationsToUpdate[i].operatorCommentWasUpdated = true;
             if (applicationsToUpdate[i].masterComment != oldApp.masterComment) applicationsToUpdate[i].masterCommentWasUpdated = true;
             if (applicationsToUpdate[i].stretchingStatus != oldApp.stretchingStatus) applicationsToUpdate[i].statusWasUpdated = true;
 
-            applicationsToUpdate[i].buried = oldApp.buried;
-            applicationsToUpdate[i].office = oldApp.office;
-            applicationsToUpdate[i].tarChangeApp = oldApp.tarChangeApp;
-            applicationsToUpdate[i].freeCable = oldApp.freeCable;
-            applicationsToUpdate[i].important = oldApp.important;
-            applicationsToUpdate[i].maxDaysForConnection = oldApp.maxDaysForConnection;
-            applicationsToUpdate[i].timeRangeIsSet = oldApp.timeRangeIsSet;
-            applicationsToUpdate[i].secondPart = oldApp.secondPart;
-            applicationsToUpdate[i].firstPart = oldApp.firstPart;
-            applicationsToUpdate[i].startHour = oldApp.startHour;
-            applicationsToUpdate[i].endHour = oldApp.endHour;
-            applicationsToUpdate[i].statusWasChecked = oldApp.statusWasChecked;
-            applicationsToUpdate[i].urgent = oldApp.urgent;
+            applicationsToUpdate[i].Copy(oldApp);
+
         }
         await _applicationRepository.UpdateRangeAsync(applicationsToUpdate);
         _logger.LogInformation("Old applications updated successfully!");

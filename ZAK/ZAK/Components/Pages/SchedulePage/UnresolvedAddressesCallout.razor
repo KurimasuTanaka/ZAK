@@ -1,0 +1,21 @@
+﻿@using ZAK.Services.UnresolvedAddressesChecker
+@inject IUnresolvedAddressesChecker _unresolvedAddressesChecker;
+@inject ILogger<UnresolvedAddressesCallout> _logger
+
+@if (unresolvedAddressesInfo is not null && unresolvedAddressesInfo.unresolvedAddressesExist)
+{
+    <Callout Color="CalloutColor.Danger">
+        <p>В базе є незарезолвлені адреси!</p>
+    </Callout>
+}
+
+@code {
+    private UnresolvedAddressesInfo? unresolvedAddressesInfo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _logger.LogInformation("Initializing UnresolvedAddressesCallout component");
+
+        unresolvedAddressesInfo = await _unresolvedAddressesChecker.GetUnresolvedAddressesInfo();
+    }
+}

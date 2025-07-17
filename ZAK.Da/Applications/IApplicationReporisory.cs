@@ -4,7 +4,7 @@ namespace ZAK.DA;
 
 public interface IApplicationReporisory : IRepository<Application, int>
 {
-    Task<IEnumerable<Application>> GetAllAsync(bool removeIgnored = false);
+    Task<IEnumerable<Application>> GetAllAsync(bool removeIgnored, bool removeBuried = true);
     Task<IEnumerable<Application>> GetAllUpdatedAsync();
     Task CreateRangeAsync(IEnumerable<Application> entities);
     Task UpdateRangeAsync(IEnumerable<Application> entities);

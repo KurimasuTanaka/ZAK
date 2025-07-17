@@ -24,10 +24,7 @@
 <Button @ref="loadCoordinatesButton" Color="ButtonColor.Primary" @onclick="LoadCoordinatesData"> Подтянуть координаты
 </Button>
 
-<Callout Color="CalloutColor.Success">
-    <p>Было найдено @(unresolvedAddressesCount) незарезолвленых адресов</p>
-</Callout>
-
+<UnresolvedAddressesCallout />
 <AddressEditingModal @ref="addressEditingModal" UpdateTable="UpdateTable" />
 
 <Grid @ref="addressGrid" TItem="Address" Class="table table-hover table-bordered table-striped"
