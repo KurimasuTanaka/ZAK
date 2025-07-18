@@ -36,7 +36,7 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         _addressRepository = addressRepository;
     }
 
-    public async Task UpdateApplications(IBrowserFile file)
+    public async Task UpdateApplications(IBrowserFile file, bool clearDailyInfo = false)
     {
         _logger.LogInformation("Updating applications...");
 
@@ -45,16 +45,15 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         List<Application> parsedApplications = await _applicationScrapper!.ScrapApplicationData(_fileLoader.GetLastLoadedFile());
 
         //Updating application list in DB
-        await ProceedApplications(parsedApplications);
+        await ProceedApplications(parsedApplications, clearDailyInfo);
 
         _logger.LogInformation("Applications updated successfully!");
     }
 
-    public async Task ProceedApplications(List<Application> parsedApplications)
+    public async Task ProceedApplications(List<Application> parsedApplications, bool clearDailyInfo)
     {
         await DeleteOldApplications(parsedApplications);
-
-        await UpdateOldApplications(parsedApplications);
+        await UpdateOldApplications(parsedApplications, clearDailyInfo);
         await AddNewApplcations(parsedApplications);
 
     }
@@ -73,7 +72,7 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
         _logger.LogInformation("Old applications deleted successfully!");
     }
 
-    public async Task UpdateOldApplications(List<Application> newApplications)
+    public async Task UpdateOldApplications(List<Application> newApplications, bool clearDailyInfo)
     {
         _logger.LogInformation("Updating old applications...");
 
@@ -94,7 +93,27 @@ public class ApplicationsLoadingService : IApplicationsLoadingService
             if (applicationsToUpdate[i].masterComment != oldApp.masterComment) applicationsToUpdate[i].masterCommentWasUpdated = true;
             if (applicationsToUpdate[i].stretchingStatus != oldApp.stretchingStatus) applicationsToUpdate[i].statusWasUpdated = true;
 
-            applicationsToUpdate[i].Copy(oldApp);
+            //Parameters that setter up manually but should not  be updated frequently
+            applicationsToUpdate[i].buried = oldApp.buried;
+            applicationsToUpdate[i].maxDaysForConnection = oldApp.maxDaysForConnection;
+            applicationsToUpdate[i].urgent = oldApp.urgent;
+
+            //Parameters that can update from time to time
+            if (!clearDailyInfo)
+            {
+                applicationsToUpdate[i].important = oldApp.important;
+                applicationsToUpdate[i].ignored = oldApp.ignored;
+
+                //Timeframe for tomorrow
+                applicationsToUpdate[i].timeRangeIsSet = oldApp.timeRangeIsSet;
+                applicationsToUpdate[i].secondPart = oldApp.secondPart;
+                applicationsToUpdate[i].firstPart = oldApp.firstPart;
+                applicationsToUpdate[i].startHour = oldApp.startHour;
+                applicationsToUpdate[i].endHour = oldApp.endHour;
+
+                applicationsToUpdate[i].inSchedule = oldApp.inSchedule;
+                applicationsToUpdate[i].brigadeNumber = oldApp.brigadeNumber;
+            }
 
         }
         await _applicationRepository.UpdateRangeAsync(applicationsToUpdate);

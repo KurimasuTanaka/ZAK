@@ -6,5 +6,5 @@ namespace ZAK.Services.ApplicationsLoadingService;
 
 public interface IApplicationsLoadingService
 {
-    public Task UpdateApplications(IBrowserFile file);
+    public Task UpdateApplications(IBrowserFile file, bool clearIgnoreInfo = false);
 }

@@ -8,9 +8,10 @@
 @inject IApplicationsLoadingService _applicationsLoadingSerivce
 @inject ILogger<ApplicationsFileLoader> _logger;
 
-<div>
+<div style="display:flex; flex-direction:row; gap: 10px; ">
+  
   <InputFile OnChange="@((InputFileChangeEventArgs e) => applicationsFileToLoad = e.File)"></InputFile>
-
+  <MudCheckBox @bind-Value="clearDailyInfo" Label="Очистити щоденну інформацію" />
   <Button @ref="updateApplicationButton" class="p-2" Color="ButtonColor.Info" @onclick="UpdateApplications">Оновити заявки</Button>
 </div>
 
@@ -18,9 +19,9 @@
 <Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopLeft" />
 @code
 {
-  [Parameter]
-  public EventCallback ApplicationsInformationWasChanged { get; set; }
+  [Parameter] public EventCallback ApplicationsInformationWasChanged { get; set; }
 
+  private bool clearDailyInfo = false;
   private Button updateApplicationButton = default!;
   IBrowserFile? applicationsFileToLoad;
   private async Task UpdateApplications()
@@ -28,7 +29,8 @@
     _logger.LogInformation("Updating applications with file: {FileName}", applicationsFileToLoad?.Name);
 
     updateApplicationButton.ShowLoading("Загрузка заявок...");
-    if (applicationsFileToLoad is not null) await _applicationsLoadingSerivce.UpdateApplications(applicationsFileToLoad);
+    if (applicationsFileToLoad is not null) await _applicationsLoadingSerivce.UpdateApplications(applicationsFileToLoad,
+    clearDailyInfo);
     else
     {
       ShowToast();
@@ -39,6 +41,8 @@
     updateApplicationButton.HideLoading();
     await ApplicationsInformationWasChanged.InvokeAsync();
   }
+
+
 
   List<ToastMessage> messages = [];
   private void ShowToast()
