@@ -13,6 +13,11 @@ public class ApplicationRepository : IApplicationReporisory
     private readonly ILogger<ApplicationRepository> _logger;
     private readonly IMemoryCache _cache;
 
+    string applicationsAllCacheKey = "AllApplications";
+    string applicationsIgnoredCacheKey = "ApplicationsIgnored";
+    string applicationsBuriedCacheKey = "ApplicationsBuried";
+    string applicationsIgnoredBuriedCacheKey = "ApplicationsScheduled";
+
     public ApplicationRepository(IDbContextFactory<ZakDbContext> dbContextFactory, ILogger<ApplicationRepository> logger, IMemoryCache cache)
     {
         _cache = cache;
@@ -23,9 +28,10 @@ public class ApplicationRepository : IApplicationReporisory
 
     private void DropCache()
     {
-        _cache.Remove("AllApplications");
-        _cache.Remove("ApplicationsIgnored");
-
+        _cache.Remove(applicationsAllCacheKey);
+        _cache.Remove(applicationsIgnoredCacheKey);
+        _cache.Remove(applicationsBuriedCacheKey);
+        _cache.Remove(applicationsIgnoredBuriedCacheKey);
     }
 
     public async Task CreateAsync(Application entity)
@@ -57,6 +63,8 @@ public class ApplicationRepository : IApplicationReporisory
             _logger.LogError(ex, "Error creating application: {@Application}", entity);
             throw;
         }
+
+        DropCache();
     }
 
     public async Task CreateRangeAsync(IEnumerable<Application> entities)
@@ -155,7 +163,7 @@ public class ApplicationRepository : IApplicationReporisory
     {
         _logger.LogInformation("Getting all applications");
 
-        if (_cache.TryGetValue("AllApplications", out IEnumerable<Application>? cachedApplications) && cachedApplications is not null)
+        if (_cache.TryGetValue(applicationsAllCacheKey, out IEnumerable<Application>? cachedApplications) && cachedApplications is not null)
         {
             return cachedApplications;
         }
@@ -172,7 +180,7 @@ public class ApplicationRepository : IApplicationReporisory
 
                 _logger.LogInformation("Retrieved {Count} applications", result.Count);
 
-                _cache.Set("AllApplications", result, TimeSpan.FromMinutes(10));
+                _cache.Set(applicationsAllCacheKey, result, TimeSpan.FromMinutes(10));
 
                 return result;
             }
@@ -188,20 +196,16 @@ public class ApplicationRepository : IApplicationReporisory
     {
         _logger.LogInformation("Getting all applications");
 
-        if (removeIgnored)
-        {
-            if (_cache.TryGetValue("AllApplicationsIgnored", out IEnumerable<Application>? cachedApplications) && cachedApplications is not null)
-            {
-                return cachedApplications;
-            }
-        }
-        else
-        {
-            if (_cache.TryGetValue("AllApplications", out IEnumerable<Application>? cachedApplications) && cachedApplications is not null)
-            {
-                return cachedApplications;
-            }
+        string cacheKey;
+        
+        if (removeIgnored && removeBuried) cacheKey = applicationsIgnoredBuriedCacheKey;
+        else if (removeIgnored) cacheKey = applicationsIgnoredCacheKey;
+        else if (removeBuried) cacheKey = applicationsBuriedCacheKey;
+        else cacheKey = applicationsAllCacheKey;
 
+        if (_cache.TryGetValue(cacheKey, out IEnumerable<Application>? cachedApplications) && cachedApplications is not null)
+        {
+            return cachedApplications;
         }
 
         try
@@ -219,11 +223,7 @@ public class ApplicationRepository : IApplicationReporisory
 
                 _logger.LogInformation("Retrieved {Count} applications", resultList.Count);
 
-                if (removeIgnored)
-                    _cache.Set("AllApplicationsIgnored", resultList, TimeSpan.FromMinutes(10));
-                else
-                    _cache.Set("AllApplications", resultList, TimeSpan.FromMinutes(10));
-
+                _cache.Set(cacheKey, resultList, TimeSpan.FromMinutes(10));
 
                 return resultList;
             }
