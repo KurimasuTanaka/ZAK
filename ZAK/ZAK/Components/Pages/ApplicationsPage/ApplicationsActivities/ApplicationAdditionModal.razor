@@ -9,6 +9,7 @@
         <ApplicationEditor application="@application" applicationUpdateSubmited="FormSubmitted" />
     </BodyTemplate>
 </Modal>
+<Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopLeft" />
 
 
 @code {
@@ -22,6 +23,13 @@
     async void FormSubmitted()
     {
         _logger.LogInformation("Creating new application with data: {@application}", application);
+
+        if(await _applicationRepository.ExistsAsync(application.id))
+        {
+            ShowToast();
+            _logger.LogWarning("Application with id {Id} already exists", application.id);
+            return;
+        }
 
         if(application.address is not null)
         {
@@ -48,6 +56,19 @@
         _logger.LogInformation("Showing modal for adding new application");
 
         await modal.ShowAsync();
+    }
+
+    List<ToastMessage> messages = [];
+    private void ShowToast()
+    {
+        messages.Add(
+        new ToastMessage
+        {
+            Type = ToastType.Warning,
+            Title = "Додавання заявки!",
+            Message = "Заявка з таким номером вже існує!",
+            AutoHide = true,
+        });
     }
 
 }

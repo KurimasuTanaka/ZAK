@@ -9,4 +9,5 @@ public interface IApplicationReporisory : IRepository<Application, int>
     Task CreateRangeAsync(IEnumerable<Application> entities);
     Task UpdateRangeAsync(IEnumerable<Application> entities);
     Task DeleteRangeAsync(IEnumerable<Application> entities);
+    Task<bool> ExistsAsync(int id);
 }

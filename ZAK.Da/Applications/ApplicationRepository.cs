@@ -378,4 +378,22 @@ public class ApplicationRepository : IApplicationReporisory
             throw;
         }
     }
+
+    public async Task<bool> ExistsAsync(int id)
+    {
+        _logger.LogInformation("Checking existence of application with id: {Id}", id);
+
+        try
+        {
+            using (ZakDbContext context = _dbContextFactory.CreateDbContext())
+            {
+                return await context.applications.AnyAsync(a => a.id == id);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error checking existence of application with id: {Id}", id);
+            throw;
+        }
+    }
 }
