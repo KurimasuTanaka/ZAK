@@ -8,12 +8,8 @@
 <td class="pr-4">
     <h6>@coefficient.parameterAlias</h6>
 </td>
-<td style="display: flex; flex-direction: column;">
+<td>
     <NumberInput TValue="double" @bind-Value="@coefficient.coefficient" @bind-Value:after="UpdateParameterValue" />
-    <div style="display: flex; flex-direction: row;">
-        <Switch @bind-Value="coefficient.infinite" @bind-Value:after="UpdateInfinityStatus" />
-        <small>Максимальний пріорітет</small>
-    </div>
 </td>
 
 @code {
@@ -23,13 +19,13 @@
 
     private async void UpdateParameterValue()
     {
-        _logger.LogInformation($"Updating coefficient with id {coefficient.id} to value {coefficient.coefficient}");
 
         if (!_initialized)
         {
             _initialized = true;
             return;
         }
+        _logger.LogInformation($"Updating coefficient with id {coefficient.id} to value {coefficient.coefficient}");
 
         Coefficient oldCoefficient = await _coefficientRepository.GetByIdAsync(coefficient.id);
         oldCoefficient.coefficient = coefficient.coefficient;
