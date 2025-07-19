@@ -16,9 +16,9 @@
 
     BrigadeList brigadeList = default!;
 
-    private async Task RefreshList()
+    private async Task RefreshList(int brigadeId)
     {
-        await brigadeList.RefreshApplicationsList();
+        await brigadeList.DeleteBrigade(brigadeId);
     }
 
     private async Task AddNewBrigade()

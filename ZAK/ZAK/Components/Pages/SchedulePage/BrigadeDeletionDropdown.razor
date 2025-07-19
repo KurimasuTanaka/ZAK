@@ -13,7 +13,7 @@
 </Dropdown>
 
 @code {
-    [Parameter] public EventCallback brigadeWasDeleted { get; set; }
+    [Parameter] public EventCallback<int> brigadeWasDeleted { get; set; }
 
     List<Brigade> brigades = new();
 
@@ -32,6 +32,6 @@
         _logger.LogInformation($"Deleting brigade with ID {brigades[brigadeNumber].id}");
 
         await _brigadeRepository.DeleteAsync(brigades[brigadeNumber].id);
-        await brigadeWasDeleted.InvokeAsync();
+        await brigadeWasDeleted.InvokeAsync(brigades[brigadeNumber].id);
     }
 }

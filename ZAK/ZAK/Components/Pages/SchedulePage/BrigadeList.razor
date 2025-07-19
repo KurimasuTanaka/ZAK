@@ -176,6 +176,15 @@
     }
 
 
+    public async Task DeleteBrigade(int brigadeId)
+    {
+        applications.RemoveAll(a => a.brigadeId == brigadeId);
+        brigades.RemoveAll(b => b.id == brigadeId);
+
+        await RefreshMap.InvokeAsync();
+        dropContainer.Refresh();
+    }
+
     public async Task RefreshApplicationsList()
     {
         _logger.LogInformation("Getting all brigades to update list of scheduled applications");
