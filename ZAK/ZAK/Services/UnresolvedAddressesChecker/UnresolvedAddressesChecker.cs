@@ -18,13 +18,11 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
 {
     IAddressRepository _addressRepository;
     IMapRoutesManager _mapRoutesManager;
-    IMemoryCache _memoryCache;
 
-    public UnresolvedAddressesChecker(IAddressRepository addressRepository, IMapRoutesManager mapRoutesManager, IMemoryCache memoryCache)
+    public UnresolvedAddressesChecker(IAddressRepository addressRepository, IMapRoutesManager mapRoutesManager)
     {
         _addressRepository = addressRepository;
         _mapRoutesManager = mapRoutesManager;
-        _memoryCache = memoryCache;
     }
 
     public async Task<int> GetNumberOfUnresolvedAddresses()
@@ -53,18 +51,12 @@ public class UnresolvedAddressesChecker : IUnresolvedAddressesChecker
 
     public async Task<UnresolvedAddressesInfo> GetUnresolvedAddressesInfo()
     {
-        if( _memoryCache.TryGetValue("UnresolvedAddressesInfo", out UnresolvedAddressesInfo? cachedInfo))
-        {
-            if(cachedInfo is not null) return cachedInfo;
-        }
 
         var newInfo = new UnresolvedAddressesInfo
         {
             unresolvedAddressesExist = await UnresolvedAddressesExist(),
             unresolvedAddressesNumber = await GetNumberOfUnresolvedAddresses()
         };
-
-        _memoryCache.Set("UnresolvedAddressesInfo", newInfo, TimeSpan.FromMinutes(5));
 
         return newInfo;
     }

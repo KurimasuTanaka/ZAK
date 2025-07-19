@@ -35,7 +35,6 @@ public class AddressRepository : IAddressRepository
             _logger.LogInformation("Address created successfully: {@Address}", entity);
 
             _cache.Remove("AllAddresses");
-            _cache.Remove("UnresolvedAddressesInfo");
         }
         catch (Exception ex)
         {
@@ -60,7 +59,6 @@ public class AddressRepository : IAddressRepository
                     _logger.LogInformation("Address deleted successfully: {Id}", id);
 
                     _cache.Remove("AllAddresses");
-                    _cache.Remove("UnresolvedAddressesInfo");
                 }
                 else
                 {
@@ -167,7 +165,6 @@ public class AddressRepository : IAddressRepository
                 await context.SaveChangesAsync();
 
                 _cache.Remove("AllAddresses");
-                _cache.Remove("UnresolvedAddressesInfo");
             }
             _logger.LogInformation("Range of addresses created successfully");
         }
@@ -199,7 +196,6 @@ public class AddressRepository : IAddressRepository
                     _logger.LogInformation("Address updated successfully: {@Address}", entity);
 
                     _cache.Remove("AllAddresses");
-                    _cache.Remove("UnresolvedAddressesInfo");
                 }
                 else
                 {
@@ -243,7 +239,6 @@ public class AddressRepository : IAddressRepository
                 _logger.LogInformation("Range of addresses updated successfully");
 
                 _cache.Remove("AllAddresses");
-                _cache.Remove("UnresolvedAddressesInfo");
             }
         }
         catch (Exception ex)
