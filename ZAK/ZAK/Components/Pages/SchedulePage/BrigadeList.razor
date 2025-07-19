@@ -191,6 +191,7 @@
 
         brigades = (await _brigadeRepository.GetAllAsync()).ToList();
 
+        applications.Clear();
         foreach (var brigade in brigades)
         {
             applications.AddRange(brigade.GetApplications());
@@ -198,6 +199,7 @@
         dropContainer.Refresh();
 
         await RefreshMap.InvokeAsync();
+        StateHasChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
