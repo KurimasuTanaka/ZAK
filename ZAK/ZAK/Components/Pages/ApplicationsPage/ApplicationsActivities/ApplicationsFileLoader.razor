@@ -8,13 +8,17 @@
 @inject IApplicationsLoadingService _applicationsLoadingSerivce
 @inject ILogger<ApplicationsFileLoader> _logger;
 
-  <div class="d-flex flex-row gap-2 align-items-center">
-    <InputFile OnChange="@((InputFileChangeEventArgs e) => applicationsFileToLoad = e.File)"></InputFile>
+<div class="d-flex flex-row gap-2 align-items-center">
+  <MudFileUpload T="IBrowserFile" FilesChanged="ChangeFile">
+    <ActivatorContent>
+      <Button Color="ButtonColor.Primary">Обрати файл заявки</Button>
+    </ActivatorContent>
+  </MudFileUpload>
 
-    <Button @ref="updateApplicationButton" Color="ButtonColor.Info" @onclick="UpdateApplications">Оновити
-      заявки</Button>
-    <MudCheckBox @bind-Value="clearDailyInfo" Size="Size.Small" Label="Очистити щоденну інформацію" />
-  </div>
+  <Button @ref="updateApplicationButton" Color="ButtonColor.Info" @onclick="UpdateApplications">Оновити
+    заявки</Button>
+  <MudCheckBox @bind-Value="clearDailyInfo" Size="Size.Small" Label="Очистити щоденну інформацію" />
+</div>
 
 
 <Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopLeft" />
@@ -43,6 +47,10 @@
     await ApplicationsInformationWasChanged.InvokeAsync();
   }
 
+  private void ChangeFile(IBrowserFile file)
+  {
+    applicationsFileToLoad = file;
+  }
 
 
   List<ToastMessage> messages = [];
