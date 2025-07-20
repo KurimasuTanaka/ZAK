@@ -15,6 +15,9 @@
     </ActivatorContent>
   </MudFileUpload>
 
+  @if(applicationsFileToLoad is not null) { <span class="text-muted">Файл: @applicationsFileToLoad?.Name</span> }
+  else { <span class="text-muted">Файл не обрано</span> }
+
   <Button @ref="updateApplicationButton" Color="ButtonColor.Info" @onclick="UpdateApplications">Оновити
     заявки</Button>
   <MudCheckBox @bind-Value="clearDailyInfo" Size="Size.Small" Label="Очистити щоденну інформацію" />
