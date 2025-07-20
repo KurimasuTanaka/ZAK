@@ -22,6 +22,7 @@
 <Card class="my-3">
   <CardBody>
     <ApplicationsActivities ApplicationsInformationWasChanged="Redraw" />
+    <hr />
     <Switch Label="Показувати тільки оновлені" @bind-Value="showUpdated" @bind-Value:after="Redraw" />
     <Switch Label="Показувати ігноровані" @bind-Value="showIgnored" Disabled="@showUpdated"
       @bind-Value:after="Redraw" />
@@ -171,7 +172,7 @@
   ApplicationEditorModal applicationEditorModal = default!;
 
   private Grid<Application> applicationsGrid = default!;
-  private bool showUpdated = false;
+  private bool showUpdated = false; 
 
   public async Task Redraw()
   {

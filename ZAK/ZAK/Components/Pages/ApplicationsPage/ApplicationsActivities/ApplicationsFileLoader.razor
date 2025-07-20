@@ -8,12 +8,13 @@
 @inject IApplicationsLoadingService _applicationsLoadingSerivce
 @inject ILogger<ApplicationsFileLoader> _logger;
 
-<div style="display:flex; flex-direction:row; gap: 10px; ">
-  
-  <InputFile OnChange="@((InputFileChangeEventArgs e) => applicationsFileToLoad = e.File)"></InputFile>
-  <MudCheckBox @bind-Value="clearDailyInfo" Label="Очистити щоденну інформацію" />
-  <Button @ref="updateApplicationButton" class="p-2" Color="ButtonColor.Info" @onclick="UpdateApplications">Оновити заявки</Button>
-</div>
+  <div class="d-flex flex-row gap-2 align-items-center">
+    <InputFile OnChange="@((InputFileChangeEventArgs e) => applicationsFileToLoad = e.File)"></InputFile>
+
+    <Button @ref="updateApplicationButton" Color="ButtonColor.Info" @onclick="UpdateApplications">Оновити
+      заявки</Button>
+    <MudCheckBox @bind-Value="clearDailyInfo" Size="Size.Small" Label="Очистити щоденну інформацію" />
+  </div>
 
 
 <Toasts class="p-3" Messages="messages" Placement="ToastsPlacement.TopLeft" />
