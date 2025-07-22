@@ -140,31 +140,39 @@
         scheduledApplication.onStretching);
 
 
-        applications.Where(a => a.brigadeId == scheduledApplication.brigadeId && 
-            a.applicationScheduledTime == scheduledApplication.applicationScheduledTime).
-            ToList().ForEach(a => a.Copy(scheduledApplication));
+        ApplicationScheduled? application = applications.Where(a => a.brigadeId == scheduledApplication.brigadeId && 
+            a.applicationScheduledTime == scheduledApplication.applicationScheduledTime).FirstOrDefault();
+
+        if (application is not null)
+        {
+            application.Copy(scheduledApplication);
+            application.applicationScheduledTime = scheduledApplication.applicationScheduledTime;
+        }
 
         dropContainer.Refresh();
         await RefreshMap.InvokeAsync();
 
         //Hiding modal window
         await applicationsRatedList.HideAsync();
-        StateHasChanged();
     }
 
     private async Task TimeWasLeftEmpty(ApplicationScheduled scheduledTime)
     {
         await _brigadesManager.MakeTimeSlotEmpty(scheduledTime.brigadeId, scheduledTime.applicationScheduledTime);
 
-        applications.Where(a => a.brigadeId == scheduledTime.brigadeId && 
-            a.applicationScheduledTime == scheduledTime.applicationScheduledTime).ToList().ForEach(a => a.id = 0);
+        ApplicationScheduled? application = applications.Where(a => a.brigadeId == scheduledTime.brigadeId && 
+            a.applicationScheduledTime == scheduledTime.applicationScheduledTime).FirstOrDefault();
+
+        if (application is not null)
+        {
+            application.id = 0; 
+        }
 
         dropContainer.Refresh();
         await RefreshMap.InvokeAsync();
 
         //Hiding modal window
         await applicationsRatedList.HideAsync();
-        StateHasChanged();
     }
 
     private async Task ShowSortedApplicationsListModal(ApplicationScheduled scheduledApplication)
