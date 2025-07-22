@@ -68,15 +68,6 @@ function drawMarker(markerString) {
 
     );
 
-    let selectOptions = "";
-    for (let i = 0; i < markerData.brigadeCount; i++) {
-
-        selectOptions +=
-            `<option id="brigadeSelector" value="${i}.${markerData.id}">
-                Бригада ${i + 1}
-            </option>`;
-    }
-
 
     const popup = L.popup()
         .setContent(
@@ -89,27 +80,11 @@ function drawMarker(markerString) {
                 <br>
                 ${markerData.masterComment}
                 <hr>
-                <b>Додати до бригади:</b>
-                <select class="custom-select"> 
-                    ${selectOptions}
-                </select>
-
             `
         );
 
 
     popup.maxHeight = 50;
-
-    // marker.on('popupopen', () => {
-    //     // Находим элемент <select> внутри popup
-    //     const select = document.querySelector('.custom-select');
-    //     if (select) {
-    //         // Удаляем старые обработчики, чтобы избежать дублирования
-    //         select.removeEventListener('change', handleSelectChange);
-    //         // Добавляем новый обработчик
-    //         select.addEventListener('change', (event) => handleSelectChange(event, marker));
-    //     }
-    // });
 
     marker.bindPopup(popup);
     markerGroup.addLayer(marker);
@@ -117,14 +92,6 @@ function drawMarker(markerString) {
 
 }
 
-// function handleSelectChange(value) {
-//     {
-//         const selectedOption = value.target.value;
-//         const [brigadeNumber, applicationId] = selectedOption.split('.');
-//         alert(`Бригада ${brigadeNumber} обрана для заявки ${applicationId}`);
-//         leafleatMapController.invokeMethodAsync("ScheduleApplicationToBrigade", applicationId, brigadeNumber)
-//     }
-// }
 function clearMap() {
     polylineGroup.clearLayers();
 }
