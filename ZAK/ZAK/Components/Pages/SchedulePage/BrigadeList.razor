@@ -147,6 +147,7 @@
         {
             application.Copy(scheduledApplication);
             application.applicationScheduledTime = scheduledApplication.applicationScheduledTime;
+            application.onStretching = scheduledApplication.onStretching;
         }
 
         dropContainer.Refresh();
