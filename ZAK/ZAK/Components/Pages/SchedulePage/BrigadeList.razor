@@ -129,6 +129,8 @@
             .ToList();
 
         await _brigadeRepository.UpdateAsync(brigade);
+
+        applications = applications.OrderBy(a => a.brigadeId).ThenBy(a => a.applicationScheduledTime).ToList();
     }
 
     private async Task ApplicationWasChosen(ApplicationScheduled scheduledApplication)
@@ -148,6 +150,8 @@
             application.Copy(scheduledApplication);
             application.applicationScheduledTime = scheduledApplication.applicationScheduledTime;
             application.onStretching = scheduledApplication.onStretching;
+
+            @* applications = applications.OrderBy(a => a.brigadeId).ThenBy(a => a.applicationScheduledTime).ToList(); *@
         }
 
         dropContainer.Refresh();
