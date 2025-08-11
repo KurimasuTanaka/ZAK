@@ -1,8 +1,10 @@
 ﻿@page "/addresses"
 @using Microsoft.EntityFrameworkCore
 @using ZAK.Services.UnresolvedAddressesChecker
+
 @rendermode InteractiveServer
 
+@attribute [StreamRendering]
 
 @inject IAddressRepository _addressRepository;
 @inject IGeoDataManager geoDataManager;
@@ -27,60 +29,76 @@
 <UnresolvedAddressesCallout />
 <AddressEditingModal @ref="addressEditingModal" UpdateTable="UpdateTable" />
 
+@if (!addressesLoaded)
+{
+    <div class="text-center">
+        <Spinner Type="SpinnerType.Border" />
+    </div>
+}
+
 <Grid @ref="addressGrid" TItem="Address" Class="table table-hover table-bordered table-striped"
     DataProvider="AddressesDataProvider" AllowPaging="true" PageSize="50" AllowFiltering="true" AllowSorting="true"
     Responsive="true">
 
     <GridColumns>
-
-        <GridColumn TItem="Address" HeaderText="-" Filterable="false" Sortable="false" TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center" >
+        <GridColumn TItem="Address" HeaderText="-" Filterable="false" Sortable="false" TextAlignment="Alignment.Center"
+            HeaderTextAlignment="Alignment.Center">
             <Button @onclick="@(mouseArg => addressEditingModal.ShowModal(context))">
                 <Icon Name="IconName.Pencil" />
             </Button>
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName" FilterTextboxWidth="200" TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center"
+        <GridColumn TItem="Address" HeaderText="Вулиця" PropertyName="streetName" FilterTextboxWidth="200"
+            TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center"
             SortKeySelector="item => item.streetName" ColumnClass="@(x => "W10")">
             @context.streetName
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Будинок" PropertyName="building" TextAlignment="Alignment.Center" HeaderTextAlignment="Alignment.Center"
-            SortKeySelector="item => item.building" ColumnClass="@(x => "W5")">
+        <GridColumn TItem="Address" HeaderText="Будинок" PropertyName="building" TextAlignment="Alignment.Center"
+            HeaderTextAlignment="Alignment.Center" SortKeySelector="item => item.building" ColumnClass="@(x => "W5")">
             @context.building
         </GridColumn>
-         <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority" ColumnClass="@(x => "W5")" Filterable="false" HeaderTextAlignment="Alignment.Center"> 
-            <PriorityInputComponent Address="context"  />
+        <GridColumn TItem="Address" HeaderText="Пріорітет" PropertyName="priority" ColumnClass="@(x => "W5")"
+            Filterable="false" HeaderTextAlignment="Alignment.Center">
+            <PriorityInputComponent Address="context" />
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Альт. вулиця" PropertyName="streetNameAlias" Filterable="false" HeaderTextAlignment="Alignment.Center">
+        <GridColumn TItem="Address" HeaderText="Альт. вулиця" PropertyName="streetNameAlias" Filterable="false"
+            HeaderTextAlignment="Alignment.Center">
             <AliasInputComponent Address="context" StreetAlias="@true" />
         </GridColumn>
-        <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias" ColumnClass="@(x => "W5")" Filterable="false" HeaderTextAlignment="Alignment.Center">
+        <GridColumn TItem="Address" HeaderText="Альт. буд" PropertyName="buildingAlias" ColumnClass="@(x => "W5")"
+            Filterable="false" HeaderTextAlignment="Alignment.Center">
             <AliasInputComponent Address="context" StreetAlias="@false" />
-        </GridColumn> 
+        </GridColumn>
 
 
-        <GridColumn TItem="Address" HeaderText="Широта \ Долгота" PropertyName="Latitude" HeaderTextAlignment="Alignment.Center" Filterable="false"
-            ColumnClass="@(x => "blackoutCell")">
+        <GridColumn TItem="Address" HeaderText="Широта \ Долгота" PropertyName="Latitude"
+            HeaderTextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "blackoutCell")">
             <CoordinatesBoxComponent Address="context" />
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" HeaderTextAlignment="Alignment.Center" SortKeySelector="item => item.resolved" TextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W5")">
+        <GridColumn TItem="Address" HeaderText="Рез." PropertyName="resolved" HeaderTextAlignment="Alignment.Center"
+            SortKeySelector="item => item.resolved" TextAlignment="Alignment.Center" Filterable="false"
+            ColumnClass="@(x => "W5")">
             <h1>@(context.resolved ? '+' : '-')</h1>
         </GridColumn>
 
-        <GridColumn TItem="Address" HeaderText="Доступ" ColumnClass="@(x => "W10")" SortKeySelector="item => item.equipmentAccess" HeaderTextAlignment="Alignment.Center" Filterable="false" TextAlignment="Alignment.Center">
+        <GridColumn TItem="Address" HeaderText="Доступ" ColumnClass="@(x => "W10")"
+            SortKeySelector="item => item.equipmentAccess" HeaderTextAlignment="Alignment.Center" Filterable="false"
+            TextAlignment="Alignment.Center">
             <AddressAccessComponent addressId="context.Id" equipmentAccess="@context.equipmentAccess" />
         </GridColumn>
     </GridColumns>
 </Grid>
-
 
 @code {
 
     private Button loadCoordinatesButton = default!;
     private Grid<Address> addressGrid = default!;
     private AddressEditingModal addressEditingModal = default!;
-
     private int unresolvedAddressesCount = 0;
+
+    bool addressesLoaded = false;
+
     private async Task<GridDataProviderResult<Address>> AddressesDataProvider(GridDataProviderRequest<Address> request)
     {
         _logger.LogInformation("Loading addresses data");
@@ -88,6 +106,7 @@
         List<Address> addresses = (await _addressRepository.GetAllAsync()).ToList();
 
         unresolvedAddressesCount = unresolvedAddressesChecker.ResolveAddresses(addresses);
+        addressesLoaded = true;
         StateHasChanged();
 
         return await Task.FromResult(request.ApplyTo(addresses));
