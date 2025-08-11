@@ -56,16 +56,15 @@
                 @*↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑*@
 
                 @*Column with name of the district*@
-                <GridColumn TItem="Application" HeaderText="Район" PropertyName="districtName" HeaderTextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W10")"
+                <GridColumn TItem="Application" HeaderText="Район" PropertyName="districtName" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W10")"
                     SortKeySelector="item => item.address != null && item.address.district != null ? item.address.district.name : string.Empty">
                     @(context.address != null && context.address.district != null ? context.address.district.name : string.Empty)
                 </GridColumn>
  
                 @*Column name with name of the street*@
-                <GridColumn TItem="Application" HeaderText="Вулиця" PropertyName="streetName" HeaderTextAlignment="Alignment.Center" Filterable="false"
+                <GridColumn TItem="Application" HeaderText="Вулиця" PropertyName="streetName" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center" Filterable="false"
                     SortKeySelector="item => item.address != null ? item.address.streetName : string.Empty">
-                    @((context.address != null ? context.address.streetName : string.Empty) + " " + 
-                      (context.address != null ? context.address!.building : string.Empty));
+                    @(context.representableAddress)
                 </GridColumn>
 
                 <GridColumn TItem="Application" HeaderText="Статус" PropertyName="stretchingStatus" HeaderTextAlignment="Alignment.Center" Filterable="false"
@@ -76,16 +75,16 @@
 
 
                 @*Column for date*@
-                <GridColumn TItem="Application" HeaderText="Дата" HeaderTextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W5")">
+                <GridColumn TItem="Application" HeaderText="Дата" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W5")">
                     <span>@context.year.@context.month.@context.day</span>
                 </GridColumn>
 
-                <GridColumn TItem="Application" HeaderText="Пріорітет" SortKeySelector="item => item.priority" HeaderTextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W10")"
+                <GridColumn TItem="Application" HeaderText="Пріорітет" SortKeySelector="item => item.priority" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W10")"
                     IsDefaultSortColumn="true" SortDirection="BlazorBootstrap.SortDirection.Descending">
-                    <span>@context.priority</span>
+                    <span>@((int)context.priority)</span>
                 </GridColumn>
 
-                <GridColumn TItem="Application" HeaderText="Доступ" HeaderTextAlignment="Alignment.Center" Filterable="false">
+                <GridColumn TItem="Application" HeaderText="Доступ" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center" Filterable="false">
 
                     @if(context.address is not null) 
                     {
@@ -97,7 +96,7 @@
                     }
                 </GridColumn>
  
-                <GridColumn TItem="Application" HeaderText="Зручний час" HeaderTextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W10")">
+                <GridColumn TItem="Application" HeaderText="Зручний час" HeaderTextAlignment="Alignment.Center" TextAlignment="Alignment.Center" Filterable="false" ColumnClass="@(x => "W10")">
                     <div style="display: flex; flex-direction: column;">
 
                     @context.comfortableVisitTime
