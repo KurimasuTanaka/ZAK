@@ -1,4 +1,5 @@
-﻿@inject IJSRuntime JSRuntime;
+﻿@using System.Text
+@inject IJSRuntime JSRuntime;
 @inject IBrigadeRepository _brigadeRepository;
 @inject ILogger<ScheduleCopyButton> _logger;
 
@@ -9,26 +10,27 @@
     {
         _logger.LogInformation("Copying brigade schedule to clipboard...");
 
-        string brigadeInChatFormat = "";
+        StringBuilder brigadeInChatFormat = new StringBuilder();
 
         List<Brigade> brigades = (await _brigadeRepository.GetAllAsync()).ToList();
+
 
         for (int i = 0; i < brigades.Count; i++)
         {
 
-            brigadeInChatFormat += "Бригада " + (i + 1).ToString() + "\n";
+            brigadeInChatFormat.Append("Бригада " + (i + 1).ToString() + "\n");
             List<ApplicationScheduled> scheduledApplications = brigades[i].GetApplications();
 
             int applicationCounter = 0;
             foreach (ApplicationScheduled application in scheduledApplications)
             {
-                application.GetScheduleString(applicationCounter);
+                brigadeInChatFormat.Append(application.GetScheduleString(applicationCounter));
                 applicationCounter++;
             }
 
             _logger.LogInformation("Brigade string generated successfully. \nInvoking clipboard function... ");
 
-            await JSRuntime.InvokeVoidAsync("CopyToClipboard", brigadeInChatFormat);
+            await JSRuntime.InvokeVoidAsync("CopyToClipboard", brigadeInChatFormat.ToString());
 
         }
     }

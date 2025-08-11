@@ -94,8 +94,11 @@ public class ApplicationScheduled : Application
         sb.Append(" ");
 
         if (id == 0) sb.Append("----- Резерв -----\n");
-        else sb.Append(GetScheduleString());
-
+        else
+        {
+            sb.Append(GetScheduleString());
+            sb.Append("\n");
+        }
         return sb.ToString();
     }
 }

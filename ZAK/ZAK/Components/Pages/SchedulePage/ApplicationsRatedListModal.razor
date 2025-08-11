@@ -46,7 +46,10 @@
                                 <Icon Name="IconName.ArrowRepeat" Color="BlazorBootstrap.IconColor.Primary" />
                             }
 
-
+                            @if(context.tarChangeApp)
+                            {
+                                <Icon Name="IconName.ArrowUpCircleFill" Color="BlazorBootstrap.IconColor.Dark" />
+                            }
                         </div>
                     </div>
                 </GridColumn>
