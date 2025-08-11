@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using ZAK.DA;
@@ -13,11 +14,21 @@ public class BrigadeRepository : IBrigadeRepository
 {
     private readonly IDbContextFactory<ZakDbContext> _dbContextFactory;
     private readonly ILogger<BrigadeRepository> _logger;
+    private readonly IMemoryCache _cache;
 
-    public BrigadeRepository(IDbContextFactory<ZakDbContext> dbContextFactory, ILogger<BrigadeRepository> logger)
+    string brigadesCacheKey = "Brigades";
+    string brigadesWithAppsCacheKey = "BrigadesWithApps";
+
+    public BrigadeRepository(IDbContextFactory<ZakDbContext> dbContextFactory, ILogger<BrigadeRepository> logger, IMemoryCache cache)
     {
         _logger = logger;
         _dbContextFactory = dbContextFactory;
+        _cache = cache;
+    }
+    private void DropCache()
+    {
+        _cache.Remove(brigadesCacheKey);
+        _cache.Remove(brigadesWithAppsCacheKey);
     }
 
     public async Task CreateAsync(Brigade entity)
@@ -41,6 +52,7 @@ public class BrigadeRepository : IBrigadeRepository
                             context.Attach(scheduledApplication.application);
                         }
                     }
+                    DropCache();
                 }
                 else
                 {
@@ -72,6 +84,7 @@ public class BrigadeRepository : IBrigadeRepository
                     context.brigades.Remove(entity);
                     await context.SaveChangesAsync();
                     _logger.LogInformation("Brigade deleted successfully: {Id}", id);
+                    DropCache();
                 }
                 else
                 {
@@ -90,6 +103,12 @@ public class BrigadeRepository : IBrigadeRepository
     {
         _logger.LogInformation("Getting all brigades");
 
+        if (_cache.TryGetValue(brigadesCacheKey, out IEnumerable<Brigade>? cachedBrigades) && cachedBrigades is not null)
+        {
+            _logger.LogInformation("Returning cached brigades");
+            return cachedBrigades;
+        }
+
         try
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
@@ -98,6 +117,9 @@ public class BrigadeRepository : IBrigadeRepository
                     .Include(b => b.scheduledApplications).ThenInclude(sa => sa.application).ThenInclude(a => a.address).ThenInclude(a => a!.district)
                     .Select(b => new Brigade(b))
                     .ToListAsync();
+
+                _cache.Set(brigadesCacheKey, result, TimeSpan.FromMinutes(5));
+
                 _logger.LogInformation("Retrieved {Count} brigades", result.Count);
                 return result;
             }
@@ -113,6 +135,12 @@ public class BrigadeRepository : IBrigadeRepository
     {
         _logger.LogInformation("Getting all brigades with scheduled application info");
 
+        if (_cache.TryGetValue(brigadesWithAppsCacheKey, out IEnumerable<Brigade>? cachedBrigades) && cachedBrigades is not null)
+        {
+            _logger.LogInformation("Returning cached brigades");
+            return cachedBrigades;
+        }
+
         try
         {
             using (ZakDbContext context = _dbContextFactory.CreateDbContext())
@@ -122,6 +150,8 @@ public class BrigadeRepository : IBrigadeRepository
                     .ThenInclude(sa => sa.application).ThenInclude(a => a.address).ThenInclude(a => a!.coordinates)
                     .Select(b => new Brigade(b))
                     .ToListAsync();
+
+                _cache.Set(brigadesWithAppsCacheKey, result, TimeSpan.FromMinutes(5));
                 _logger.LogInformation("Retrieved {Count} brigades with scheduled application info", result.Count);
                 return result;
             }
@@ -194,6 +224,7 @@ public class BrigadeRepository : IBrigadeRepository
                         }
                     }
                     await context.SaveChangesAsync();
+                    DropCache();
                     _logger.LogInformation("Brigade updated successfully: {@Brigade}", entity);
                 }
             }
