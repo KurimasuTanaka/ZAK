@@ -40,6 +40,8 @@ public class Application : ApplicationModel
         {
             if (timeRangeIsSet)
             {
+                if(startHour == 10 && endHour == 19) return "Протягом дня";
+
                 return $"{startHour} - {endHour}";
             }
             else
@@ -156,7 +158,8 @@ public class Application : ApplicationModel
         this.masterCommentWasUpdated = source.masterCommentWasUpdated;
         this.operatorCommentWasUpdated = source.operatorCommentWasUpdated;
         this.statusWasUpdated = source.statusWasUpdated;
-        
+        this.office = source.office;
+        this.inSchedule = source.inSchedule;
     }
 
 

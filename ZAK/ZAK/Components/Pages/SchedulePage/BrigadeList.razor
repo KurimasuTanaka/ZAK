@@ -33,48 +33,8 @@
         <ItemRenderer>
             @{
                 //Add time info
-                var scheduledApplicationText = $"{context.applicationScheduledTime + 10} - {context.applicationScheduledTime + 11} | ";
-                
-                if(context.id != 0)
-                {
-                    scheduledApplicationText += $"{@context.id} -";
-                    
-                    //If address is not null, add address info
-                    if(context.address is not null)
-                    {
-                        if (context.address.district is not null)
-                        {
-                            scheduledApplicationText += $" {@context.address!.district!.name} - ";
-                        }
+                var scheduledApplicationText = context.GetScheduleString(context.applicationScheduledTime);
 
-                        scheduledApplicationText += $"{context.address.streetName} {context.address.building}";
-                    
-                        scheduledApplicationText += $" - {context.address.equipmentAccess.GetDisplayName()}";
-                    }
-
-                    //Add comfortable visit time if brigade is not for stretching
-
-                    if (context.office)
-                    {
-                        scheduledApplicationText += $" - ОФІС";
-                    }
-
-                    if(context.inSchedule)
-                    {
-                        scheduledApplicationText += $" - ДОМОВЛЕНО";
-                    } else if (context.onStretching)
-                    {
-                        scheduledApplicationText += $" - ПРОТЯЖКА";
-                    }
-
-                    if (!context.onStretching)
-                    {
-                        scheduledApplicationText += $" - {context.comfortableVisitTime}";    
-                    } 
-                } else 
-                {
-                    scheduledApplicationText += " РЕЗЕРВ";
-                }
             }
             <MudListItem T="ApplicationScheduled"
                 Text="@scheduledApplicationText"
@@ -171,6 +131,8 @@
         if (application is not null)
         {
             application.id = 0; 
+            application.onStretching = false;
+            application.inSchedule = false;
         }
 
         dropContainer.Refresh();

@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using System.Text;
+using BlazorApp.Enums;
 using ZAK.DAO;
 using ZAK.Db;
 using ZAK.Db.Models;
@@ -30,84 +32,151 @@ public class ApplicationScheduled : Application
         this.brigadeId = brigadeId;
         this.applicationScheduledTime = applicationScheduledTime;
     }
+
+    public string GetScheduleString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        //Id
+        sb.Append(this.id);
+        sb.Append(" - ");
+
+        //District
+        if (address is not null && address.district is not null)
+        {
+            sb.Append(this.address.district.name);
+            sb.Append(" - ");
+        }
+
+        //Address
+        sb.Append(this.representableAddress);
+        sb.Append(" - ");
+
+        //Equipment access
+        if (address is not null)
+        {
+            sb.Append(address.equipmentAccess.GetDisplayName());
+            sb.Append(" - ");
+        }
+
+        //TAGS
+        if (office)
+        {
+            sb.Append("ОФІС");
+            sb.Append(" - ");
+        }
+        if (inSchedule)
+        {
+            sb.Append("ДОМОВЛЕНА");
+            sb.Append(" - ");
+        }
+        if (onStretching)
+        {
+            sb.Append("ПРОТЯЖКА");
+        }
+
+        //Comfortable visit time
+        if (!onStretching)
+        {
+            sb.Append(comfortableVisitTime);
+        }
+
+        return sb.ToString();
+    }
+
+    public string GetScheduleString(int time)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append(time + 10);
+        sb.Append(" - ");
+        sb.Append(time + 11);
+        sb.Append(" ");
+
+        if (id == 0) sb.Append("----- Резерв -----\n");
+        else sb.Append(GetScheduleString());
+
+        return sb.ToString();
+    }
 }
 
-
-public class Brigade : BrigadeModel
-{
-    public Brigade() : base() {
-        brigadeNumber = 0;
-        brigadeSlotsCount = 9;
-    }
-    public Brigade(BrigadeModel model) : base(model) {
-        brigadeNumber = 0;
-        brigadeSlotsCount = 9;
-    }
-
-    public object? this[string propertyName]
+    public class Brigade : BrigadeModel
     {
-        get
+        public Brigade() : base()
         {
-            PropertyInfo? myPropInfo = GetType().GetProperty(propertyName);
-            if (myPropInfo is not null) return myPropInfo.GetValue(this);
-            else
+            brigadeNumber = 0;
+            brigadeSlotsCount = 9;
+        }
+        public Brigade(BrigadeModel model) : base(model)
+        {
+            brigadeNumber = 0;
+            brigadeSlotsCount = 9;
+        }
+
+        public object? this[string propertyName]
+        {
+            get
             {
-                throw new Exception("Non existing property is used");
+                PropertyInfo? myPropInfo = GetType().GetProperty(propertyName);
+                if (myPropInfo is not null) return myPropInfo.GetValue(this);
+                else
+                {
+                    throw new Exception("Non existing property is used");
+                }
+            }
+            set
+            {
+                PropertyInfo? myPropInfo = GetType().GetProperty(propertyName);
+                if (myPropInfo is not null) myPropInfo.SetValue(this, value, null);
+                else
+                {
+                    throw new Exception("Non existing property is used");
+                }
             }
         }
-        set
+
+
+        public ApplicationScheduled GetApplicationScheduledOn(int time)
         {
-            PropertyInfo? myPropInfo = GetType().GetProperty(propertyName);
-            if (myPropInfo is not null) myPropInfo.SetValue(this, value, null);
-            else
+            foreach (ScheduledApplicationModel scheduledApplication in scheduledApplications)
             {
-                throw new Exception("Non existing property is used");
+                if (scheduledApplication.scheduledTime == time) return new ApplicationScheduled(scheduledApplication.application, time);
             }
+            return new ApplicationScheduled();
         }
-    }
 
-
-    public ApplicationScheduled GetApplicationScheduledOn(int time)
-    {
-        foreach(ScheduledApplicationModel scheduledApplication in scheduledApplications)
+        public List<ApplicationScheduled> GetApplications()
         {
-            if(scheduledApplication.scheduledTime == time) return new ApplicationScheduled(scheduledApplication.application, time);
-        }
-        return new ApplicationScheduled();
-    }
-
-    public List<ApplicationScheduled> GetApplications()
-    {
-        List<ApplicationScheduled> applications = new List<ApplicationScheduled>();
-        for(int i = 0; i < brigadeSlotsCount; i++)
-        {
-            ScheduledApplicationModel? scheduledApplication = scheduledApplications.Find(s => s.scheduledTime == i);
-            if (scheduledApplication is not null)
+            List<ApplicationScheduled> applications = new List<ApplicationScheduled>();
+            for (int i = 0; i < brigadeSlotsCount; i++)
             {
-                //applications.Add(new ApplicationScheduled(scheduledApplication.application, brigadeId: id, applicationScheduledTime: i));
+                ScheduledApplicationModel? scheduledApplication = scheduledApplications.Find(s => s.scheduledTime == i);
+                if (scheduledApplication is not null)
+                {
+                    //applications.Add(new ApplicationScheduled(scheduledApplication.application, brigadeId: id, applicationScheduledTime: i));
 
-                //TODO: FIX THIS 
-                ApplicationScheduled? applicationScheduled = new();
-                applicationScheduled.id = scheduledApplication.application.id;
-                applicationScheduled.address = scheduledApplication.application.address;
-                applicationScheduled.brigadeId = scheduledApplication.brigadeId;
-                applicationScheduled.applicationScheduledTime = i;
-                applicationScheduled.onStretching = scheduledApplication.onStretching;
+                    //TODO: FIX THIS 
+                    ApplicationScheduled? applicationScheduled = new();
+                    applicationScheduled.id = scheduledApplication.application.id;
+                    applicationScheduled.address = scheduledApplication.application.address;
+                    applicationScheduled.brigadeId = scheduledApplication.brigadeId;
+                    applicationScheduled.applicationScheduledTime = i;
+                    applicationScheduled.onStretching = scheduledApplication.onStretching;
 
-                applicationScheduled.timeRangeIsSet = scheduledApplication.application.timeRangeIsSet;
-                applicationScheduled.firstPart = scheduledApplication.application.firstPart;
-                applicationScheduled.secondPart = scheduledApplication.application.secondPart;
-                applicationScheduled.startHour = scheduledApplication.application.startHour;
-                applicationScheduled.endHour = scheduledApplication.application.endHour;
+                    applicationScheduled.timeRangeIsSet = scheduledApplication.application.timeRangeIsSet;
+                    applicationScheduled.firstPart = scheduledApplication.application.firstPart;
+                    applicationScheduled.secondPart = scheduledApplication.application.secondPart;
+                    applicationScheduled.startHour = scheduledApplication.application.startHour;
+                    applicationScheduled.endHour = scheduledApplication.application.endHour;
 
-                applicationScheduled.inSchedule = scheduledApplication.application.inSchedule;
-                applicationScheduled.office = scheduledApplication.application.office;
+                    applicationScheduled.inSchedule = scheduledApplication.application.inSchedule;
+                    applicationScheduled.office = scheduledApplication.application.office;
 
-                applications.Add(applicationScheduled);
+                    applications.Add(applicationScheduled);
 
+                }
+                else applications.Add(new ApplicationScheduled(this.id, i));
             }
-            else applications.Add(new ApplicationScheduled(this.id, i));
+            return applications;
         }
-        return applications;
     }
-}

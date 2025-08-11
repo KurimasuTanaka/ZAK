@@ -22,26 +22,7 @@
             int applicationCounter = 0;
             foreach (ApplicationScheduled application in scheduledApplications)
             {
-
-                if (application.id == 0)
-                {
-                    brigadeInChatFormat +=
-                    (applicationCounter + 10).ToString() + " - " + (applicationCounter + 11).ToString() + " " +
-                    "----- Резерв -----\n";
-                }
-                else
-                {
-                    brigadeInChatFormat +=
-                    (applicationCounter + 10).ToString() + " - " + (applicationCounter + 11).ToString() + " " +
-                    application.id + " " + 
-                    ClearSteetName(application.address!.streetName) + " " +
-                    application.address!.building + " (" +  
-                    application.comfortableVisitTime + " " +
-                    (application.office ? "ОФІС " : "") +
-                    application.address.equipmentAccess.GetDisplayName() + ") " +
-                    (application.inSchedule ? "ДОМОВЛЕНО " : "") + '\n'; 
-                }
-
+                application.GetScheduleString(applicationCounter);
                 applicationCounter++;
             }
 
